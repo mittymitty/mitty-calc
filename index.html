@@ -49,7 +49,6 @@
     .emp-body { padding: 10px 18px; }
     .emp-footer { background: #fafafa; padding: 12px 18px; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 600; color: var(--mitty-green); }
     
-    /* 查詢表樣式 */
     .toggle-btn { width: 100%; padding: 12px; background: #fff; border: 1px solid var(--mitty-gold); color: var(--mitty-gold); border-radius: 8px; cursor: pointer; margin-bottom: 10px; }
     #insTable { display: none; margin-top: 15px; }
     .table-wrap { overflow-x: auto; border: 1px solid #ddd; border-radius: 8px; }
@@ -77,7 +76,7 @@
   <div class="container">
     <header>
       <h1>Mitty 雲端結算系統</h1>
-      <p style="color:#888;">按月存檔 · 完整級距與補貼版</p>
+      <p style="color:#888;">按月存檔 · 欄位完整還原版</p>
     </header>
 
     <div class="input-row" style="justify-content: center; gap: 15px; margin-bottom: 30px;">
@@ -87,18 +86,30 @@
 
     <h2>一、營業額計算</h2>
     <div class="section-card">
-      <div class="input-row"><label>店面總營收</label><input type="number" id="shopRev" oninput="calc()"></div>
-      <div class="input-row"><label>刷卡手續費</label><input type="number" id="cardFee" oninput="calc()"></div>
-      <div class="input-row" style="margin-top:20px;"><label>網路總營收</label><input type="number" id="onlineRev" oninput="calc()"></div>
-      <div class="input-row"><label>網店各項扣抵</label><input type="number" id="onlineExp" oninput="calc()"></div>
+      <h3>店面營收</h3>
+      <div class="input-row"><label>網站店面營收</label><input type="number" id="shopRev" placeholder="0" oninput="calc()"></div>
+      <div class="input-row"><label>刷卡手續費</label><input type="number" id="cardFee" placeholder="0" oninput="calc()"></div>
       <div class="result-display">
-        <div class="res-line" style="font-weight:600; color:#c0392b;"><span>本月總營業額</span><span id="totalRev">0 元</span></div>
+        <div class="res-line"><span>店面淨營收</span><span id="shopNet">0 元</span></div>
+      </div>
+
+      <h3 style="margin-top:30px;">網路營收</h3>
+      <div class="input-row"><label>網站網路營收</label><input type="number" id="onlineRev" placeholder="0" oninput="calc()"></div>
+      <div class="input-row"><label>便利商店運費</label><input type="number" id="convFee" placeholder="0" oninput="calc()"></div>
+      <div class="input-row"><label>網店手續費</label><input type="number" id="platformFee" placeholder="0" oninput="calc()"></div>
+      <div class="input-row"><label>退貨金額</label><input type="number" id="refund" placeholder="0" oninput="calc()"></div>
+      <div class="input-row"><label>取消未取消訂單</label><input type="number" id="cancelOrder" placeholder="0" oninput="calc()"></div>
+      <div class="result-display">
+        <div class="res-line"><span>網路淨營收</span><span id="onlineNet">0 元</span></div>
+        <div class="res-line" style="font-weight:600; color:#c0392b; border-top: 1px solid #eee; margin-top: 5px; padding-top: 10px;">
+          <span>本月總營業額</span><span id="totalRev">0 元</span>
+        </div>
       </div>
     </div>
 
     <h2>二、薪資計算</h2>
     <div class="section-card">
-      <div class="input-row"><label>晚班總時數</label><input type="number" id="nightHours" step="0.5" oninput="calc()"></div>
+      <div class="input-row"><label>晚班總時數</label><input type="number" id="nightHours" step="0.5" placeholder="0" oninput="calc()"></div>
       <div class="bonus-banner">每小時獎金基數：<strong id="bonusBase">0</strong> 元</div>
       <div id="ptList"></div>
       <h3 style="margin:30px 0 15px; color:var(--mitty-gold);">正職人員</h3>
@@ -111,8 +122,7 @@
       <div class="table-wrap">
         <table>
           <thead><tr><th>投保級距</th><th>勞保</th><th>健保</th><th>合計</th></tr></thead>
-          <tbody id="insTbody">
-            </tbody>
+          <tbody id="insTbody"></tbody>
         </table>
       </div>
     </div>
@@ -150,17 +160,7 @@ var PT = [
 ];
 var FT = [{ name: '鯰 (店長)', salary: 63000 }, { name: '倫 (阿倫)', salary: 60000 }];
 
-const insData = [
-  [1500,277,458,735],[3000,277,458,735],[4500,277,458,735],[6000,277,458,735],[7500,277,458,735],
-  [8700,277,458,735],[9900,277,458,735],[11100,277,458,735],[12540,313,458,771],[13500,338,458,796],
-  [15840,396,458,854],[16500,413,458,871],[17280,432,458,890],[17880,447,458,905],[19047,476,458,934],
-  [20008,500,458,958],[21009,525,458,983],[22000,550,458,1008],[23100,577,458,1035],[24000,600,458,1058],
-  [25250,632,458,1090],[26400,660,458,1118],[27600,690,458,1148],[28590,715,458,1173],[29500,738,458,1196],
-  [30300,758,470,1228],[31800,795,493,1288],[33300,833,516,1349],[34800,870,540,1410],[36300,908,563,1471],
-  [38200,955,592,1547],[40100,1002,622,1624],[42000,1050,651,1701],[43900,1098,681,1779],[45800,1145,710,1855],
-  [48200,1145,748,1893],[50600,1145,785,1930],[53000,1145,822,1967],[55400,1145,859,2004],[57800,1145,896,2041],
-  [60800,1145,943,2088],[63800,1145,990,2135]
-];
+const insData = [[1500,277,458,735],[3000,277,458,735],[4500,277,458,735],[6000,277,458,735],[7500,277,458,735],[8700,277,458,735],[9900,277,458,735],[11100,277,458,735],[12540,313,458,771],[13500,338,458,796],[15840,396,458,854],[16500,413,458,871],[17280,432,458,890],[17880,447,458,905],[19047,476,458,934],[20008,500,458,958],[21009,525,458,983],[22000,550,458,1008],[23100,577,458,1035],[24000,600,458,1058],[25250,632,458,1090],[26400,660,458,1118],[27600,690,458,1148],[28590,715,458,1173],[29500,738,458,1196],[30300,758,470,1228],[31800,795,493,1288],[33300,833,516,1349],[34800,870,540,1410],[36300,908,563,1471],[38200,955,592,1547],[40100,1002,622,1624],[42000,1050,651,1701],[43900,1098,681,1779],[45800,1145,710,1855],[48200,1145,748,1893],[50600,1145,785,1930],[53000,1145,822,1967],[55400,1145,859,2004],[57800,1145,896,2041],[60800,1145,943,2088],[63800,1145,990,2135]];
 
 function initUI() {
   let ptHtml = '';
@@ -205,8 +205,11 @@ function gv(id) { return parseFloat(document.getElementById(id).value) || 0; }
 
 function calc() {
   const shopNet = gv('shopRev') - gv('cardFee');
-  const onlineNet = gv('onlineRev') - gv('onlineExp');
+  const onlineNet = gv('onlineRev') - gv('convFee') - gv('platformFee') - gv('refund') - gv('cancelOrder');
   const totalRev = shopNet + onlineNet;
+
+  document.getElementById('shopNet').textContent = fmt(shopNet) + " 元";
+  document.getElementById('onlineNet').textContent = fmt(onlineNet) + " 元";
   document.getElementById('totalRev').textContent = fmt(totalRev) + " 元";
 
   const nightH = gv('nightHours');
