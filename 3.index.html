@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mitty 雲端結算系統</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --mitty-bg: #fdfaf5; --mitty-green: #2d5a27; --mitty-gold: #b38b59; --mitty-text: #3c3c3c;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans TC', sans-serif; background: var(--mitty-bg); color: var(--mitty-text); }
+
+    /* ── 登入介面 ── */
+    #loginOverlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--mitty-bg); z-index: 1000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .login-box {
+      background: #fff; padding: 40px; border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 400px;
+    }
+    .login-box h1 { color: var(--mitty-green); margin-bottom: 20px; letter-spacing: 2px; }
+    .login-box input {
+      width: 100%; padding: 12px; margin-bottom: 15px;
+      border: 1px solid #ddd; border-radius: 6px; font-size: 16px;
+    }
+    .login-box button {
+      width: 100%; padding: 12px; background: var(--mitty-green);
+      color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;
+    }
+
+    /* ── 主內容 (預設隱藏) ── */
+    #mainContent { display: none; padding: 30px 15px 100px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 40px; border-bottom: 1.5px solid var(--mitty-gold); padding-bottom: 20px; }
+    h2 { font-size: 1.2rem; margin: 40px 0 20px; padding-left: 12px; border-left: 4px solid var(--mitty-green); color: var(--mitty-green); }
+    .section-card { background: #fff; border: 1px solid #e0dcd0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
+    .input-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+    .input-row input { width: 140px; padding: 10px; border: 1px solid #e0dcd0; border-radius: 6px; text-align: right; background: #fafafa; font-size: 16px; }
+    .result-display { background: #f8f9fa; border-radius: 8px; padding: 15px 20px; margin-top: 15px; }
+    .res-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; }
+    .res-line:last-child { font-weight: 600; color: #c0392b; border-top: 1px solid #eee; margin-top: 5px; padding-top: 10px; }
+    .bonus-banner { background: var(--mitty-green); color: #fff; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0; }
+    .emp-card { border: 1.5px solid #e0dcd0; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
+    .emp-header { background: #f1f3f1; padding: 12px 18px; font-weight: 600; display: flex; justify-content: space-between; }
+    .emp-body { padding: 10px 18px; }
+    .emp-footer { background: #fafafa; padding: 12px 18px; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 600; color: var(--mitty-green); }
+    .summary-box { background: var(--mitty-green); color: #fff; border-radius: 12px; padding: 25px; margin-top: 30px; }
+    .sum-line { display: flex; justify-content: space-between; padding: 8px 0; }
+  </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div class="login-box">
+    <h1>MITTY Login</h1>
+    <input type="text" id="username" placeholder="帳號">
+    <input type="password" id="password" placeholder="密碼">
+    <button onclick="checkLogin()">登入系統</button>
+    <p id="loginError" style="color:red; margin-top:10px; font-size:14px; display:none;">帳號或密碼錯誤</p>
+  </div>
+</div>
+
+<div id="mainContent">
+  <div class="container">
+    <header>
+      <h1>Mitty 雲端結算系統</h1>
+      <p style="color:#888;">登入成功 · 按月儲存版本</p>
+    </header>
+
+    <div class="input-row" style="justify-content: center; gap: 15px; margin-bottom: 30px;">
+      <label style="font-weight:600;">結算月份</label>
+      <input type="month" id="calcMonth" onchange="loadMonthlyData()">
+    </div>
+
+    <h2>一、營業額計算</h2>
+    <div class="section-card">
+      <div class="input-row"><label>店面總營收</label><input type="number" id="shopRev" oninput="calc()"></div>
+      <div class="input-row"><label>刷卡手續費</label><input type="number" id="cardFee" oninput="calc()"></div>
+      <div class="input-row" style="margin-top:20px;"><label>網路總營收</label><input type="number" id="onlineRev" oninput="calc()"></div>
+      <div class="input-row"><label>網店各項扣抵 (運/退/手續)</label><input type="number" id="onlineExp" oninput="calc()"></div>
+      <div class="result-display">
+        <div class="res-line"><span>本月總營業額</span><span id="totalRev">—</span></div>
+      </div>
+    </div>
+
+    <h2>二、薪資計算</h2>
+    <div class="section-card">
+      <div class="input-row"><label>晚班總時數</label><input type="number" id="nightHours" step="0.5" oninput="calc()"></div>
+      <div class="bonus-banner">每小時獎金基數：<strong id="bonusBase">0</strong> 元</div>
+      <div id="ptList"></div>
+      <h3 style="margin:30px 0 15px; color:var(--mitty-gold);">正職員工</h3>
+      <div id="ftList"></div>
+    </div>
+
+    <div class="summary-box">
+      <div class="sum-line" style="font-size:1.3rem; font-weight:600;"><span>本月薪資總支出</span><span id="sumAll">0 元</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 設定帳密 ──
+const CONFIG = {
+  user: "mittyadmin", 
+  pass: "mitty888" // 你可以自行修改
+};
+
+function checkLogin() {
+  const u = document.getElementById('username').value;
+  const p = document.getElementById('password').value;
+  if(u === CONFIG.user && p === CONFIG.pass) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    // 預設載入當前月份
+    const now = new Date();
+    const monthStr = now.getFullYear() + "-" + (now.getMonth()+1).toString().padStart(2, '0');
+    document.getElementById('calcMonth').value = monthStr;
+    loadMonthlyData();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+// ── 員工資料 ──
+var PT = [
+  { name: '聖', rate: 300, pct: 0.04 }, { name: '斐', rate: 280, pct: 0.03 },
+  { name: '都', rate: 250, pct: 0.03 }, { name: '浩', rate: 230, pct: 0.03 }, { name: '童', rate: 200, pct: 0.02 }
+];
+var FT = [{ name: '鯰 (店長)', salary: 63000 }, { name: '倫', salary: 60000 }];
+
+function initUI() {
+  let ptHtml = '';
+  PT.forEach((e, i) => {
+    ptHtml += `
+    <div class="emp-card">
+      <div class="emp-header"><span>${e.name}</span></div>
+      <div class="emp-body">
+        <div class="input-row"><label>上班時數</label><input type="number" id="pt_h_${i}" oninput="calc()"></div>
+        <div class="input-row"><label>假日時數</label><input type="number" id="pt_hd_${i}" oninput="calc()"></div>
+        <div class="input-row"><label>勞健保自付</label><input type="number" id="pt_ins_${i}" oninput="calc()"></div>
+      </div>
+      <div class="emp-footer"><span>應領薪資</span><span id="pt_pay_${i}">—</span></div>
+    </div>`;
+  });
+  document.getElementById('ptList').innerHTML = ptHtml;
+
+  let ftHtml = '';
+  FT.forEach((f, i) => {
+    ftHtml += `
+    <div class="emp-card">
+      <div class="emp-header"><span>${f.name}</span></div>
+      <div class="emp-body">
+        <div class="input-row"><label>勞健保自付</label><input type="number" id="ft_ins_${i}" oninput="calc()"></div>
+      </div>
+      <div class="emp-footer"><span>應領薪資</span><span id="ft_pay_${i}">—</span></div>
+    </div>`;
+  });
+  document.getElementById('ftList').innerHTML = ftHtml;
+}
+
+function fmt(n) { return Math.round(n).toLocaleString('zh-TW'); }
+function gv(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+function calc() {
+  const shopNet = gv('shopRev') - gv('cardFee');
+  const onlineNet = gv('onlineRev') - gv('onlineExp');
+  const totalRev = shopNet + onlineNet;
+  document.getElementById('totalRev').textContent = fmt(totalRev) + " 元";
+
+  const nightH = gv('nightHours');
+  const bonusBase = nightH > 0 ? totalRev / nightH : 0;
+  document.getElementById('bonusBase').textContent = fmt(bonusBase);
+
+  let totalPay = 0;
+  PT.forEach((e, i) => {
+    const h = gv(`pt_h_${i}`), hd = gv(`pt_hd_${i}`), ins = gv(`pt_ins_${i}`);
+    const pay = (e.rate + (bonusBase * e.pct)) * h + (hd * e.rate) - ins;
+    document.getElementById(`pt_pay_${i}`).textContent = h > 0 ? fmt(pay) + " 元" : "—";
+    if(h > 0) totalPay += pay;
+  });
+
+  FT.forEach((f, i) => {
+    const ins = gv(`ft_ins_${i}`);
+    const pay = f.salary - ins;
+    document.getElementById(`ft_pay_${i}`).textContent = fmt(pay) + " 元";
+    totalPay += pay;
+  });
+
+  document.getElementById('sumAll').textContent = fmt(totalPay) + " 元";
+  saveMonthlyData();
+}
+
+// ── 核心功能：按月儲存 ──
+function saveMonthlyData() {
+  const month = document.getElementById('calcMonth').value;
+  if(!month) return;
+  const data = {};
+  document.querySelectorAll('input').forEach(ipt => {
+    if(ipt.id !== 'username' && ipt.id !== 'password') data[ipt.id] = ipt.value;
+  });
+  localStorage.setItem(`mitty_data_${month}`, JSON.stringify(data));
+}
+
+function loadMonthlyData() {
+  const month = document.getElementById('calcMonth').value;
+  const saved = localStorage.getItem(`mitty_data_${month}`);
+  // 先清空所有輸入框
+  document.querySelectorAll('input:not([type="month"])').forEach(ipt => {
+    if(ipt.id !== 'username' && ipt.id !== 'password') ipt.value = "";
+  });
+  if(saved) {
+    const data = JSON.parse(saved);
+    Object.keys(data).forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.value = data[id];
+    });
+  }
+  calc();
+}
+
+initUI();
+</script>
+</body>
+</html>
