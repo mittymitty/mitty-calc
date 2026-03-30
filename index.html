@@ -77,7 +77,7 @@
   <div class="container">
     <header>
       <h1>Mitty 雲端結算系統</h1>
-      <p style="color:#888;">按月存檔 · 完整級距版</p>
+      <p style="color:#888;">按月存檔 · 完整級距與補貼版</p>
     </header>
 
     <div class="input-row" style="justify-content: center; gap: 15px; margin-bottom: 30px;">
@@ -171,6 +171,7 @@ function initUI() {
       <div class="emp-body">
         <div class="input-row"><label>上班時數</label><input type="number" id="pt_h_${i}" oninput="calc()"></div>
         <div class="input-row"><label>假日時數</label><input type="number" id="pt_hd_${i}" oninput="calc()"></div>
+        <div class="input-row"><label>額外補貼</label><input type="number" id="pt_extra_${i}" oninput="calc()"></div>
         <div class="input-row"><label>勞健保自付</label><input type="number" id="pt_ins_${i}" oninput="calc()"></div>
       </div>
       <div class="emp-footer"><span>應領薪資</span><span id="pt_pay_${i}">—</span></div>
@@ -184,6 +185,7 @@ function initUI() {
     <div class="emp-card">
       <div class="emp-header"><span>${f.name}</span> <small>底薪 ${fmt(f.salary)}</small></div>
       <div class="emp-body">
+        <div class="input-row"><label>額外補貼</label><input type="number" id="ft_extra_${i}" oninput="calc()"></div>
         <div class="input-row"><label>勞健保自付</label><input type="number" id="ft_ins_${i}" oninput="calc()"></div>
       </div>
       <div class="emp-footer"><span>應領薪資</span><span id="ft_pay_${i}">—</span></div>
@@ -213,15 +215,15 @@ function calc() {
 
   let totalPay = 0;
   PT.forEach((e, i) => {
-    const h = gv(`pt_h_${i}`), hd = gv(`pt_hd_${i}`), ins = gv(`pt_ins_${i}`);
-    const pay = (e.rate + (bonusBase * e.pct)) * h + (hd * e.rate) - ins;
+    const h = gv(`pt_h_${i}`), hd = gv(`pt_hd_${i}`), ins = gv(`pt_ins_${i}`), extra = gv(`pt_extra_${i}`);
+    const pay = (e.rate + (bonusBase * e.pct)) * h + (hd * e.rate) + extra - ins;
     document.getElementById(`pt_pay_${i}`).textContent = h > 0 ? fmt(pay) + " 元" : "—";
     if(h > 0) totalPay += pay;
   });
 
   FT.forEach((f, i) => {
-    const ins = gv(`ft_ins_${i}`);
-    const pay = f.salary - ins;
+    const ins = gv(`ft_ins_${i}`), extra = gv(`ft_extra_${i}`);
+    const pay = f.salary + extra - ins;
     document.getElementById(`ft_pay_${i}`).textContent = fmt(pay) + " 元";
     totalPay += pay;
   });
