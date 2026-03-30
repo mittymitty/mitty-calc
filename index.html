@@ -10,7 +10,7 @@
       --mitty-bg: #fdfaf5; --mitty-green: #2d5a27; --mitty-gold: #b38b59; --mitty-text: #3c3c3c;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Noto Sans TC', sans-serif; background: var(--mitty-bg); color: var(--mitty-text); }
+    body { font-family: 'Noto Sans TC', sans-serif; background: var(--mitty-bg); color: var(--mitty-text); line-height: 1.6; }
 
     /* ── 登入介面 ── */
     #loginOverlay {
@@ -20,7 +20,7 @@
     }
     .login-box {
       background: #fff; padding: 40px; border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 450px;
     }
     .login-box h1 { color: var(--mitty-green); margin-bottom: 20px; letter-spacing: 2px; }
     .login-box input {
@@ -32,22 +32,31 @@
       color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;
     }
 
-    /* ── 主內容 (預設隱藏) ── */
+    /* ── 主內容 ── */
     #mainContent { display: none; padding: 30px 15px 100px; }
     .container { max-width: 800px; margin: 0 auto; }
     header { text-align: center; margin-bottom: 40px; border-bottom: 1.5px solid var(--mitty-gold); padding-bottom: 20px; }
     h2 { font-size: 1.2rem; margin: 40px 0 20px; padding-left: 12px; border-left: 4px solid var(--mitty-green); color: var(--mitty-green); }
+    h3 { font-size: 1rem; margin: 25px 0 12px; color: var(--mitty-gold); }
     .section-card { background: #fff; border: 1px solid #e0dcd0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
     .input-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
     .input-row input { width: 140px; padding: 10px; border: 1px solid #e0dcd0; border-radius: 6px; text-align: right; background: #fafafa; font-size: 16px; }
     .result-display { background: #f8f9fa; border-radius: 8px; padding: 15px 20px; margin-top: 15px; }
     .res-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; }
-    .res-line:last-child { font-weight: 600; color: #c0392b; border-top: 1px solid #eee; margin-top: 5px; padding-top: 10px; }
     .bonus-banner { background: var(--mitty-green); color: #fff; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0; }
     .emp-card { border: 1.5px solid #e0dcd0; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
     .emp-header { background: #f1f3f1; padding: 12px 18px; font-weight: 600; display: flex; justify-content: space-between; }
     .emp-body { padding: 10px 18px; }
     .emp-footer { background: #fafafa; padding: 12px 18px; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 600; color: var(--mitty-green); }
+    
+    /* 查詢表樣式 */
+    .toggle-btn { width: 100%; padding: 12px; background: #fff; border: 1px solid var(--mitty-gold); color: var(--mitty-gold); border-radius: 8px; cursor: pointer; margin-bottom: 10px; }
+    #insTable { display: none; margin-top: 15px; }
+    .table-wrap { overflow-x: auto; border: 1px solid #ddd; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: #fff; }
+    th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
+    th { background: #f8f9fa; color: var(--mitty-green); }
+
     .summary-box { background: var(--mitty-green); color: #fff; border-radius: 12px; padding: 25px; margin-top: 30px; }
     .sum-line { display: flex; justify-content: space-between; padding: 8px 0; }
   </style>
@@ -56,10 +65,10 @@
 
 <div id="loginOverlay">
   <div class="login-box">
-    <h1>MITTY Login</h1>
-    <input type="text" id="username" placeholder="帳號">
+    <h1>MITTY 雲端管理</h1>
+    <input type="text" id="username" placeholder="帳號 (Email)">
     <input type="password" id="password" placeholder="密碼">
-    <button onclick="checkLogin()">登入系統</button>
+    <button onclick="checkLogin()">進入系統</button>
     <p id="loginError" style="color:red; margin-top:10px; font-size:14px; display:none;">帳號或密碼錯誤</p>
   </div>
 </div>
@@ -68,7 +77,7 @@
   <div class="container">
     <header>
       <h1>Mitty 雲端結算系統</h1>
-      <p style="color:#888;">登入成功 · 按月儲存版本</p>
+      <p style="color:#888;">按月存檔 · 完整級距版</p>
     </header>
 
     <div class="input-row" style="justify-content: center; gap: 15px; margin-bottom: 30px;">
@@ -81,9 +90,9 @@
       <div class="input-row"><label>店面總營收</label><input type="number" id="shopRev" oninput="calc()"></div>
       <div class="input-row"><label>刷卡手續費</label><input type="number" id="cardFee" oninput="calc()"></div>
       <div class="input-row" style="margin-top:20px;"><label>網路總營收</label><input type="number" id="onlineRev" oninput="calc()"></div>
-      <div class="input-row"><label>網店各項扣抵 (運/退/手續)</label><input type="number" id="onlineExp" oninput="calc()"></div>
+      <div class="input-row"><label>網店各項扣抵</label><input type="number" id="onlineExp" oninput="calc()"></div>
       <div class="result-display">
-        <div class="res-line"><span>本月總營業額</span><span id="totalRev">—</span></div>
+        <div class="res-line" style="font-weight:600; color:#c0392b;"><span>本月總營業額</span><span id="totalRev">0 元</span></div>
       </div>
     </div>
 
@@ -92,8 +101,20 @@
       <div class="input-row"><label>晚班總時數</label><input type="number" id="nightHours" step="0.5" oninput="calc()"></div>
       <div class="bonus-banner">每小時獎金基數：<strong id="bonusBase">0</strong> 元</div>
       <div id="ptList"></div>
-      <h3 style="margin:30px 0 15px; color:var(--mitty-gold);">正職員工</h3>
+      <h3 style="margin:30px 0 15px; color:var(--mitty-gold);">正職人員</h3>
       <div id="ftList"></div>
+    </div>
+
+    <h2>三、勞健保自付額查詢</h2>
+    <button class="toggle-btn" onclick="toggleIns()">展開 / 收起 完整級距表</button>
+    <div id="insTable">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>投保級距</th><th>勞保</th><th>健保</th><th>合計</th></tr></thead>
+          <tbody id="insTbody">
+            </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="summary-box">
@@ -103,10 +124,9 @@
 </div>
 
 <script>
-// ── 設定帳密 ──
 const CONFIG = {
-  user: "mittyadmin", 
-  pass: "mitty888" // 你可以自行修改
+  user: "louischen3535@gmail.com",
+  pass: "mitty3535"
 };
 
 function checkLogin() {
@@ -115,7 +135,6 @@ function checkLogin() {
   if(u === CONFIG.user && p === CONFIG.pass) {
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
-    // 預設載入當前月份
     const now = new Date();
     const monthStr = now.getFullYear() + "-" + (now.getMonth()+1).toString().padStart(2, '0');
     document.getElementById('calcMonth').value = monthStr;
@@ -125,19 +144,30 @@ function checkLogin() {
   }
 }
 
-// ── 員工資料 ──
 var PT = [
   { name: '聖', rate: 300, pct: 0.04 }, { name: '斐', rate: 280, pct: 0.03 },
   { name: '都', rate: 250, pct: 0.03 }, { name: '浩', rate: 230, pct: 0.03 }, { name: '童', rate: 200, pct: 0.02 }
 ];
-var FT = [{ name: '鯰 (店長)', salary: 63000 }, { name: '倫', salary: 60000 }];
+var FT = [{ name: '鯰 (店長)', salary: 63000 }, { name: '倫 (阿倫)', salary: 60000 }];
+
+const insData = [
+  [1500,277,458,735],[3000,277,458,735],[4500,277,458,735],[6000,277,458,735],[7500,277,458,735],
+  [8700,277,458,735],[9900,277,458,735],[11100,277,458,735],[12540,313,458,771],[13500,338,458,796],
+  [15840,396,458,854],[16500,413,458,871],[17280,432,458,890],[17880,447,458,905],[19047,476,458,934],
+  [20008,500,458,958],[21009,525,458,983],[22000,550,458,1008],[23100,577,458,1035],[24000,600,458,1058],
+  [25250,632,458,1090],[26400,660,458,1118],[27600,690,458,1148],[28590,715,458,1173],[29500,738,458,1196],
+  [30300,758,470,1228],[31800,795,493,1288],[33300,833,516,1349],[34800,870,540,1410],[36300,908,563,1471],
+  [38200,955,592,1547],[40100,1002,622,1624],[42000,1050,651,1701],[43900,1098,681,1779],[45800,1145,710,1855],
+  [48200,1145,748,1893],[50600,1145,785,1930],[53000,1145,822,1967],[55400,1145,859,2004],[57800,1145,896,2041],
+  [60800,1145,943,2088],[63800,1145,990,2135]
+];
 
 function initUI() {
   let ptHtml = '';
   PT.forEach((e, i) => {
     ptHtml += `
     <div class="emp-card">
-      <div class="emp-header"><span>${e.name}</span></div>
+      <div class="emp-header"><span>${e.name}</span> <small>時薪 ${e.rate} / 獎金 ${e.pct*100}%</small></div>
       <div class="emp-body">
         <div class="input-row"><label>上班時數</label><input type="number" id="pt_h_${i}" oninput="calc()"></div>
         <div class="input-row"><label>假日時數</label><input type="number" id="pt_hd_${i}" oninput="calc()"></div>
@@ -152,7 +182,7 @@ function initUI() {
   FT.forEach((f, i) => {
     ftHtml += `
     <div class="emp-card">
-      <div class="emp-header"><span>${f.name}</span></div>
+      <div class="emp-header"><span>${f.name}</span> <small>底薪 ${fmt(f.salary)}</small></div>
       <div class="emp-body">
         <div class="input-row"><label>勞健保自付</label><input type="number" id="ft_ins_${i}" oninput="calc()"></div>
       </div>
@@ -160,6 +190,12 @@ function initUI() {
     </div>`;
   });
   document.getElementById('ftList').innerHTML = ftHtml;
+
+  let insHtml = '';
+  insData.forEach(d => {
+    insHtml += `<tr><td>${fmt(d[0])}</td><td>${d[1]}</td><td>${d[2]}</td><td><strong>${d[3]}</strong></td></tr>`;
+  });
+  document.getElementById('insTbody').innerHTML = insHtml;
 }
 
 function fmt(n) { return Math.round(n).toLocaleString('zh-TW'); }
@@ -194,7 +230,6 @@ function calc() {
   saveMonthlyData();
 }
 
-// ── 核心功能：按月儲存 ──
 function saveMonthlyData() {
   const month = document.getElementById('calcMonth').value;
   if(!month) return;
@@ -208,7 +243,6 @@ function saveMonthlyData() {
 function loadMonthlyData() {
   const month = document.getElementById('calcMonth').value;
   const saved = localStorage.getItem(`mitty_data_${month}`);
-  // 先清空所有輸入框
   document.querySelectorAll('input:not([type="month"])').forEach(ipt => {
     if(ipt.id !== 'username' && ipt.id !== 'password') ipt.value = "";
   });
@@ -220,6 +254,11 @@ function loadMonthlyData() {
     });
   }
   calc();
+}
+
+function toggleIns() {
+  var el = document.getElementById('insTable');
+  el.style.display = (el.style.display === 'block') ? 'none' : 'block';
 }
 
 initUI();
