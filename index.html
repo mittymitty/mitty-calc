@@ -7,266 +7,749 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --mitty-bg: #fdfaf5; --mitty-green: #2d5a27; --mitty-gold: #b38b59; --mitty-text: #3c3c3c;
+      --green: #2d5a27;
+      --gold: #b38b59;
+      --bg: #fdfaf5;
+      --text: #3c3c3c;
+      --border: #e0dcd0;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Noto Sans TC', sans-serif; background: var(--mitty-bg); color: var(--mitty-text); line-height: 1.6; }
+    body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    input, button { font-family: 'Noto Sans TC', sans-serif; }
 
-    /* ── 登入介面 ── */
-    #loginOverlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--mitty-bg); z-index: 1000;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .login-box {
-      background: #fff; padding: 40px; border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 450px;
-    }
-    .login-box h1 { color: var(--mitty-green); margin-bottom: 20px; letter-spacing: 2px; }
-    .login-box input {
-      width: 100%; padding: 12px; margin-bottom: 15px;
-      border: 1px solid #ddd; border-radius: 6px; font-size: 16px;
-    }
-    .login-box button {
-      width: 100%; padding: 12px; background: var(--mitty-green);
-      color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;
-    }
+    /* ── 通用隱藏 ── */
+    .hidden { display: none !important; }
 
-    /* ── 主內容 ── */
-    #mainContent { display: none; padding: 30px 15px 100px; }
-    .container { max-width: 800px; margin: 0 auto; }
-    header { text-align: center; margin-bottom: 40px; border-bottom: 1.5px solid var(--mitty-gold); padding-bottom: 20px; }
-    h2 { font-size: 1.2rem; margin: 40px 0 20px; padding-left: 12px; border-left: 4px solid var(--mitty-green); color: var(--mitty-green); }
-    h3 { font-size: 1rem; margin: 25px 0 12px; color: var(--mitty-gold); }
-    .section-card { background: #fff; border: 1px solid #e0dcd0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
-    .input-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
-    .input-row input { width: 140px; padding: 10px; border: 1px solid #e0dcd0; border-radius: 6px; text-align: right; background: #fafafa; font-size: 16px; }
-    .result-display { background: #f8f9fa; border-radius: 8px; padding: 15px 20px; margin-top: 15px; }
-    .res-line { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; }
-    .bonus-banner { background: var(--mitty-green); color: #fff; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0; }
-    .emp-card { border: 1.5px solid #e0dcd0; border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
-    .emp-header { background: #f1f3f1; padding: 12px 18px; font-weight: 600; display: flex; justify-content: space-between; }
-    .emp-body { padding: 10px 18px; }
-    .emp-footer { background: #fafafa; padding: 12px 18px; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 600; color: var(--mitty-green); }
-    
-    .toggle-btn { width: 100%; padding: 12px; background: #fff; border: 1px solid var(--mitty-gold); color: var(--mitty-gold); border-radius: 8px; cursor: pointer; margin-bottom: 10px; }
-    #insTable { display: none; margin-top: 15px; }
-    .table-wrap { overflow-x: auto; border: 1px solid #ddd; border-radius: 8px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: #fff; }
-    th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
-    th { background: #f8f9fa; color: var(--mitty-green); }
+    /* ── 全頁遮罩（登入、等待） ── */
+    .overlay {
+      position: fixed; inset: 0; background: var(--bg); z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card {
+      background: #fff; padding: 36px 32px; border-radius: 14px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.10); width: 92%; max-width: 440px; text-align: center;
+    }
+    .card h1 { color: var(--green); font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 4px; }
+    .card .subtitle { color: #aaa; font-size: 0.88rem; margin-bottom: 24px; }
+    .field { width: 100%; padding: 13px 14px; margin-bottom: 13px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: #fafafa; }
+    .field:focus { outline: none; border-color: var(--green); background: #fff; }
+    .btn-primary { width: 100%; padding: 13px; background: var(--green); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: opacity .2s; }
+    .btn-primary:hover { opacity: .88; }
+    .btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-link { background: none; border: none; color: var(--gold); cursor: pointer; font-size: 0.9rem; margin-top: 14px; text-decoration: underline; }
+    .error-msg { color: #c0392b; font-size: 0.88rem; margin-top: 10px; }
+    .success-msg { color: var(--green); font-size: 0.92rem; margin-top: 10px; }
 
-    .summary-box { background: var(--mitty-green); color: #fff; border-radius: 12px; padding: 25px; margin-top: 30px; }
-    .sum-line { display: flex; justify-content: space-between; padding: 8px 0; }
+    /* ── 主介面框架 ── */
+    .view { display: none; padding-bottom: 80px; }
+    .app-header {
+      background: #fff; border-bottom: 1.5px solid var(--gold);
+      padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .app-header h1 { color: var(--green); font-size: 1.05rem; letter-spacing: 1px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .user-badge { font-size: 0.82rem; color: #888; }
+    .btn-logout { padding: 5px 12px; background: transparent; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-size: 0.82rem; color: #888; }
+    .btn-logout:hover { background: #f5f5f5; }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 0 15px; }
+
+    /* ── 分頁標籤（管理員用） ── */
+    .tab-bar { display: flex; border-bottom: 2px solid var(--border); margin: 20px 0 0; }
+    .tab-btn { flex: 1; padding: 11px; background: none; border: none; cursor: pointer; font-size: 0.92rem; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all .2s; }
+    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); font-weight: 600; }
+    .tab-panel { display: none; padding-top: 20px; }
+    .tab-panel.active { display: block; }
+
+    /* ── 區塊標題 ── */
+    h2 { font-size: 1.05rem; margin: 30px 0 14px; padding-left: 12px; border-left: 4px solid var(--green); color: var(--green); }
+    h3 { font-size: 0.95rem; margin: 18px 0 10px; color: var(--gold); }
+    .section-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 18px; }
+
+    /* ── 輸入列 ── */
+    .input-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; }
+    .input-row input { width: 140px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; text-align: right; background: #fafafa; font-size: 16px; }
+    .input-row input:focus { outline: none; border-color: var(--green); background: #fff; }
+
+    /* ── 結果顯示 ── */
+    .result-display { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 10px; }
+    .res-line { display: flex; justify-content: space-between; padding: 5px 0; font-size: 0.93rem; }
+    .res-line.total { font-weight: 600; color: #c0392b; border-top: 1px solid #eee; margin-top: 5px; padding-top: 10px; }
+
+    /* ── 獎金橫幅 ── */
+    .bonus-banner { background: var(--green); color: #fff; padding: 11px 16px; border-radius: 8px; text-align: center; margin: 14px 0; font-size: 0.95rem; }
+
+    /* ── 員工卡片 ── */
+    .emp-card { border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+    .emp-header { background: #f1f3f1; padding: 10px 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .emp-header small { font-weight: 400; color: #888; font-size: 0.82rem; }
+    .emp-header .emp-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; background: #e8f4e8; color: var(--green); }
+    .emp-header .emp-badge.pending { background: #fef3e2; color: var(--gold); }
+    .emp-body { padding: 8px 15px; }
+    .emp-footer { background: #fafafa; padding: 10px 15px; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 600; color: var(--green); font-size: 0.95rem; }
+
+    /* ── 勞健保表格 ── */
+    .toggle-btn { width: 100%; padding: 10px; background: #fff; border: 1px solid var(--gold); color: var(--gold); border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-size: 0.9rem; }
+    #insTable { display: none; }
+    .table-wrap { overflow-x: auto; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: #fff; }
+    th, td { border: 1px solid #eee; padding: 8px 10px; text-align: center; }
+    th { background: #f8f9fa; color: var(--green); }
+
+    /* ── 總計框 ── */
+    .summary-box { background: var(--green); color: #fff; border-radius: 12px; padding: 20px; margin-top: 20px; }
+    .sum-line { display: flex; justify-content: space-between; padding: 6px 0; }
+    .sum-line.big { font-size: 1.2rem; font-weight: 600; }
+
+    /* ── 月份選擇器 ── */
+    .month-row { display: flex; align-items: center; gap: 12px; padding: 18px 0; justify-content: center; }
+    .month-row label { font-weight: 600; font-size: 0.95rem; }
+    .month-row input[type=month] { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
+
+    /* ── 員工打卡介面 ── */
+    .emp-welcome { text-align: center; padding: 28px 20px 10px; }
+    .emp-welcome .greeting { font-size: 1.25rem; font-weight: 600; color: var(--green); margin-bottom: 4px; }
+    .emp-welcome .hint { color: #888; font-size: 0.88rem; }
+    .hours-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; margin: 10px 0 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); }
+    .hours-card h3 { color: var(--green); margin: 0 0 18px; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 1rem; }
+    .hours-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f5f5f5; }
+    .hours-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .hours-row label { font-size: 1rem; }
+    .hours-input { width: 130px; padding: 12px; border: 1.5px solid var(--border); border-radius: 9px; text-align: right; font-size: 1.1rem; font-weight: 600; background: #fafafa; }
+    .hours-input:focus { outline: none; border-color: var(--green); background: #fff; }
+    .btn-submit { width: 100%; padding: 16px; background: var(--green); color: #fff; border: none; border-radius: 12px; cursor: pointer; font-size: 1.05rem; font-weight: 600; margin-top: 8px; transition: opacity .2s; }
+    .btn-submit:disabled { opacity: .55; cursor: not-allowed; }
+    .save-status { text-align: center; margin-top: 12px; font-size: 0.95rem; padding: 12px; border-radius: 8px; display: none; }
+    .save-status.ok { background: #f0faf0; color: var(--green); }
+    .save-status.err { background: #fef0f0; color: #c0392b; }
+
+    /* ── 用戶管理（管理員） ── */
+    .user-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid #f0f0f0; }
+    .user-row:last-child { border-bottom: none; }
+    .user-info small { display: block; color: #aaa; font-size: 0.8rem; }
+    .user-actions { display: flex; gap: 8px; align-items: center; }
+    .role-select { padding: 5px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.82rem; }
+    .emp-key-select { padding: 5px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.82rem; }
+    .btn-save-user { padding: 5px 12px; background: var(--green); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.82rem; }
+    .section-title { font-size: 0.82rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px; }
   </style>
 </head>
 <body>
 
-<div id="loginOverlay">
-  <div class="login-box">
+<!-- ══════════════════════════════════
+     登入介面
+═══════════════════════════════════ -->
+<div id="loginView" class="overlay">
+  <div class="card">
     <h1>MITTY 雲端管理</h1>
-    <input type="text" id="username" placeholder="帳號 (Email)">
-    <input type="password" id="password" placeholder="密碼">
-    <button onclick="checkLogin()">進入系統</button>
-    <p id="loginError" style="color:red; margin-top:10px; font-size:14px; display:none;">帳號或密碼錯誤</p>
+    <p class="subtitle">員工及管理員登入系統</p>
+    <input class="field" type="email" id="loginEmail" placeholder="電子郵件" autocomplete="email">
+    <input class="field" type="password" id="loginPassword" placeholder="密碼" autocomplete="current-password">
+    <button class="btn-primary" id="loginBtn" onclick="doLogin()">進入系統</button>
+    <p id="loginError" class="error-msg hidden"></p>
+    <button class="btn-link" onclick="showSignup()">第一次登入？點此建立帳號</button>
   </div>
 </div>
 
-<div id="mainContent">
-  <div class="container">
-    <header>
-      <h1>Mitty 雲端結算系統</h1>
-      <p style="color:#888;">按月存檔 · 欄位完整還原版</p>
-    </header>
+<!-- ══════════════════════════════════
+     建立帳號介面（員工自助註冊）
+═══════════════════════════════════ -->
+<div id="signupView" class="overlay hidden">
+  <div class="card">
+    <h1>建立帳號</h1>
+    <p class="subtitle">填寫後，等待老闆開通</p>
+    <input class="field" type="text"  id="signupName"     placeholder="你的名字（例：聖）">
+    <input class="field" type="email" id="signupEmail"    placeholder="電子郵件">
+    <input class="field" type="password" id="signupPass"  placeholder="設定密碼（至少6位）">
+    <input class="field" type="password" id="signupPass2" placeholder="再輸入一次密碼">
+    <button class="btn-primary" id="signupBtn" onclick="doSignup()">送出申請</button>
+    <p id="signupError" class="error-msg hidden"></p>
+    <button class="btn-link" onclick="showLogin()">← 返回登入</button>
+  </div>
+</div>
 
-    <div class="input-row" style="justify-content: center; gap: 15px; margin-bottom: 30px;">
-      <label style="font-weight:600;">結算月份</label>
-      <input type="month" id="calcMonth" onchange="loadMonthlyData()">
+<!-- ══════════════════════════════════
+     等待開通介面
+═══════════════════════════════════ -->
+<div id="pendingView" class="overlay hidden">
+  <div class="card">
+    <div style="font-size:3rem; margin-bottom:16px;">⏳</div>
+    <h1 style="font-size:1.2rem;">等待老闆開通</h1>
+    <p class="subtitle" style="margin-top:8px;">帳號已建立，請等待管理員審核後即可使用</p>
+    <button class="btn-primary" style="margin-top:24px;" onclick="doLogout()">登出</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     管理員介面
+═══════════════════════════════════ -->
+<div id="adminView" class="view">
+  <div class="app-header">
+    <h1>Mitty 雲端結算系統</h1>
+    <div class="header-right">
+      <span class="user-badge" id="adminUserName"></span>
+      <button class="btn-logout" onclick="doLogout()">登出</button>
+    </div>
+  </div>
+  <div class="container">
+    <!-- 分頁 -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('salary')">薪資結算</button>
+      <button class="tab-btn" onclick="switchTab('users')">員工帳號</button>
     </div>
 
-    <h2>一、營業額計算</h2>
-    <div class="section-card">
-      <h3>店面營收</h3>
-      <div class="input-row"><label>網站店面營收</label><input type="number" id="shopRev" placeholder="0" oninput="calc()"></div>
-      <div class="input-row"><label>刷卡手續費</label><input type="number" id="cardFee" placeholder="0" oninput="calc()"></div>
-      <div class="result-display">
-        <div class="res-line"><span>店面淨營收</span><span id="shopNet">0 元</span></div>
+    <!-- 薪資結算分頁 -->
+    <div class="tab-panel active" id="tab-salary">
+      <div class="month-row">
+        <label>結算月份</label>
+        <input type="month" id="adminMonth" onchange="adminLoadMonth()">
       </div>
 
-      <h3 style="margin-top:30px;">網路營收</h3>
-      <div class="input-row"><label>網站網路營收</label><input type="number" id="onlineRev" placeholder="0" oninput="calc()"></div>
-      <div class="input-row"><label>便利商店運費</label><input type="number" id="convFee" placeholder="0" oninput="calc()"></div>
-      <div class="input-row"><label>網店手續費</label><input type="number" id="platformFee" placeholder="0" oninput="calc()"></div>
-      <div class="input-row"><label>退貨金額</label><input type="number" id="refund" placeholder="0" oninput="calc()"></div>
-      <div class="input-row"><label>取消未取消訂單</label><input type="number" id="cancelOrder" placeholder="0" oninput="calc()"></div>
-      <div class="result-display">
-        <div class="res-line"><span>網路淨營收</span><span id="onlineNet">0 元</span></div>
-        <div class="res-line" style="font-weight:600; color:#c0392b; border-top: 1px solid #eee; margin-top: 5px; padding-top: 10px;">
-          <span>本月總營業額</span><span id="totalRev">0 元</span>
+      <h2>一、營業額計算</h2>
+      <div class="section-card">
+        <h3>店面營收</h3>
+        <div class="input-row"><label>網站店面營收</label><input type="number" id="shopRev" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>刷卡手續費</label><input type="number" id="cardFee" placeholder="0" oninput="adminCalc()"></div>
+        <div class="result-display">
+          <div class="res-line"><span>店面淨營收</span><span id="shopNet">0 元</span></div>
+        </div>
+        <h3 style="margin-top:22px;">網路營收</h3>
+        <div class="input-row"><label>網站網路營收</label><input type="number" id="onlineRev" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>便利商店運費</label><input type="number" id="convFee" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>網店手續費</label><input type="number" id="platformFee" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>退貨金額</label><input type="number" id="refund" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>取消未取消訂單</label><input type="number" id="cancelOrder" placeholder="0" oninput="adminCalc()"></div>
+        <div class="result-display">
+          <div class="res-line"><span>網路淨營收</span><span id="onlineNet">0 元</span></div>
+          <div class="res-line total"><span>本月總營業額</span><span id="totalRev">0 元</span></div>
         </div>
       </div>
-    </div>
 
-    <h2>二、薪資計算</h2>
-    <div class="section-card">
-      <div class="input-row"><label>晚班總時數</label><input type="number" id="nightHours" step="0.5" placeholder="0" oninput="calc()"></div>
-      <div class="bonus-banner">每小時獎金基數：<strong id="bonusBase">0</strong> 元</div>
-      <div id="ptList"></div>
-      <h3 style="margin:30px 0 15px; color:var(--mitty-gold);">正職人員</h3>
-      <div id="ftList"></div>
-    </div>
+      <h2>二、薪資計算</h2>
+      <div class="section-card">
+        <div class="input-row"><label>晚班總時數</label><input type="number" id="nightHours" step="0.5" placeholder="0" oninput="adminCalc()"></div>
+        <div class="bonus-banner">每小時獎金基數：<strong id="bonusBase">0</strong> 元</div>
+        <h3>兼職人員</h3>
+        <div id="adminPtList"></div>
+        <h3 style="margin-top:22px;">正職人員</h3>
+        <div id="adminFtList"></div>
+      </div>
 
-    <h2>三、勞健保自付額查詢</h2>
-    <button class="toggle-btn" onclick="toggleIns()">展開 / 收起 完整級距表</button>
-    <div id="insTable">
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>投保級距</th><th>勞保</th><th>健保</th><th>合計</th></tr></thead>
-          <tbody id="insTbody"></tbody>
-        </table>
+      <h2>三、勞健保自付額查詢</h2>
+      <button class="toggle-btn" onclick="toggleIns()">展開 / 收起 完整級距表</button>
+      <div id="insTable">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>投保級距</th><th>勞保</th><th>健保</th><th>合計</th></tr></thead>
+            <tbody id="insTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <div class="sum-line big"><span>本月薪資總支出</span><span id="adminSumAll">0 元</span></div>
       </div>
     </div>
 
-    <div class="summary-box">
-      <div class="sum-line" style="font-size:1.3rem; font-weight:600;"><span>本月薪資總支出</span><span id="sumAll">0 元</span></div>
+    <!-- 員工帳號分頁 -->
+    <div class="tab-panel" id="tab-users">
+      <div class="section-card" style="margin-top:20px;">
+        <p class="section-title">待審核帳號</p>
+        <div id="pendingUserList"><p style="color:#aaa; font-size:0.88rem;">沒有待審核帳號</p></div>
+      </div>
+      <div class="section-card">
+        <p class="section-title">已開通帳號</p>
+        <div id="activeUserList"><p style="color:#aaa; font-size:0.88rem;">載入中…</p></div>
+      </div>
     </div>
   </div>
 </div>
 
-<script>
-const CONFIG = {
-  user: "louischen3535@gmail.com",
-  pass: "mittymitty"
+<!-- ══════════════════════════════════
+     員工打卡介面
+═══════════════════════════════════ -->
+<div id="employeeView" class="view">
+  <div class="app-header">
+    <h1>Mitty 員工系統</h1>
+    <div class="header-right">
+      <span class="user-badge" id="empUserName"></span>
+      <button class="btn-logout" onclick="doLogout()">登出</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="emp-welcome">
+      <p class="greeting">您好，<span id="empDisplayName"></span> 👋</p>
+      <p class="hint">請填寫當月上班時數後送出</p>
+    </div>
+    <div class="month-row">
+      <label>月份</label>
+      <input type="month" id="empMonth" onchange="empLoadMonth()">
+    </div>
+    <div class="hours-card">
+      <h3>上班時數登記</h3>
+      <div class="hours-row">
+        <label>一般班時數</label>
+        <input class="hours-input" type="number" id="empHours" placeholder="0" step="0.5" min="0">
+      </div>
+      <div class="hours-row">
+        <label>假日班時數</label>
+        <input class="hours-input" type="number" id="empHolidayHours" placeholder="0" step="0.5" min="0">
+      </div>
+    </div>
+    <button class="btn-submit" id="empSaveBtn" onclick="saveEmpData()">送出時數</button>
+    <p id="empSaveStatus" class="save-status"></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     Firebase + App Logic
+═══════════════════════════════════ -->
+<script type="module">
+import { initializeApp }                    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword,
+         signInWithEmailAndPassword, signOut,
+         onAuthStateChanged }               from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc,
+         collection, getDocs, updateDoc }   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// ══════════════════════════════════════════════════════════
+//  ⚠️ 填入你的 Firebase 設定（步驟說明請看 setup-guide.html）
+// ══════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyDJTaa5nLlvzJ8UQTgYvCqeI5P6Vfuw7EM",
+  authDomain:        "mitty-calc.firebaseapp.com",
+  projectId:         "mitty-calc",
+  storageBucket:     "mitty-calc.firebasestorage.app",
+  messagingSenderId: "177534928087",
+  appId:             "1:177534928087:web:c05fab7be02181fa081c92"
 };
 
-function checkLogin() {
-  const u = document.getElementById('username').value;
-  const p = document.getElementById('password').value;
-  if(u === CONFIG.user && p === CONFIG.pass) {
-    document.getElementById('loginOverlay').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    const now = new Date();
-    const monthStr = now.getFullYear() + "-" + (now.getMonth()+1).toString().padStart(2, '0');
-    document.getElementById('calcMonth').value = monthStr;
-    loadMonthlyData();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-  }
-}
-
-var PT = [
-  { name: '聖', rate: 300, pct: 0.04 }, { name: '斐', rate: 280, pct: 0.03 },
-  { name: '都', rate: 250, pct: 0.03 }, { name: '浩', rate: 230, pct: 0.03 }, { name: '童', rate: 200, pct: 0.02 }
+// ── 員工設定 ─────────────────────────────────────────────
+const PT = [
+  { key:'sheng', name:'聖', rate:300, pct:0.04 },
+  { key:'fei',   name:'斐', rate:280, pct:0.03 },
+  { key:'du',    name:'都', rate:250, pct:0.03 },
+  { key:'hao',   name:'浩', rate:230, pct:0.03 },
+  { key:'tong',  name:'童', rate:200, pct:0.02 }
 ];
-var FT = [{ name: '鯰 (店長)', salary: 63000 }, { name: '倫 (阿倫)', salary: 60000 }];
+const FT = [
+  { key:'nian', name:'鯰 (店長)', salary:63000 },
+  { key:'lun',  name:'倫 (阿倫)', salary:60000 }
+];
+// 員工 key 清單（供管理員指派用）
+const EMP_KEYS = [
+  { key:'sheng', label:'聖（兼職）'},{ key:'fei', label:'斐（兼職）'},
+  { key:'du',    label:'都（兼職）'},{ key:'hao', label:'浩（兼職）'},
+  { key:'tong',  label:'童（兼職）'},{ key:'nian', label:'鯰 店長（正職）'},
+  { key:'lun',   label:'倫（正職）'}
+];
 
 const insData = [[1500,277,458,735],[3000,277,458,735],[4500,277,458,735],[6000,277,458,735],[7500,277,458,735],[8700,277,458,735],[9900,277,458,735],[11100,277,458,735],[12540,313,458,771],[13500,338,458,796],[15840,396,458,854],[16500,413,458,871],[17280,432,458,890],[17880,447,458,905],[19047,476,458,934],[20008,500,458,958],[21009,525,458,983],[22000,550,458,1008],[23100,577,458,1035],[24000,600,458,1058],[25250,632,458,1090],[26400,660,458,1118],[27600,690,458,1148],[28590,715,458,1173],[29500,738,458,1196],[30300,758,470,1228],[31800,795,493,1288],[33300,833,516,1349],[34800,870,540,1410],[36300,908,563,1471],[38200,955,592,1547],[40100,1002,622,1624],[42000,1050,651,1701],[43900,1098,681,1779],[45800,1145,710,1855],[48200,1145,748,1893],[50600,1145,785,1930],[53000,1145,822,1967],[55400,1145,859,2004],[57800,1145,896,2041],[60800,1145,943,2088],[63800,1145,990,2135]];
 
-function initUI() {
+// ── 初始化 ────────────────────────────────────────────────
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let currentUser = null;
+let currentUserData = null;
+let saveTimer = null;
+
+// ── Auth 狀態監聽 ─────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { showLogin(); return; }
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists()) { await signOut(auth); showLogin('帳號設定異常，請聯繫老闆'); return; }
+    currentUser     = user;
+    currentUserData = snap.data();
+    routeToView();
+  } catch(e) {
+    console.error(e);
+    showLogin('載入失敗，請重新整理');
+  }
+});
+
+function routeToView() {
+  const role = currentUserData.role;
+  hideAll();
+  if (role === 'admin') {
+    document.getElementById('adminView').style.display = 'block';
+    initAdmin();
+  } else if (role === 'employee') {
+    document.getElementById('employeeView').style.display = 'block';
+    initEmployee();
+  } else {
+    // pending
+    document.getElementById('pendingView').classList.remove('hidden');
+  }
+}
+
+// ── 顯示控制 ──────────────────────────────────────────────
+function hideAll() {
+  ['loginView','signupView','pendingView'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  ['adminView','employeeView'].forEach(id => document.getElementById(id).style.display = 'none');
+}
+function showLogin(err) {
+  hideAll();
+  document.getElementById('loginView').classList.remove('hidden');
+  const el = document.getElementById('loginError');
+  if (err) { el.textContent = err; el.classList.remove('hidden'); }
+  else el.classList.add('hidden');
+  document.getElementById('loginBtn').disabled = false;
+  document.getElementById('loginBtn').textContent = '進入系統';
+}
+window.showSignup = () => { hideAll(); document.getElementById('signupView').classList.remove('hidden'); };
+window.showLogin  = () => showLogin();
+
+// ── 登入 ──────────────────────────────────────────────────
+window.doLogin = async function() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+  const btn   = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = '登入中…';
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch(e) { showLogin('帳號或密碼錯誤，請重試'); }
+};
+
+// ── 登出 ──────────────────────────────────────────────────
+window.doLogout = () => signOut(auth);
+
+// ── 員工自助註冊 ──────────────────────────────────────────
+window.doSignup = async function() {
+  const name  = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass  = document.getElementById('signupPass').value;
+  const pass2 = document.getElementById('signupPass2').value;
+  const errEl = document.getElementById('signupError');
+  const btn   = document.getElementById('signupBtn');
+
+  errEl.classList.add('hidden');
+  if (!name)            { errEl.textContent='請填寫你的名字'; errEl.classList.remove('hidden'); return; }
+  if (pass !== pass2)   { errEl.textContent='兩次密碼不一致'; errEl.classList.remove('hidden'); return; }
+  if (pass.length < 6)  { errEl.textContent='密碼至少需要 6 個字元'; errEl.classList.remove('hidden'); return; }
+
+  btn.disabled = true; btn.textContent = '送出中…';
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      name, email, role: 'pending', employeeKey: '', createdAt: new Date().toISOString()
+    });
+    // onAuthStateChanged will handle routing to pendingView
+  } catch(e) {
+    let msg = '建立失敗，請重試';
+    if (e.code === 'auth/email-already-in-use') msg = '此 Email 已被使用';
+    if (e.code === 'auth/invalid-email')        msg = 'Email 格式不正確';
+    errEl.textContent = msg; errEl.classList.remove('hidden');
+    btn.disabled = false; btn.textContent = '送出申請';
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+//  管理員介面
+// ══════════════════════════════════════════════════════════
+function initAdmin() {
+  const now = new Date();
+  document.getElementById('adminMonth').value =
+    now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  document.getElementById('adminUserName').textContent = currentUserData.name || '';
+  renderAdminEmpCards();
+  initInsTable();
+  loadAdminData();
+  loadUserList();
+}
+
+// ── 分頁切換 ─────────────────────────────────────────────
+window.switchTab = function(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    const tabs = ['salary','users'];
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach((p,i) => {
+    const tabs = ['salary','users'];
+    p.classList.toggle('active', tabs[i] === tab);
+  });
+};
+
+// ── 渲染員工輸入卡片 ──────────────────────────────────────
+function renderAdminEmpCards() {
   let ptHtml = '';
-  PT.forEach((e, i) => {
+  PT.forEach(e => {
     ptHtml += `
     <div class="emp-card">
-      <div class="emp-header"><span>${e.name}</span> <small>時薪 ${e.rate} / 獎金 ${e.pct*100}%</small></div>
-      <div class="emp-body">
-        <div class="input-row"><label>上班時數</label><input type="number" id="pt_h_${i}" oninput="calc()"></div>
-        <div class="input-row"><label>假日時數</label><input type="number" id="pt_hd_${i}" oninput="calc()"></div>
-        <div class="input-row"><label>額外補貼</label><input type="number" id="pt_extra_${i}" oninput="calc()"></div>
-        <div class="input-row"><label>勞健保自付</label><input type="number" id="pt_ins_${i}" oninput="calc()"></div>
+      <div class="emp-header">
+        <span>${e.name}</span><small>時薪 ${e.rate} / 獎金 ${e.pct*100}%</small>
       </div>
-      <div class="emp-footer"><span>應領薪資</span><span id="pt_pay_${i}">—</span></div>
+      <div class="emp-body">
+        <div class="input-row"><label>上班時數</label><input type="number" id="pt_h_${e.key}"     step="0.5" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>假日時數</label><input type="number" id="pt_hd_${e.key}"    step="0.5" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>額外補貼</label><input type="number" id="pt_extra_${e.key}" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>勞健保自付</label><input type="number" id="pt_ins_${e.key}" placeholder="0" oninput="adminCalc()"></div>
+      </div>
+      <div class="emp-footer"><span>應領薪資</span><span id="pt_pay_${e.key}">—</span></div>
     </div>`;
   });
-  document.getElementById('ptList').innerHTML = ptHtml;
+  document.getElementById('adminPtList').innerHTML = ptHtml;
 
   let ftHtml = '';
-  FT.forEach((f, i) => {
+  FT.forEach(f => {
     ftHtml += `
     <div class="emp-card">
-      <div class="emp-header"><span>${f.name}</span> <small>底薪 ${fmt(f.salary)}</small></div>
-      <div class="emp-body">
-        <div class="input-row"><label>額外補貼</label><input type="number" id="ft_extra_${i}" oninput="calc()"></div>
-        <div class="input-row"><label>勞健保自付</label><input type="number" id="ft_ins_${i}" oninput="calc()"></div>
+      <div class="emp-header">
+        <span>${f.name}</span><small>底薪 ${fmt(f.salary)}</small>
       </div>
-      <div class="emp-footer"><span>應領薪資</span><span id="ft_pay_${i}">—</span></div>
+      <div class="emp-body">
+        <div class="input-row"><label>額外補貼</label><input type="number" id="ft_extra_${f.key}" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>勞健保自付</label><input type="number" id="ft_ins_${f.key}" placeholder="0" oninput="adminCalc()"></div>
+      </div>
+      <div class="emp-footer"><span>應領薪資</span><span id="ft_pay_${f.key}">—</span></div>
     </div>`;
   });
-  document.getElementById('ftList').innerHTML = ftHtml;
-
-  let insHtml = '';
-  insData.forEach(d => {
-    insHtml += `<tr><td>${fmt(d[0])}</td><td>${d[1]}</td><td>${d[2]}</td><td><strong>${d[3]}</strong></td></tr>`;
-  });
-  document.getElementById('insTbody').innerHTML = insHtml;
+  document.getElementById('adminFtList').innerHTML = ftHtml;
 }
 
-function fmt(n) { return Math.round(n).toLocaleString('zh-TW'); }
-function gv(id) { return parseFloat(document.getElementById(id).value) || 0; }
+// ── 載入月份資料 ──────────────────────────────────────────
+window.adminLoadMonth = () => loadAdminData();
 
-function calc() {
-  const shopNet = gv('shopRev') - gv('cardFee');
+async function loadAdminData() {
+  const month = document.getElementById('adminMonth').value;
+  if (!month) return;
+
+  // 清空所有輸入
+  ['shopRev','cardFee','onlineRev','convFee','platformFee','refund','cancelOrder','nightHours']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  PT.forEach(e => ['h','hd','extra','ins'].forEach(f => {
+    const el = document.getElementById(`pt_${f}_${e.key}`); if(el) el.value='';
+  }));
+  FT.forEach(f => ['extra','ins'].forEach(field => {
+    const el = document.getElementById(`ft_${field}_${f.key}`); if(el) el.value='';
+  }));
+
+  try {
+    // 載入營業額
+    const revSnap = await getDoc(doc(db,'monthlyData',month,'data','revenue'));
+    if (revSnap.exists()) {
+      const d = revSnap.data();
+      Object.keys(d).forEach(k => { const el=document.getElementById(k); if(el && d[k]) el.value=d[k]; });
+    }
+    // 載入員工資料
+    for (const e of PT) {
+      const snap = await getDoc(doc(db,'monthlyData',month,'employees',e.key));
+      if (snap.exists()) {
+        const d = snap.data();
+        setVal(`pt_h_${e.key}`,     d.hours);
+        setVal(`pt_hd_${e.key}`,    d.holidayHours);
+        setVal(`pt_extra_${e.key}`, d.extraAllowance);
+        setVal(`pt_ins_${e.key}`,   d.insurance);
+      }
+    }
+    for (const f of FT) {
+      const snap = await getDoc(doc(db,'monthlyData',month,'employees',f.key));
+      if (snap.exists()) {
+        const d = snap.data();
+        setVal(`ft_extra_${f.key}`, d.extraAllowance);
+        setVal(`ft_ins_${f.key}`,   d.insurance);
+      }
+    }
+  } catch(e) { console.error('loadAdminData:', e); }
+  adminCalc();
+}
+function setVal(id, val) { const el=document.getElementById(id); if(el && val) el.value=val; }
+
+// ── 計算薪資 ──────────────────────────────────────────────
+window.adminCalc = function() {
+  const shopNet   = gv('shopRev') - gv('cardFee');
   const onlineNet = gv('onlineRev') - gv('convFee') - gv('platformFee') - gv('refund') - gv('cancelOrder');
-  const totalRev = shopNet + onlineNet;
+  const totalRev  = shopNet + onlineNet;
+  setText('shopNet',  fmt(shopNet)  + ' 元');
+  setText('onlineNet',fmt(onlineNet)+ ' 元');
+  setText('totalRev', fmt(totalRev) + ' 元');
 
-  document.getElementById('shopNet').textContent = fmt(shopNet) + " 元";
-  document.getElementById('onlineNet').textContent = fmt(onlineNet) + " 元";
-  document.getElementById('totalRev').textContent = fmt(totalRev) + " 元";
-
-  const nightH = gv('nightHours');
+  const nightH    = gv('nightHours');
   const bonusBase = nightH > 0 ? totalRev / nightH : 0;
-  document.getElementById('bonusBase').textContent = fmt(bonusBase);
+  setText('bonusBase', fmt(bonusBase));
 
-  let totalPay = 0;
-  PT.forEach((e, i) => {
-    const h = gv(`pt_h_${i}`), hd = gv(`pt_hd_${i}`), ins = gv(`pt_ins_${i}`), extra = gv(`pt_extra_${i}`);
-    const pay = (e.rate + (bonusBase * e.pct)) * h + (hd * e.rate) + extra - ins;
-    document.getElementById(`pt_pay_${i}`).textContent = h > 0 ? fmt(pay) + " 元" : "—";
-    if(h > 0) totalPay += pay;
+  let total = 0;
+  PT.forEach(e => {
+    const h=gv(`pt_h_${e.key}`), hd=gv(`pt_hd_${e.key}`), ins=gv(`pt_ins_${e.key}`), extra=gv(`pt_extra_${e.key}`);
+    const pay = (e.rate + bonusBase * e.pct) * h + hd * e.rate + extra - ins;
+    setText(`pt_pay_${e.key}`, h > 0 ? fmt(pay)+' 元' : '—');
+    if (h > 0) total += pay;
   });
-
-  FT.forEach((f, i) => {
-    const ins = gv(`ft_ins_${i}`), extra = gv(`ft_extra_${i}`);
-    const pay = f.salary + extra - ins;
-    document.getElementById(`ft_pay_${i}`).textContent = fmt(pay) + " 元";
-    totalPay += pay;
+  FT.forEach(f => {
+    const pay = f.salary + gv(`ft_extra_${f.key}`) - gv(`ft_ins_${f.key}`);
+    setText(`ft_pay_${f.key}`, fmt(pay)+' 元');
+    total += pay;
   });
+  setText('adminSumAll', fmt(total)+' 元');
 
-  document.getElementById('sumAll').textContent = fmt(totalPay) + " 元";
-  saveMonthlyData();
-}
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(adminSaveData, 1500);
+};
 
-function saveMonthlyData() {
-  const month = document.getElementById('calcMonth').value;
-  if(!month) return;
-  const data = {};
-  document.querySelectorAll('input').forEach(ipt => {
-    if(ipt.id !== 'username' && ipt.id !== 'password') data[ipt.id] = ipt.value;
-  });
-  localStorage.setItem(`mitty_data_${month}`, JSON.stringify(data));
-}
-
-function loadMonthlyData() {
-  const month = document.getElementById('calcMonth').value;
-  const saved = localStorage.getItem(`mitty_data_${month}`);
-  document.querySelectorAll('input:not([type="month"])').forEach(ipt => {
-    if(ipt.id !== 'username' && ipt.id !== 'password') ipt.value = "";
-  });
-  if(saved) {
-    const data = JSON.parse(saved);
-    Object.keys(data).forEach(id => {
-      const el = document.getElementById(id);
-      if(el) el.value = data[id];
+// ── 自動儲存 ──────────────────────────────────────────────
+async function adminSaveData() {
+  const month = document.getElementById('adminMonth').value;
+  if (!month) return;
+  try {
+    await setDoc(doc(db,'monthlyData',month,'data','revenue'), {
+      shopRev:gv('shopRev'), cardFee:gv('cardFee'), onlineRev:gv('onlineRev'),
+      convFee:gv('convFee'), platformFee:gv('platformFee'), refund:gv('refund'),
+      cancelOrder:gv('cancelOrder'), nightHours:gv('nightHours')
     });
+    for (const e of PT) {
+      const prev = await getDoc(doc(db,'monthlyData',month,'employees',e.key));
+      const base = prev.exists() ? prev.data() : {};
+      await setDoc(doc(db,'monthlyData',month,'employees',e.key), {
+        ...base,
+        hours:gv(`pt_h_${e.key}`), holidayHours:gv(`pt_hd_${e.key}`),
+        extraAllowance:gv(`pt_extra_${e.key}`), insurance:gv(`pt_ins_${e.key}`)
+      });
+    }
+    for (const f of FT) {
+      const prev = await getDoc(doc(db,'monthlyData',month,'employees',f.key));
+      const base = prev.exists() ? prev.data() : {};
+      await setDoc(doc(db,'monthlyData',month,'employees',f.key), {
+        ...base, extraAllowance:gv(`ft_extra_${f.key}`), insurance:gv(`ft_ins_${f.key}`)
+      });
+    }
+  } catch(e) { console.error('adminSave:', e); }
+}
+
+// ── 用戶管理 ──────────────────────────────────────────────
+async function loadUserList() {
+  try {
+    const snap = await getDocs(collection(db,'users'));
+    const pending = [], active = [];
+    snap.forEach(d => {
+      const u = { uid: d.id, ...d.data() };
+      if (u.role === 'pending') pending.push(u);
+      else active.push(u);
+    });
+    renderPendingUsers(pending);
+    renderActiveUsers(active);
+  } catch(e) { console.error('loadUserList:', e); }
+}
+
+function renderPendingUsers(users) {
+  const el = document.getElementById('pendingUserList');
+  if (!users.length) { el.innerHTML='<p style="color:#aaa; font-size:0.88rem;">沒有待審核帳號</p>'; return; }
+  el.innerHTML = users.map(u => `
+  <div class="user-row">
+    <div class="user-info">
+      <strong>${u.name}</strong>
+      <small>${u.email}</small>
+    </div>
+    <div class="user-actions">
+      <select class="emp-key-select" id="empkey_${u.uid}">
+        <option value="">— 選擇員工 —</option>
+        ${EMP_KEYS.map(k=>`<option value="${k.key}">${k.label}</option>`).join('')}
+      </select>
+      <button class="btn-save-user" onclick="approveUser('${u.uid}')">開通</button>
+    </div>
+  </div>`).join('');
+}
+
+function renderActiveUsers(users) {
+  const el = document.getElementById('activeUserList');
+  if (!users.length) { el.innerHTML='<p style="color:#aaa; font-size:0.88rem;">尚無已開通帳號</p>'; return; }
+  el.innerHTML = users.map(u => `
+  <div class="user-row">
+    <div class="user-info">
+      <strong>${u.name}</strong>
+      <small>${u.email} &nbsp;·&nbsp; ${u.role==='admin'?'管理員':'員工'} ${u.employeeKey?`(${u.employeeKey})`:''}
+      </small>
+    </div>
+    <span class="emp-badge ${u.role==='pending'?'pending':''}">${u.role==='admin'?'管理員':'已開通'}</span>
+  </div>`).join('');
+}
+
+window.approveUser = async function(uid) {
+  const empKey = document.getElementById(`empkey_${uid}`)?.value;
+  if (!empKey) { alert('請先選擇對應的員工'); return; }
+  try {
+    await updateDoc(doc(db,'users',uid), { role:'employee', employeeKey:empKey });
+    alert('已成功開通！');
+    loadUserList();
+  } catch(e) { alert('開通失敗：'+e.message); }
+};
+
+// ══════════════════════════════════════════════════════════
+//  員工打卡介面
+// ══════════════════════════════════════════════════════════
+function initEmployee() {
+  const now = new Date();
+  document.getElementById('empMonth').value =
+    now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  document.getElementById('empDisplayName').textContent = currentUserData.name || '';
+  document.getElementById('empUserName').textContent    = currentUserData.name || '';
+  loadEmpData();
+}
+
+window.empLoadMonth = () => loadEmpData();
+
+async function loadEmpData() {
+  const month  = document.getElementById('empMonth').value;
+  if (!month || !currentUserData) return;
+  document.getElementById('empHours').value        = '';
+  document.getElementById('empHolidayHours').value = '';
+  try {
+    const snap = await getDoc(doc(db,'monthlyData',month,'employees',currentUserData.employeeKey));
+    if (snap.exists()) {
+      const d = snap.data();
+      if (d.hours)        document.getElementById('empHours').value        = d.hours;
+      if (d.holidayHours) document.getElementById('empHolidayHours').value = d.holidayHours;
+    }
+  } catch(e) { console.error('loadEmpData:', e); }
+}
+
+window.saveEmpData = async function() {
+  const month  = document.getElementById('empMonth').value;
+  const btn    = document.getElementById('empSaveBtn');
+  const status = document.getElementById('empSaveStatus');
+  if (!month || !currentUserData?.employeeKey) return;
+
+  btn.disabled = true; status.style.display = 'none';
+  try {
+    const prev = await getDoc(doc(db,'monthlyData',month,'employees',currentUserData.employeeKey));
+    const base = prev.exists() ? prev.data() : {};
+    await setDoc(doc(db,'monthlyData',month,'employees',currentUserData.employeeKey), {
+      ...base,
+      hours:        parseFloat(document.getElementById('empHours').value)        || 0,
+      holidayHours: parseFloat(document.getElementById('empHolidayHours').value) || 0,
+      lastUpdated:  new Date().toISOString()
+    });
+    status.className = 'save-status ok'; status.textContent = '✅ 已成功送出！'; status.style.display='block';
+  } catch(e) {
+    status.className = 'save-status err'; status.textContent = '❌ 儲存失敗，請重試'; status.style.display='block';
   }
-  calc();
+  btn.disabled = false;
+};
+
+// ══════════════════════════════════════════════════════════
+//  工具函式
+// ══════════════════════════════════════════════════════════
+function fmt(n)       { return Math.round(n).toLocaleString('zh-TW'); }
+function gv(id)       { const el=document.getElementById(id); return el ? (parseFloat(el.value)||0) : 0; }
+function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
+
+function initInsTable() {
+  const tbody = document.getElementById('insTbody'); if(!tbody) return;
+  tbody.innerHTML = insData.map(d =>
+    `<tr><td>${fmt(d[0])}</td><td>${d[1]}</td><td>${d[2]}</td><td><strong>${d[3]}</strong></td></tr>`
+  ).join('');
 }
 
-function toggleIns() {
-  var el = document.getElementById('insTable');
-  el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-}
+window.toggleIns = function() {
+  const el = document.getElementById('insTable');
+  el.style.display = el.style.display==='block' ? 'none' : 'block';
+};
 
-initUI();
+// Enter 鍵登入
+document.addEventListener('keypress', e => {
+  if (e.key==='Enter' && !document.getElementById('loginView').classList.contains('hidden')) doLogin();
+});
 </script>
 </body>
 </html>
