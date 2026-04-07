@@ -332,6 +332,9 @@
     .sched-cal-day.selected.sun, .sched-cal-day.selected.sat { color: #fff; }
     .sched-emp-dots { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; max-width: 100%; }
     .sched-emp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .sched-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 12px; padding: 10px 12px; background: var(--border-light); border-radius: var(--r-md); }
+    .sched-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--text-sub); }
+    .sched-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .sched-notes-label { font-size: 0.85rem; color: #888; margin: 12px 0 6px; font-weight: 500; }
 
     /* ── 排班系統（管理員端）── */
@@ -602,6 +605,7 @@
         <button onclick="schedNextMonth()">›</button>
       </div>
       <div id="empSchedCalendar" class="sched-cal-grid"></div>
+      <div id="schedColorLegend" class="sched-legend"></div>
       <p class="sched-notes-label">📝 備註（例如某天只能早班、可能需要請假等）</p>
       <textarea class="schedule-textarea" id="empSchedNotes" placeholder="例：5/3 只能上早班&#10;5/15~5/17 可能需要請假"></textarea>
       <button class="btn-submit" style="margin-top:14px;" onclick="saveSchedData()">送出排班意願</button>
@@ -1177,8 +1181,8 @@ function renderSwitchEmpGrid() {
   if (!grid) return;
   // 每位員工的代表色（與排班系統共用）
   const colors = {
-    sheng:'#B03A2E', fei:'#1A6BA0', du:'#1D8348',
-    hao:'#9A7D0A',   tong:'#6C3483', nian:'#A04000', lun:'#C2185B'
+    sheng:'#B03030', fei:'#1F6BAE', du:'#1E7A42',
+    hao:'#C07D10',   tong:'#6B3A9C', nian:'#2BBFB0', lun:'#E06090'
   };
   const roleLabel = { sheng:'兼職', fei:'兼職', du:'兼職', hao:'兼職', tong:'兼職', nian:'店長', lun:'正職' };
   const allEmps = [...PT, ...FT];
@@ -2919,8 +2923,13 @@ window.mittyLoadDeleted = async function() {
 
 // 每位員工的代表色（深色版，確保白字可讀）
 const SCHED_COLORS = {
-  sheng:'#B03A2E', fei:'#1A6BA0', du:'#1D8348',
-  hao:'#9A7D0A',   tong:'#6C3483', nian:'#A04000', lun:'#C2185B'
+  sheng:'#B03030', fei:'#1F6BAE', du:'#1E7A42',
+  hao:'#C07D10',   tong:'#6B3A9C', nian:'#2BBFB0', lun:'#E06090'
+};
+
+// 員工顯示名稱對照
+const EMP_NAMES = {
+  sheng:'聖', fei:'斐', du:'都', hao:'浩', tong:'童', nian:'鯰', lun:'倫'
 };
 
 // ── 員工端狀態 ────────────────────────────────────────────
@@ -2962,6 +2971,22 @@ function renderEmpSchedCalendar() {
     html += `<div class="${cls}" onclick="toggleSchedDay(${d})"><span>${d}</span>${dotsHtml}</div>`;
   }
   cal.innerHTML = html;
+
+  // 渲染顏色說明（只顯示其他員工，不含自己）
+  const legend = document.getElementById('schedColorLegend');
+  if (legend) {
+    const otherEmpKeys = Object.keys(SCHED_COLORS).filter(k => k !== currentUserData?.employeeKey);
+    if (otherEmpKeys.length > 0) {
+      legend.innerHTML = otherEmpKeys.map(k =>
+        `<span class="sched-legend-item">
+          <span class="sched-legend-dot" style="background:${SCHED_COLORS[k]}"></span>
+          ${EMP_NAMES[k] || k}
+        </span>`
+      ).join('');
+    } else {
+      legend.innerHTML = '';
+    }
+  }
 }
 
 window.toggleSchedDay = function(day) {
