@@ -1122,8 +1122,8 @@ window.adminPreviewEmp = function(empKey) {
   };
 
   // 重置員工介面上所有可能留存的狀態
-  document.getElementById('empYufuBtn').style.display   = 'none';
-  document.getElementById('empMittyBtn').style.display  = 'none';
+  const _yb = document.getElementById('empYufuBtn');  if (_yb) _yb.style.display = 'none';
+  const _mb = document.getElementById('empMittyBtn'); if (_mb) _mb.style.display = 'none';
   document.getElementById('empLeaveCard').style.display = 'none';
   // 重新顯示可能被 FT 預覽隱藏的元素（PT 預覽需要）
   const ev = document.getElementById('employeeView');
@@ -1439,14 +1439,8 @@ function initEmployee() {
   document.getElementById('empDisplayName').textContent = currentUserData.name || '';
   document.getElementById('empUserName').textContent    = currentUserData.name || '';
 
-  // 有 Yufu 存取權的員工顯示入口按鈕
-  if (hasYufuAccess()) {
-    document.getElementById('empYufuBtn').style.display = 'block';
-  }
-  // 有 Mitty Girls 存取權的員工顯示入口按鈕
-  if (hasMittyAccess()) {
-    document.getElementById('empMittyBtn').style.display = 'block';
-  }
+  // 有 Yufu 存取權的員工顯示入口按鈕（已移至頁面頂端快速入口，底部按鈕已移除）
+  // 有 Mitty Girls 存取權的員工顯示入口按鈕（同上）
 
   // 正職員工（nian, lun）不需要填寫班表與時數，但顯示請假卡片
   const isFT = ['nian','lun'].includes(currentUserData.employeeKey);
