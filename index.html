@@ -337,6 +337,15 @@
     .sched-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .holiday-hint { font-size: 0.78rem; color: var(--text-sub); background: #fffbe6; border-left: 3px solid #f0c040; border-radius: 0 var(--r-sm) var(--r-sm) 0; padding: 6px 10px; margin-top: 8px; line-height: 1.6; display: none; }
     .holiday-hint.has-data { display: block; }
+    .formula-details { margin-top: 10px; border-radius: var(--r-sm); overflow: hidden; }
+    .formula-details summary { font-size: 0.8rem; color: var(--text-sub); cursor: pointer; padding: 6px 8px; background: var(--border-light); border-radius: var(--r-sm); list-style: none; display: flex; align-items: center; gap: 4px; user-select: none; }
+    .formula-details summary::-webkit-details-marker { display: none; }
+    .formula-details[open] summary { border-radius: var(--r-sm) var(--r-sm) 0 0; }
+    .formula-details[open] summary::after { content: ' ▲'; font-size: 0.65rem; }
+    .formula-details summary::after { content: ' ▼'; font-size: 0.65rem; }
+    .formula-body { background: #f9f7f4; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--r-sm) var(--r-sm); padding: 10px 12px; }
+    .formula-body p { font-size: 0.78rem; color: var(--text-sub); margin: 0 0 6px; line-height: 1.7; }
+    .formula-body p:last-child { margin-bottom: 0; }
     .sched-notes-label { font-size: 0.85rem; color: #888; margin: 12px 0 6px; font-weight: 500; }
 
     /* ── 排班系統（管理員端）── */
@@ -1218,8 +1227,17 @@ function renderAdminEmpCards() {
       <div class="emp-body">
         <div class="input-row"><label>上班總時數</label><input type="number" id="pt_h_${e.key}"     step="0.5" placeholder="0" oninput="adminCalc()"></div>
         <div class="input-row"><label>國定假日時數</label><input type="number" id="pt_hd_${e.key}"    step="0.5" placeholder="0" oninput="adminCalc()"></div>
-        <div class="input-row"><label>額外補貼</label><input type="number" id="pt_extra_${e.key}" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>其他</label><input type="number" id="pt_extra_${e.key}" placeholder="0" oninput="adminCalc()"></div>
         <div class="input-row"><label>勞健保自付</label><input type="number" id="pt_ins_${e.key}" placeholder="0" oninput="adminCalc()"></div>
+        <details class="formula-details">
+          <summary>📐 薪資計算公式</summary>
+          <div class="formula-body">
+            <p>① 每小時獎金 ＝ 總營收 ÷ 晚班總時數 × 個人獎金%</p>
+            <p>② 薪資 ＝ (時薪 ＋ 每小時獎金) × 上班總時數<br>
+               ＋ 國定假日時數 × 時薪<br>
+               ＋ 其他 － 勞健保自付</p>
+          </div>
+        </details>
         <div style="margin-top:10px;"><label style="font-size:0.82rem;color:#888;">📋 班表記錄</label>
           <div class="schedule-log-box" id="emp_log_${e.key}"><span class="schedule-log-empty">尚未填寫</span></div>
         </div>
@@ -1237,9 +1255,15 @@ function renderAdminEmpCards() {
         <span>${f.name}</span><small>底薪 ${fmt(f.salary)}</small>
       </div>
       <div class="emp-body">
-        <div class="input-row"><label>額外補貼</label><input type="number" id="ft_extra_${f.key}" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>其他</label><input type="number" id="ft_extra_${f.key}" placeholder="0" oninput="adminCalc()"></div>
         <div class="input-row"><label>勞健保自付</label><input type="number" id="ft_ins_${f.key}" value="${f.insurance}" readonly style="background:#f5f5f5;color:#888;cursor:not-allowed;" oninput="adminCalc()"></div>
         <input type="hidden" id="ft_leave_deduct_${f.key}" value="0">
+        <details class="formula-details">
+          <summary>📐 薪資計算公式</summary>
+          <div class="formula-body">
+            <p>薪資 ＝ 底薪 ＋ 其他 － 勞健保自付 － 請假扣款</p>
+          </div>
+        </details>
         <div style="margin-top:10px;"><label style="font-size:0.82rem;color:#888;">🏥 請假紀錄</label>
           <div class="leave-display" id="ft_leave_${f.key}"><span style="color:#ccc;font-style:italic;font-size:0.82rem;">無請假</span></div>
         </div>
