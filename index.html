@@ -335,6 +335,8 @@
     .sched-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 12px; padding: 10px 12px; background: var(--border-light); border-radius: var(--r-md); }
     .sched-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--text-sub); }
     .sched-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .holiday-hint { font-size: 0.78rem; color: var(--text-sub); background: #fffbe6; border-left: 3px solid #f0c040; border-radius: 0 var(--r-sm) var(--r-sm) 0; padding: 6px 10px; margin-top: 8px; line-height: 1.6; display: none; }
+    .holiday-hint.has-data { display: block; }
     .sched-notes-label { font-size: 0.85rem; color: #888; margin: 12px 0 6px; font-weight: 500; }
 
     /* ── 排班系統（管理員端）── */
@@ -438,6 +440,7 @@
         <label>結算月份</label>
         <input type="month" id="adminMonth" onchange="adminLoadMonth()">
       </div>
+      <div class="holiday-hint" id="adminHolidayHint"></div>
 
       <h2>一、營業額計算</h2>
       <div class="section-card">
@@ -560,13 +563,14 @@
     <div class="hours-card">
       <h3>上班時數登記</h3>
       <div class="hours-row">
-        <label>一般班時數</label>
+        <label>上班總時數</label>
         <input class="hours-input" type="number" id="empHours" placeholder="0" step="0.5" min="0">
       </div>
       <div class="hours-row">
-        <label>假日班時數</label>
+        <label>國定假日時數</label>
         <input class="hours-input" type="number" id="empHolidayHours" placeholder="0" step="0.5" min="0">
       </div>
+      <div class="holiday-hint" id="empHolidayHint"></div>
     </div>
     <button class="btn-submit" id="empSaveBtn" onclick="saveEmpData()">送出時數</button>
     <p id="empSaveStatus" class="save-status"></p>
@@ -1098,6 +1102,14 @@ function initAdmin() {
   initInsTable();
   loadAdminData();
   loadUserList();
+
+  // 初始顯示本月國定假日提示
+  const adminHint = document.getElementById('adminHolidayHint');
+  if (adminHint) {
+    const text = getHolidayHint(document.getElementById('adminMonth').value);
+    adminHint.textContent = text;
+    adminHint.classList.toggle('has-data', !!text);
+  }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1204,8 +1216,8 @@ function renderAdminEmpCards() {
         <span>${e.name}</span><small>時薪 ${e.rate} / 獎金 ${e.pct*100}%</small>
       </div>
       <div class="emp-body">
-        <div class="input-row"><label>上班時數</label><input type="number" id="pt_h_${e.key}"     step="0.5" placeholder="0" oninput="adminCalc()"></div>
-        <div class="input-row"><label>假日時數</label><input type="number" id="pt_hd_${e.key}"    step="0.5" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>上班總時數</label><input type="number" id="pt_h_${e.key}"     step="0.5" placeholder="0" oninput="adminCalc()"></div>
+        <div class="input-row"><label>國定假日時數</label><input type="number" id="pt_hd_${e.key}"    step="0.5" placeholder="0" oninput="adminCalc()"></div>
         <div class="input-row"><label>額外補貼</label><input type="number" id="pt_extra_${e.key}" placeholder="0" oninput="adminCalc()"></div>
         <div class="input-row"><label>勞健保自付</label><input type="number" id="pt_ins_${e.key}" placeholder="0" oninput="adminCalc()"></div>
         <div style="margin-top:10px;"><label style="font-size:0.82rem;color:#888;">📋 班表記錄</label>
@@ -1239,7 +1251,15 @@ function renderAdminEmpCards() {
 }
 
 // ── 載入月份資料 ──────────────────────────────────────────
-window.adminLoadMonth = () => loadAdminData();
+window.adminLoadMonth = () => {
+  loadAdminData();
+  const hint = document.getElementById('adminHolidayHint');
+  if (hint) {
+    const text = getHolidayHint(document.getElementById('adminMonth').value);
+    hint.textContent = text;
+    hint.classList.toggle('has-data', !!text);
+  }
+};
 
 async function loadAdminData() {
   const month = document.getElementById('adminMonth').value;
@@ -1478,9 +1498,25 @@ function initEmployee() {
   // 所有員工：初始化排班填寫日曆
   initSchedSection();
   loadEmpData();
+
+  // 初始顯示本月國定假日提示
+  const empHint = document.getElementById('empHolidayHint');
+  if (empHint) {
+    const text = getHolidayHint(document.getElementById('empMonth').value);
+    empHint.textContent = text;
+    empHint.classList.toggle('has-data', !!text);
+  }
 }
 
-window.empLoadMonth = () => loadEmpData();
+window.empLoadMonth = () => {
+  loadEmpData();
+  const hint = document.getElementById('empHolidayHint');
+  if (hint) {
+    const text = getHolidayHint(document.getElementById('empMonth').value);
+    hint.textContent = text;
+    hint.classList.toggle('has-data', !!text);
+  }
+};
 
 // ── 正職請假：載入、計算、儲存 ──────────────────────────
 async function loadLeaveData() {
@@ -2910,6 +2946,56 @@ window.mittyLoadDeleted = async function() {
 // ══════════════════════════════════════════════════════════
 //  排班系統
 // ══════════════════════════════════════════════════════════
+
+// ── 台灣國定假日（2025–2026）────────────────────────────────
+// 格式：TW_HOLIDAYS['年'][月] = [{d:日, n:'假日名稱'}, ...]
+const TW_HOLIDAYS = {
+  '2025': {
+    1:  [{d:1,n:'元旦'},{d:27,n:'春節補假'},{d:28,n:'除夕'},{d:29,n:'春節初一'},{d:30,n:'春節初二'},{d:31,n:'春節初三'}],
+    2:  [{d:28,n:'和平紀念日'}],
+    4:  [{d:3,n:'兒童節補假'},{d:4,n:'兒童節・清明節'}],
+    5:  [{d:1,n:'勞動節'},{d:30,n:'端午節補假'},{d:31,n:'端午節'}],
+    10: [{d:6,n:'中秋節'},{d:10,n:'國慶日'}]
+  },
+  '2026': {
+    1:  [{d:1,n:'元旦'}],
+    2:  [{d:15,n:'春節小年夜'},{d:16,n:'農曆除夕'},{d:17,n:'春節初一'},{d:18,n:'春節初二'},{d:19,n:'春節初三'},{d:20,n:'春節補假'},{d:27,n:'和平紀念日補假'}],
+    4:  [{d:3,n:'兒童節補假'},{d:6,n:'清明節補假'}],
+    5:  [{d:1,n:'勞動節'}],
+    6:  [{d:19,n:'端午節'}],
+    9:  [{d:25,n:'中秋節'},{d:28,n:'孔子誕辰・教師節'}],
+    10: [{d:9,n:'國慶日補假'},{d:25,n:'台灣光復節'},{d:26,n:'光復節補假'}],
+    12: [{d:25,n:'行憲紀念日'}]
+  },
+  '2027': {
+    1:  [{d:1,n:'元旦'}],
+    2:  [{d:4,n:'春節小年夜'},{d:5,n:'農曆除夕'},{d:8,n:'春節初一補假'},{d:9,n:'春節初二補假'},{d:10,n:'春節初三補假'}],
+    3:  [{d:1,n:'和平紀念日補假'}],
+    4:  [{d:2,n:'兒童節補假'},{d:5,n:'清明節補假'},{d:30,n:'勞動節補假'}],
+    6:  [{d:9,n:'端午節'}],
+    9:  [{d:15,n:'中秋節'},{d:28,n:'教師節'}],
+    10: [{d:11,n:'國慶日補假'},{d:25,n:'台灣光復節'}],
+    12: [{d:24,n:'行憲紀念日補假'},{d:31,n:'2028元旦補假'}]
+  },
+  '2028': {
+    1:  [{d:24,n:'春節小年夜補假'},{d:25,n:'農曆除夕'},{d:26,n:'春節初一'},{d:27,n:'春節初二'},{d:28,n:'春節初三'}],
+    2:  [{d:28,n:'和平紀念日'}],
+    4:  [{d:4,n:'兒童節'},{d:5,n:'清明節'}],
+    5:  [{d:1,n:'勞動節'},{d:29,n:'端午節補假'}],
+    9:  [{d:28,n:'教師節'}],
+    10: [{d:3,n:'中秋節'},{d:10,n:'國慶日'},{d:25,n:'台灣光復節'}],
+    12: [{d:25,n:'行憲紀念日'}]
+  }
+};
+
+// 回傳指定月份（'2026-04'格式）的假日提示文字
+function getHolidayHint(yearMonth) {
+  if (!yearMonth) return '';
+  const [y, m] = yearMonth.split('-');
+  const days = (TW_HOLIDAYS[y] || {})[parseInt(m)] || [];
+  if (!days.length) return '';
+  return '📌 本月國定假日：' + days.map(h => `${parseInt(m)}/${h.d}（${h.n}）`).join('、');
+}
 
 // 每位員工的代表色（深色版，確保白字可讀）
 const SCHED_COLORS = {
