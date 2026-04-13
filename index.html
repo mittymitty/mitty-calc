@@ -277,6 +277,8 @@
     .schedule-textarea { width: 100%; min-height: 150px; padding: 12px; border: 1.5px solid var(--border); border-radius: var(--r-md); font-size: 0.92rem; font-family: 'Noto Sans TC', monospace; line-height: 1.7; background: #fafaf8; resize: vertical; transition: border-color .2s; }
     .schedule-textarea:focus { outline: none; border-color: var(--green); background: #fff; }
     .schedule-log-box { background: #f9f9f8; border: 1px solid var(--border-light); border-radius: var(--r-sm); padding: 10px 12px; margin-top: 8px; font-size: 0.82rem; color: #555; white-space: pre-wrap; line-height: 1.7; max-height: 160px; overflow-y: auto; }
+    .notes-textarea { width: 100%; margin-top: 8px; padding: 10px 12px; background: #f9f9f8; border: 1px solid var(--border-light); border-radius: var(--r-sm); font-size: 0.82rem; color: #555; line-height: 1.7; resize: vertical; outline: none; transition: border-color 0.2s; }
+    .notes-textarea:focus { border-color: var(--green-light); background: #fff; }
     .schedule-log-empty { color: var(--text-muted); font-size: 0.82rem; font-style: italic; }
 
     /* Yufu 員工入口按鈕 */
@@ -1233,15 +1235,6 @@ function renderAdminEmpCards() {
         <div class="input-row"><label>國定假日時數</label><input type="number" id="pt_hd_${e.key}"    step="0.5" placeholder="0" oninput="adminCalc()"></div>
         <div class="input-row"><label>其他</label><input type="number" id="pt_extra_${e.key}" placeholder="0" oninput="adminCalc()"></div>
         <div class="input-row"><label>勞健保自付</label><input type="number" id="pt_ins_${e.key}" placeholder="0" oninput="adminCalc()"></div>
-        <details class="formula-details">
-          <summary>📐 薪資計算公式</summary>
-          <div class="formula-body">
-            <p>① 每小時獎金 ＝ 總營收 ÷ 晚班總時數 × 個人獎金%</p>
-            <p>② 薪資 ＝ (時薪 ＋ 每小時獎金) × 上班總時數<br>
-               ＋ 國定假日時數 × 時薪<br>
-               ＋ 其他 － 勞健保自付</p>
-          </div>
-        </details>
         <div style="margin-top:10px;"><label style="font-size:0.82rem;color:#888;">📋 班表記錄</label>
           <div class="schedule-log-box" id="emp_log_${e.key}"><span class="schedule-log-empty">尚未填寫</span></div>
         </div>
@@ -1263,14 +1256,11 @@ function renderAdminEmpCards() {
         <div class="input-row"><label>其他</label><input type="number" id="ft_extra_${f.key}" placeholder="0" oninput="adminCalc()"></div>
         <div class="input-row"><label>勞健保自付</label><input type="number" id="ft_ins_${f.key}" value="${f.insurance}" readonly style="background:#f5f5f5;color:#888;cursor:not-allowed;" oninput="adminCalc()"></div>
         <input type="hidden" id="ft_leave_deduct_${f.key}" value="0">
-        <details class="formula-details">
-          <summary>📐 薪資計算公式</summary>
-          <div class="formula-body">
-            <p>薪資 ＝ 底薪 ＋ 其他 － 勞健保自付 － 請假扣款</p>
-          </div>
-        </details>
         <div style="margin-top:10px;"><label style="font-size:0.82rem;color:#888;">🏥 請假紀錄</label>
           <div class="leave-display" id="ft_leave_${f.key}"><span style="color:#ccc;font-style:italic;font-size:0.82rem;">無請假</span></div>
+        </div>
+        <div style="margin-top:10px;"><label style="font-size:0.82rem;color:#888;">📝 其他告知事項</label>
+          <textarea class="notes-textarea" id="ft_notes_${f.key}" placeholder="報帳、購買店內商品或其他需扣款事項..." rows="3" oninput="clearTimeout(saveTimer);saveTimer=setTimeout(adminSaveData,1500)"></textarea>
         </div>
       </div>
       <div class="emp-footer"><span>應領薪資</span><span id="ft_pay_${f.key}">—</span></div>
@@ -1304,6 +1294,7 @@ async function loadAdminData() {
   }));
   FT.forEach(f => {
     const el = document.getElementById(`ft_extra_${f.key}`); if(el) el.value='';
+    const notesEl = document.getElementById(`ft_notes_${f.key}`); if(notesEl) notesEl.value='';
     // 保險欄位固定不清除
   });
 
@@ -1332,9 +1323,11 @@ async function loadAdminData() {
       const snap = await getDoc(doc(db,'monthlyData',month,'employees',f.key));
       const leaveEl   = document.getElementById(`ft_leave_${f.key}`);
       const deductEl  = document.getElementById(`ft_leave_deduct_${f.key}`);
+      const notesEl = document.getElementById(`ft_notes_${f.key}`);
       if (snap.exists()) {
         const d = snap.data();
         setVal(`ft_extra_${f.key}`, d.extraAllowance);
+        if (notesEl) notesEl.value = d.ftNotes || '';
         // 計算並顯示請假扣薪
         const typeMap = { sick:'病假', personal:'事假' };
         if (d.leaveType && d.leaveDays > 0) {
@@ -1352,6 +1345,7 @@ async function loadAdminData() {
       } else {
         if (deductEl) deductEl.value = 0;
         if (leaveEl) leaveEl.innerHTML = '<span style="color:#ccc;font-style:italic;font-size:0.82rem;">無請假</span>';
+        if (notesEl) notesEl.value = '';
       }
       // 保險固定用 FT 陣列中的值，不從 DB 覆蓋
       setVal(`ft_ins_${f.key}`, f.insurance);
@@ -1469,8 +1463,10 @@ async function adminSaveData() {
     for (const f of FT) {
       const prev = await getDoc(doc(db,'monthlyData',month,'employees',f.key));
       const base = prev.exists() ? prev.data() : {};
+      const notesEl = document.getElementById(`ft_notes_${f.key}`);
       await setDoc(doc(db,'monthlyData',month,'employees',f.key), {
-        ...base, extraAllowance:gv(`ft_extra_${f.key}`), insurance:gv(`ft_ins_${f.key}`)
+        ...base, extraAllowance:gv(`ft_extra_${f.key}`), insurance:gv(`ft_ins_${f.key}`),
+        ftNotes: notesEl ? notesEl.value : ''
       });
     }
   } catch(e) { console.error('adminSave:', e); }
