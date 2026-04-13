@@ -337,6 +337,8 @@
     .sched-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .holiday-hint { font-size: 0.78rem; color: var(--text-sub); background: #fffbe6; border-left: 3px solid #f0c040; border-radius: 0 var(--r-sm) var(--r-sm) 0; padding: 6px 10px; margin-top: 8px; line-height: 1.6; display: none; }
     .holiday-hint.has-data { display: block; }
+    .copy-formula-btn { width: 100%; margin-top: 8px; padding: 9px; background: #f0f7ee; border: 1px solid #c8dfc4; border-radius: var(--r-sm); color: var(--green); font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all .15s; }
+    .copy-formula-btn:hover { background: var(--green); color: #fff; }
     .formula-details { margin-top: 10px; border-radius: var(--r-sm); overflow: hidden; }
     .formula-details summary { font-size: 0.8rem; color: var(--text-sub); cursor: pointer; padding: 6px 8px; background: var(--border-light); border-radius: var(--r-sm); list-style: none; display: flex; align-items: center; gap: 4px; user-select: none; }
     .formula-details summary::-webkit-details-marker { display: none; }
@@ -1009,6 +1011,8 @@ const db   = getFirestore(app);
 let currentUser = null;
 let currentUserData = null;
 let saveTimer = null;
+let isLoadingAdminData = false; // 載入中時禁止自動儲存
+let adminTotalRev = 0, adminNightH = 0, adminBonusBase = 0; // 給複製公式用
 
 // ── Auth 狀態監聽 ─────────────────────────────────────────
 onAuthStateChanged(auth, async (user) => {
@@ -1243,6 +1247,7 @@ function renderAdminEmpCards() {
         </div>
       </div>
       <div class="emp-footer"><span>應領薪資</span><span id="pt_pay_${e.key}">—</span></div>
+      <button class="copy-formula-btn" id="copy_pt_${e.key}" onclick="copyPtFormula('${e.key}')">📋 複製薪資說明</button>
     </div>`;
   });
   document.getElementById('adminPtList').innerHTML = ptHtml;
@@ -1269,6 +1274,7 @@ function renderAdminEmpCards() {
         </div>
       </div>
       <div class="emp-footer"><span>應領薪資</span><span id="ft_pay_${f.key}">—</span></div>
+      <button class="copy-formula-btn" id="copy_ft_${f.key}" onclick="copyFtFormula('${f.key}')">📋 複製薪資說明</button>
     </div>`;
   });
   document.getElementById('adminFtList').innerHTML = ftHtml;
@@ -1288,6 +1294,8 @@ window.adminLoadMonth = () => {
 async function loadAdminData() {
   const month = document.getElementById('adminMonth').value;
   if (!month) return;
+  isLoadingAdminData = true;
+  clearTimeout(saveTimer); // 取消任何待執行的儲存
 
   ['shopRev','cardFee','onlineRev','convFee','platformFee','refund','cancelOrder','nightHours']
     .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
@@ -1349,9 +1357,60 @@ async function loadAdminData() {
       setVal(`ft_ins_${f.key}`, f.insurance);
     }
   } catch(e) { console.error('loadAdminData:', e); }
+  isLoadingAdminData = false; // 載入完畢，恢復自動儲存
   adminCalc();
 }
 function setVal(id, val) { const el=document.getElementById(id); if(el && val) el.value=val; }
+
+// ── 複製薪資說明 ──────────────────────────────────────────
+window.copyPtFormula = function(key) {
+  const emp = PT.find(e => e.key === key);
+  if (!emp) return;
+  const month = document.getElementById('adminMonth').value || '本月';
+  const h     = gv(`pt_h_${key}`);
+  const hd    = gv(`pt_hd_${key}`);
+  const extra = gv(`pt_extra_${key}`);
+  const ins   = gv(`pt_ins_${key}`);
+  const bonus = Math.round(adminBonusBase * emp.pct);
+  const pay   = Math.round((emp.rate + adminBonusBase * emp.pct) * h + hd * emp.rate + extra - ins);
+  const name  = emp.name.replace(/\s*\(.*?\)/g,'');
+  const text =
+`📐 ${month} 薪資計算（${name}）
+
+【每小時獎金】
+當月總營收 ${fmt(adminTotalRev)} ÷ 晚班總時數 ${adminNightH} × 個人獎金% ${emp.pct*100}% ＝ ${fmt(bonus)} 元／小時
+
+【薪資計算】
+（時薪 ${emp.rate} ＋ 每小時獎金 ${fmt(bonus)}）× 上班總時數 ${h}
+＋ 國定假日時數 ${hd} × 時薪 ${emp.rate}
+＋ 其他 ${fmt(extra)} － 勞健保自付 ${fmt(ins)}
+＝ 應領薪資 ${fmt(pay)} 元`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(`copy_pt_${key}`);
+    if (btn) { btn.textContent = '✅ 已複製'; setTimeout(() => btn.textContent = '📋 複製薪資說明', 2000); }
+  });
+};
+
+window.copyFtFormula = function(key) {
+  const emp = FT.find(f => f.key === key);
+  if (!emp) return;
+  const month   = document.getElementById('adminMonth').value || '本月';
+  const extra   = gv(`ft_extra_${key}`);
+  const ins     = gv(`ft_ins_${key}`);
+  const deduct  = parseFloat(document.getElementById(`ft_leave_deduct_${key}`)?.value) || 0;
+  const pay     = Math.round(emp.salary + extra - ins - deduct);
+  const name    = emp.name.replace(/\s*\(.*?\)/g,'');
+  const text =
+`📐 ${month} 薪資計算（${name}）
+
+【薪資計算】
+底薪 ${fmt(emp.salary)} ＋ 其他 ${fmt(extra)} － 勞健保自付 ${fmt(ins)} － 請假扣款 ${fmt(deduct)}
+＝ 應領薪資 ${fmt(pay)} 元`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(`copy_ft_${key}`);
+    if (btn) { btn.textContent = '✅ 已複製'; setTimeout(() => btn.textContent = '📋 複製薪資說明', 2000); }
+  });
+};
 
 // ── 計算薪資 ──────────────────────────────────────────────
 window.adminCalc = function() {
@@ -1365,6 +1424,7 @@ window.adminCalc = function() {
   const nightH    = gv('nightHours');
   const bonusBase = nightH > 0 ? totalRev / nightH : 0;
   setText('bonusBase', fmt(bonusBase));
+  adminTotalRev = totalRev; adminNightH = nightH; adminBonusBase = bonusBase;
 
   let total = 0;
   PT.forEach(e => {
@@ -1388,6 +1448,7 @@ window.adminCalc = function() {
 
 // ── 自動儲存 ──────────────────────────────────────────────
 async function adminSaveData() {
+  if (isLoadingAdminData) return; // 載入資料中，禁止覆寫
   const month = document.getElementById('adminMonth').value;
   if (!month) return;
   try {
