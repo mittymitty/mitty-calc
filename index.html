@@ -4148,7 +4148,7 @@ function mittyShowMsg(id, msg) {
         const tags = (v.tags || []).map(function(t) {
           return '<span class="vendor-tag">' + t + '</span>';
         }).join('');
-        return '<div class="vendor-card" onclick="vendorShowDetail('' + v.id + '')">' +
+        return '<div class="vendor-card" onclick="vendorShowDetail(\'' + v.id + '\')">' +
           '<div class="vendor-card-brand">' + (VENDOR_BRAND_LABELS[v.brand] || v.brand) + '</div>' +
           '<h3>' + v.name + '</h3>' +
           (v.specialty ? '<div class="vendor-card-meta">🔧 ' + v.specialty + '</div>' : '') +
