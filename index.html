@@ -356,6 +356,15 @@
        廠商管理模組（倫/斐專用）
     ══════════════════════════════════════ */
     .vendor-brand-tabs { display: flex; gap: 8px; margin: 16px 0 18px; flex-wrap: wrap; }
+    /* ── 員工 Tab bar ── */
+    .emp-tab-btn {
+      flex: 1; padding: 12px 0; background: none; border: none; border-bottom: 3px solid transparent;
+      font-size: 0.92rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all .2s;
+    }
+    .emp-tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+    .emp-tab-btn:hover:not(.active) { color: var(--text); }
+    .emp-tab-panel { display: block; }
+
     .vendor-brand-tab { padding: 8px 20px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--card); color: var(--text-sub); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all .2s; font-family: 'Noto Sans TC', sans-serif; white-space: nowrap; }
     .vendor-brand-tab.active { background: var(--green); color: #fff; border-color: var(--green); font-weight: 600; }
     .vendor-brand-tab:hover:not(.active) { border-color: var(--green); color: var(--green); }
@@ -718,6 +727,11 @@
       <button class="btn-logout" onclick="doLogout()">登出</button>
     </div>
   </div>
+  <!-- 員工 Tab bar（斐/倫專用，預設隱藏） -->
+  <div id="empTabBar" style="display:none; background:#fff; border-bottom:1px solid var(--border); display:none; flex-direction:row;">
+    <button id="empTabMyData" class="emp-tab-btn active" onclick="switchEmpTab('mydata')">📋 我的資料</button>
+    <button id="empTabVendor" class="emp-tab-btn" onclick="switchEmpTab('vendor')">🏭 廠商管理</button>
+  </div>
   <!-- 管理員切換帳號橫幅（預設隱藏） -->
   <div class="preview-banner" id="previewBanner">
     <div class="preview-label">
@@ -726,6 +740,8 @@
     </div>
     <button class="preview-exit" onclick="exitPreviewMode()">← 返回管理員</button>
   </div>
+  <!-- 員工 Tab 面板：我的資料 -->
+  <div id="empPanelMyData" class="emp-tab-panel">
   <div class="container">
     <!-- 帳簿快速入口（斐/倫專用，預設隱藏） -->
     <div id="empTopQuickAccess" style="display:none; margin: 12px 0 0;"></div>
@@ -782,39 +798,6 @@
       <p class="leave-hint">⚠️ 其他假別不需登記（例如特休、婚假等）</p>
       <button class="btn-submit" style="margin-top:14px;" id="empLeaveSaveBtn" onclick="saveLeaveData()">儲存請假紀錄</button>
       <p id="empLeaveSaveStatus" class="save-status"></p>
-    </div>
-
-    <!-- 廠商管理（斐/倫專用，預設隱藏） -->
-    <div id="empVendorSheet" style="display:none;">
-      <div class="vendor-emp-sheet">
-        <h3>🏭 廠商資料管理</h3>
-        <div class="vendor-brand-tabs" style="margin-top:0;">
-          <button class="vendor-brand-tab active" data-brand="mitty" onclick="vendorSwitchBrand('mitty')">🏷 Mitty</button>
-          <button class="vendor-brand-tab" data-brand="mitty-girls" onclick="vendorSwitchBrand('mitty-girls')">👗 Mitty Girls</button>
-          <button class="vendor-brand-tab" data-brand="yufu" onclick="vendorSwitchBrand('yufu')">📒 Yufu</button>
-        </div>
-        <div id="emp-vendor-panel-mitty" class="vendor-brand-panel active">
-          <div class="vendor-section-header">
-            <span style="font-weight:600;font-size:0.92rem;">Mitty 廠商</span>
-            <button class="vendor-add-btn" onclick="vendorOpenAdd('mitty')">＋ 新增</button>
-          </div>
-          <div class="vendor-grid" id="emp-vendor-grid-mitty"><div class="vendor-empty">載入中…</div></div>
-        </div>
-        <div id="emp-vendor-panel-mitty-girls" class="vendor-brand-panel">
-          <div class="vendor-section-header">
-            <span style="font-weight:600;font-size:0.92rem;">Mitty Girls 廠商</span>
-            <button class="vendor-add-btn" onclick="vendorOpenAdd('mitty-girls')">＋ 新增</button>
-          </div>
-          <div class="vendor-grid" id="emp-vendor-grid-mitty-girls"><div class="vendor-empty">載入中…</div></div>
-        </div>
-        <div id="emp-vendor-panel-yufu" class="vendor-brand-panel">
-          <div class="vendor-section-header">
-            <span style="font-weight:600;font-size:0.92rem;">Yufu 廠商</span>
-            <button class="vendor-add-btn" onclick="vendorOpenAdd('yufu')">＋ 新增</button>
-          </div>
-          <div class="vendor-grid" id="emp-vendor-grid-yufu"><div class="vendor-empty">載入中…</div></div>
-        </div>
-      </div>
     </div>
 
     <!-- 排班填寫（所有員工） -->
@@ -895,7 +878,43 @@
       </div>
     </div>
 
-  </div>
+  </div><!-- end container mydata -->
+  </div><!-- end empPanelMyData -->
+
+  <!-- 員工 Tab 面板：廠商管理 -->
+  <div id="empPanelVendor" class="emp-tab-panel" style="display:none;">
+    <div class="container">
+      <div class="vendor-emp-sheet" style="padding-top:0;">
+        <div class="vendor-brand-tabs" style="margin-top:16px;">
+          <button class="vendor-brand-tab active" data-brand="mitty" onclick="vendorSwitchBrand('mitty')">🏷 Mitty</button>
+          <button class="vendor-brand-tab" data-brand="mitty-girls" onclick="vendorSwitchBrand('mitty-girls')">👗 Mitty Girls</button>
+          <button class="vendor-brand-tab" data-brand="yufu" onclick="vendorSwitchBrand('yufu')">📒 Yufu</button>
+        </div>
+        <div id="emp-vendor-panel-mitty" class="vendor-brand-panel active">
+          <div class="vendor-section-header">
+            <span style="font-weight:600;font-size:0.92rem;">Mitty 廠商</span>
+            <button class="vendor-add-btn" onclick="vendorOpenAdd('mitty')">＋ 新增</button>
+          </div>
+          <div class="vendor-grid" id="emp-vendor-grid-mitty"><div class="vendor-empty">載入中…</div></div>
+        </div>
+        <div id="emp-vendor-panel-mitty-girls" class="vendor-brand-panel">
+          <div class="vendor-section-header">
+            <span style="font-weight:600;font-size:0.92rem;">Mitty Girls 廠商</span>
+            <button class="vendor-add-btn" onclick="vendorOpenAdd('mitty-girls')">＋ 新增</button>
+          </div>
+          <div class="vendor-grid" id="emp-vendor-grid-mitty-girls"><div class="vendor-empty">載入中…</div></div>
+        </div>
+        <div id="emp-vendor-panel-yufu" class="vendor-brand-panel">
+          <div class="vendor-section-header">
+            <span style="font-weight:600;font-size:0.92rem;">Yufu 廠商</span>
+            <button class="vendor-add-btn" onclick="vendorOpenAdd('yufu')">＋ 新增</button>
+          </div>
+          <div class="vendor-grid" id="emp-vendor-grid-yufu"><div class="vendor-empty">載入中…</div></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end empPanelVendor -->
+
 </div>
 
 <!-- ══════════════════════════════════
@@ -1863,6 +1882,14 @@ window.approveUser = async function(uid) {
 // ══════════════════════════════════════════════════════════
 //  員工打卡介面
 // ══════════════════════════════════════════════════════════
+window.switchEmpTab = function(tab) {
+  document.getElementById('empPanelMyData').style.display  = tab === 'mydata'  ? 'block' : 'none';
+  document.getElementById('empPanelVendor').style.display  = tab === 'vendor'  ? 'block' : 'none';
+  document.getElementById('empTabMyData').classList.toggle('active', tab === 'mydata');
+  document.getElementById('empTabVendor').classList.toggle('active', tab === 'vendor');
+  if (tab === 'vendor') vendorLoadAll();
+};
+
 function initEmployee() {
   const now = new Date();
   document.getElementById('empMonth').value =
@@ -1892,19 +1919,20 @@ function initEmployee() {
     loadLeaveData();
   }
 
-  // 斐 / 倫：把最常用的帳簿按鈕移到最上方
+  // 斐 / 倫：顯示帳簿入口 + 廠商 Tab bar
   const quickEl = document.getElementById('empTopQuickAccess');
+  const tabBar  = document.getElementById('empTabBar');
   if (quickEl) {
     quickEl.style.display = 'none';
     quickEl.innerHTML = '';
     if (currentUserData.employeeKey === 'fei') {
       quickEl.style.display = 'block';
-      quickEl.innerHTML = `<button class="yufu-entry-btn" style="display:block;margin-top:0;border-color:var(--green);color:var(--green);font-size:1.05rem;padding:18px;" onclick="openYufuView('employee')">📒 Yufu 帳簿記帳</button>
-<button class="yufu-entry-btn" style="display:block;margin-top:10px;border-color:var(--gold);color:var(--gold);font-size:1.05rem;padding:18px;" onclick="vendorShowEmpSheet()">🏭 廠商資料管理</button>`;
+      quickEl.innerHTML = `<button class="yufu-entry-btn" style="display:block;margin-top:0;border-color:var(--green);color:var(--green);font-size:1.05rem;padding:18px;" onclick="openYufuView('employee')">📒 Yufu 帳簿記帳</button>`;
+      if (tabBar) { tabBar.style.display = 'flex'; }
     } else if (currentUserData.employeeKey === 'lun') {
       quickEl.style.display = 'block';
-      quickEl.innerHTML = `<button class="yufu-entry-btn" style="display:block;margin-top:0;border-color:var(--green);color:var(--green);font-size:1.05rem;padding:18px;" onclick="openMittyView('employee')">👗 Mitty Girls 帳簿記帳</button>
-<button class="yufu-entry-btn" style="display:block;margin-top:10px;border-color:var(--gold);color:var(--gold);font-size:1.05rem;padding:18px;" onclick="vendorShowEmpSheet()">🏭 廠商資料管理</button>`;
+      quickEl.innerHTML = `<button class="yufu-entry-btn" style="display:block;margin-top:0;border-color:var(--green);color:var(--green);font-size:1.05rem;padding:18px;" onclick="openMittyView('employee')">👗 Mitty Girls 帳簿記帳</button>`;
+      if (tabBar) { tabBar.style.display = 'flex'; }
     }
   }
 
@@ -4099,19 +4127,8 @@ function mittyShowMsg(id, msg) {
     return k === 'lun' || k === 'fei';
   }
 
-  // 顯示/隱藏員工廠商 sheet
-  window.vendorShowEmpSheet = async function() {
-    if (!vendorCanAccess()) return;
-    const sheet = document.getElementById('empVendorSheet');
-    if (!sheet) return;
-    if (sheet.style.display === 'none' || sheet.style.display === '') {
-      sheet.style.display = 'block';
-      sheet.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      await vendorLoadAll();
-    } else {
-      sheet.style.display = 'none';
-    }
-  };
+  // vendorShowEmpSheet 已由 switchEmpTab('vendor') 取代（保留空函式避免舊呼叫出錯）
+  window.vendorShowEmpSheet = function() { window.switchEmpTab('vendor'); };
 
   // 載入全部廠商
   window.vendorLoadAll = async function() {
