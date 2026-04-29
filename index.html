@@ -678,7 +678,7 @@
         <div class="sales-card"><div class="sales-chart-label">銷售金額前10名（由高至低）</div><canvas id="s-barVintage" style="max-height:280px"></canvas></div>
         <div class="sales-two-col">
           <div class="sales-card"><div class="sales-chart-label">金額佔比（前8名）</div><canvas id="s-pieVintage"></canvas></div>
-          <div class="sales-card"><div class="sales-chart-label">古著品項件數（本週 vs 上週）</div><canvas id="s-vintageQtyCompare"></canvas></div>
+          <div class="sales-card"><div class="sales-chart-label">古著品項件數（本週 vs 上週）</div><canvas id="s-vintageQtyCompare" style="max-height:340px"></canvas><div style="margin-top:14px"><div style="font-size:0.78rem;font-weight:700;color:#888;letter-spacing:0.08em;margin-bottom:4px">📉 銷售最差 TOP 5</div><div id="s-vintageWorst5"></div></div></div>
         </div>
       </div>
 
@@ -3941,7 +3941,8 @@ function mittyShowMsg(id, msg) {
     const esVintageKeys = ['Polo 襯衫','格紋襯衫','條紋襯衫','縮腰上衣','外套','古巴襯衫','Y2K 襯衫','領帶','素色襯衫','短版上衣','防風罩衫','花襯衫','短T','背心','老美縮口','衛衣','燈芯絨','毛衣','帽子'];
     const esPrevW = w > 0 ? w - 1 : null;
     const esPrevVq = esPrevW !== null ? sData.vintage_qty[esPrevW] : null;
-    const esSortedKeys = [...esVintageKeys].sort((a, b) => (vq[a]||0) - (vq[b]||0));
+    const esActiveKeys = esVintageKeys.filter(k => (vq[k]||0) > 0 || (esPrevVq && (esPrevVq[k]||0) > 0));
+    const esSortedKeys = [...esActiveKeys].sort((a, b) => (vq[a]||0) - (vq[b]||0));
     const esThisWeekQty = esSortedKeys.map(k => vq[k] || 0);
     const esLastWeekQty = esSortedKeys.map(k => esPrevVq ? (esPrevVq[k] || 0) : 0);
     esCharts.vintageQtyCompare = new Chart(document.getElementById('es-vintageQtyCompare'), {
@@ -3949,8 +3950,8 @@ function mittyShowMsg(id, msg) {
       data: {
         labels: esSortedKeys,
         datasets: [
-          { label: '本週件數', data: esThisWeekQty, backgroundColor: '#2d5a27cc', borderRadius: 3 },
-          { label: '上週件數', data: esLastWeekQty, backgroundColor: '#bbbbbb88', borderRadius: 3 },
+          { label: '本週件數', data: esThisWeekQty, backgroundColor: '#2d5a27cc', borderRadius: 4 },
+          { label: '上週件數', data: esLastWeekQty, backgroundColor: '#cccccc99', borderRadius: 4 },
         ]
       },
       options: {
@@ -3960,8 +3961,8 @@ function mittyShowMsg(id, msg) {
           tooltip: { callbacks: { label: c => ` ${c.dataset.label}：${c.raw} 件` } }
         },
         scales: {
-          x: { grid: { color: '#f0ece6' }, ticks: { font: sFont }, title: { display: true, text: '件數', font: sFont } },
-          y: { grid: { display: false }, ticks: { font: { family: 'Noto Sans TC', size: 10 } } }
+          x: { grid: { color: '#f0ece6' }, ticks: { font: sFont, stepSize: 5 }, title: { display: true, text: '件數', font: sFont } },
+          y: { grid: { display: false }, ticks: { font: { family: 'Noto Sans TC', size: 12 } } }
         }
       }
     });
@@ -4103,17 +4104,18 @@ function mittyShowMsg(id, msg) {
     const vintageKeys = ['Polo 襯衫','格紋襯衫','條紋襯衫','縮腰上衣','外套','古巴襯衫','Y2K 襯衫','領帶','素色襯衫','短版上衣','防風罩衫','花襯衫','短T','背心','老美縮口','衛衣','燈芯絨','毛衣','帽子'];
     const prevW = w > 0 ? w - 1 : null;
     const prevVq = prevW !== null ? sData.vintage_qty[prevW] : null;
-    // 依本週件數排序（從少到多，方便看銷售差的）
-    const sortedVintageKeys = [...vintageKeys].sort((a, b) => (vq[a]||0) - (vq[b]||0));
-    const thisWeekQty = sortedVintageKeys.map(k => vq[k] || 0);
-    const lastWeekQty = sortedVintageKeys.map(k => prevVq ? (prevVq[k] || 0) : 0);
+    // 只取本週有銷售 or 上週有銷售的品項，依本週件數排序
+    const activeKeys = vintageKeys.filter(k => (vq[k]||0) > 0 || (prevVq && (prevVq[k]||0) > 0));
+    const sortedKeys = [...activeKeys].sort((a, b) => (vq[a]||0) - (vq[b]||0));
+    const thisWeekQty = sortedKeys.map(k => vq[k] || 0);
+    const lastWeekQty = sortedKeys.map(k => prevVq ? (prevVq[k] || 0) : 0);
     sCharts.vintageQtyCompare = new Chart(document.getElementById('s-vintageQtyCompare'), {
       type: 'bar',
       data: {
-        labels: sortedVintageKeys,
+        labels: sortedKeys,
         datasets: [
-          { label: '本週件數', data: thisWeekQty, backgroundColor: '#2d5a27cc', borderRadius: 3 },
-          { label: '上週件數', data: lastWeekQty, backgroundColor: '#bbbbbb88', borderRadius: 3 },
+          { label: '本週件數', data: thisWeekQty, backgroundColor: '#2d5a27cc', borderRadius: 4 },
+          { label: '上週件數', data: lastWeekQty, backgroundColor: '#cccccc99', borderRadius: 4 },
         ]
       },
       options: {
@@ -4123,11 +4125,29 @@ function mittyShowMsg(id, msg) {
           tooltip: { callbacks: { label: c => ` ${c.dataset.label}：${c.raw} 件` } }
         },
         scales: {
-          x: { grid: { color: '#f0ece6' }, ticks: { font: sFont }, title: { display: true, text: '件數', font: sFont } },
-          y: { grid: { display: false }, ticks: { font: { family: 'Noto Sans TC', size: 10 } } }
-        }
+          x: { grid: { color: '#f0ece6' }, ticks: { font: sFont, stepSize: 5 }, title: { display: true, text: '件數', font: sFont } },
+          y: { grid: { display: false }, ticks: { font: { family: 'Noto Sans TC', size: 12 } } }
+        },
+        layout: { padding: { right: 10 } }
       }
     });
+    // 最差5名文字
+    const worst5 = sortedKeys.slice(0, 5);
+    const worst5El = document.getElementById('s-vintageWorst5');
+    if (worst5El) {
+      worst5El.innerHTML = worst5.map(function(k, i) {
+        var thisQ = vq[k] || 0;
+        var lastQ = prevVq ? (prevVq[k] || 0) : null;
+        var diff = lastQ !== null ? thisQ - lastQ : null;
+        var diffStr = diff !== null ? (diff > 0 ? '<span style="color:#2d5a27">▲' + diff + '</span>' : diff < 0 ? '<span style="color:#c0392b">▼' + Math.abs(diff) + '</span>' : '<span style="color:#999">–</span>') : '';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f0ece6">' +
+          '<span style="font-size:0.95rem;font-weight:700;color:#888;width:20px">' + (i+1) + '</span>' +
+          '<span style="flex:1;font-size:0.9rem;font-weight:600">' + k + '</span>' +
+          '<span style="font-size:0.9rem;color:#555">' + thisQ + ' 件</span>' +
+          '<span style="font-size:0.82rem;min-width:36px;text-align:right">' + diffStr + '</span>' +
+          '</div>';
+      }).join('');
+    }
   }
 
   function sMakeGroupedBar(id, labels, datasets) {
