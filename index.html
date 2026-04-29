@@ -678,7 +678,7 @@
         <div class="sales-card"><div class="sales-chart-label">銷售金額前10名（由高至低）</div><canvas id="s-barVintage" style="max-height:280px"></canvas></div>
         <div class="sales-two-col">
           <div class="sales-card"><div class="sales-chart-label">金額佔比（前8名）</div><canvas id="s-pieVintage"></canvas></div>
-          <div class="sales-card"><div class="sales-chart-label">件數 vs 金額散點圖</div><canvas id="s-scatterVintage"></canvas></div>
+          <div class="sales-card"><div class="sales-chart-label">古著品項件數（本週 vs 上週）</div><canvas id="s-vintageQtyCompare"></canvas></div>
         </div>
       </div>
 
@@ -849,7 +849,7 @@
         <p class="sales-section-title">二手古著品項</p>
         <div class="sales-card"><div class="sales-chart-label">銷售金額前10名</div><canvas id="es-barVintage" style="max-height:260px"></canvas></div>
         <div class="sales-card"><div class="sales-chart-label">金額佔比（前8名）</div><canvas id="es-pieVintage" style="max-height:220px"></canvas></div>
-        <div class="sales-card"><div class="sales-chart-label">件數 vs 金額</div><canvas id="es-scatterVintage" style="max-height:220px"></canvas></div>
+        <div class="sales-card"><div class="sales-chart-label">古著品項件數（本週 vs 上週）</div><canvas id="es-vintageQtyCompare" style="max-height:220px"></canvas></div>
       </div>
       <!-- 三週趨勢 -->
       <div id="emp-sales-trend-view" style="display:none">
@@ -3937,14 +3937,31 @@ function mittyShowMsg(id, msg) {
     const top8k = vKeys.slice(0,8), top8v = vVals.slice(0,8);
     esCharts.pieVintage = esMakePie('es-pieVintage', top8k, top8v, sColors.gray, g.古著, top8k.map(k=>vq[k]||0));
     const allEntries = Object.entries(v).filter(([,val])=>val>0);
-    esCharts.scatterVintage = new Chart(document.getElementById('es-scatterVintage'), {
-      type: 'scatter',
-      data: { datasets: [{ label: '品項', data: allEntries.map(([k,val])=>({ x: vq[k]||0, y: val, label: k })), backgroundColor: '#2d5a2799', pointRadius: 7 }] },
+    // 古著品項件數：本週 vs 上週（員工版）
+    const esVintageKeys = ['Polo 襯衫','格紋襯衫','條紋襯衫','縮腰上衣','外套','古巴襯衫','Y2K 襯衫','領帶','素色襯衫','短版上衣','防風罩衫','花襯衫','短T','背心','老美縮口','衛衣','燈芯絨','毛衣','帽子'];
+    const esPrevW = w > 0 ? w - 1 : null;
+    const esPrevVq = esPrevW !== null ? sData.vintage_qty[esPrevW] : null;
+    const esSortedKeys = [...esVintageKeys].sort((a, b) => (vq[a]||0) - (vq[b]||0));
+    const esThisWeekQty = esSortedKeys.map(k => vq[k] || 0);
+    const esLastWeekQty = esSortedKeys.map(k => esPrevVq ? (esPrevVq[k] || 0) : 0);
+    esCharts.vintageQtyCompare = new Chart(document.getElementById('es-vintageQtyCompare'), {
+      type: 'bar',
+      data: {
+        labels: esSortedKeys,
+        datasets: [
+          { label: '本週件數', data: esThisWeekQty, backgroundColor: '#2d5a27cc', borderRadius: 3 },
+          { label: '上週件數', data: esLastWeekQty, backgroundColor: '#bbbbbb88', borderRadius: 3 },
+        ]
+      },
       options: {
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw.label}：${c.raw.x}件 / ${sFmt(c.raw.y)}` } } },
+        indexAxis: 'y',
+        plugins: {
+          legend: { position: 'bottom', labels: { font: sFont, padding: 10, boxWidth: 12 } },
+          tooltip: { callbacks: { label: c => ` ${c.dataset.label}：${c.raw} 件` } }
+        },
         scales: {
-          x: { title: { display: true, text: '件數', font: sFont }, grid: { color: '#f0ece6' }, ticks: { font: sFont } },
-          y: { title: { display: true, text: '金額', font: sFont }, grid: { color: '#f0ece6' }, ticks: { callback: v => sFmt(v), font: sFont } }
+          x: { grid: { color: '#f0ece6' }, ticks: { font: sFont }, title: { display: true, text: '件數', font: sFont } },
+          y: { grid: { display: false }, ticks: { font: { family: 'Noto Sans TC', size: 10 } } }
         }
       }
     });
@@ -4082,14 +4099,32 @@ function mittyShowMsg(id, msg) {
     sCharts.pieVintage = sMakePie('s-pieVintage', top8k, top8v, sColors.gray, g.古著, top8k.map(k=>vq[k]||0));
 
     const allEntries = Object.entries(v).filter(([,val])=>val>0);
-    sCharts.scatterVintage = new Chart(document.getElementById('s-scatterVintage'), {
-      type: 'scatter',
-      data: { datasets: [{ label: '品項', data: allEntries.map(([k,val])=>({ x: vq[k]||0, y: val, label: k })), backgroundColor: '#2d5a2799', pointRadius: 7 }] },
+    // 古著品項件數：本週 vs 上週
+    const vintageKeys = ['Polo 襯衫','格紋襯衫','條紋襯衫','縮腰上衣','外套','古巴襯衫','Y2K 襯衫','領帶','素色襯衫','短版上衣','防風罩衫','花襯衫','短T','背心','老美縮口','衛衣','燈芯絨','毛衣','帽子'];
+    const prevW = w > 0 ? w - 1 : null;
+    const prevVq = prevW !== null ? sData.vintage_qty[prevW] : null;
+    // 依本週件數排序（從少到多，方便看銷售差的）
+    const sortedVintageKeys = [...vintageKeys].sort((a, b) => (vq[a]||0) - (vq[b]||0));
+    const thisWeekQty = sortedVintageKeys.map(k => vq[k] || 0);
+    const lastWeekQty = sortedVintageKeys.map(k => prevVq ? (prevVq[k] || 0) : 0);
+    sCharts.vintageQtyCompare = new Chart(document.getElementById('s-vintageQtyCompare'), {
+      type: 'bar',
+      data: {
+        labels: sortedVintageKeys,
+        datasets: [
+          { label: '本週件數', data: thisWeekQty, backgroundColor: '#2d5a27cc', borderRadius: 3 },
+          { label: '上週件數', data: lastWeekQty, backgroundColor: '#bbbbbb88', borderRadius: 3 },
+        ]
+      },
       options: {
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw.label}：${c.raw.x}件 / ${sFmt(c.raw.y)}` } } },
+        indexAxis: 'y',
+        plugins: {
+          legend: { position: 'bottom', labels: { font: sFont, padding: 10, boxWidth: 12 } },
+          tooltip: { callbacks: { label: c => ` ${c.dataset.label}：${c.raw} 件` } }
+        },
         scales: {
-          x: { title: { display: true, text: '件數', font: sFont }, grid: { color: '#f0ece6' }, ticks: { font: sFont } },
-          y: { title: { display: true, text: '金額', font: sFont }, grid: { color: '#f0ece6' }, ticks: { callback: v => sFmt(v), font: sFont } }
+          x: { grid: { color: '#f0ece6' }, ticks: { font: sFont }, title: { display: true, text: '件數', font: sFont } },
+          y: { grid: { display: false }, ticks: { font: { family: 'Noto Sans TC', size: 10 } } }
         }
       }
     });
