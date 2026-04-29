@@ -1,0 +1,118 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 判斷是否為管理員
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // 判斷是否為該員工本人
+    function isOwner(empKey) {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.employeeKey == empKey;
+    }
+
+    // 判斷是否有 Yufu 帳簿存取權（老闆、斐、店長）
+    function hasYufuAccess() {
+      let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return request.auth != null && (
+        userData.role == 'admin' ||
+        userData.employeeKey == 'fei' ||
+        userData.employeeKey == 'nian'
+      );
+    }
+
+    // 判斷是否有 Mitty Girls 帳簿存取權（老闆、店長、倫）
+    function hasMittyAccess() {
+      let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return request.auth != null && (
+        userData.role == 'admin' ||
+        userData.employeeKey == 'nian' ||
+        userData.employeeKey == 'lun'
+      );
+    }
+
+    // ── 用戶資料 ──────────────────────────────────────────
+    match /users/{userId} {
+      // 本人可以讀取自己的資料
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // 管理員可以讀取所有用戶資料
+      allow read: if isAdmin();
+      // 只有新帳號（pending）可以自己建立
+      allow create: if request.auth.uid == userId &&
+                       request.resource.data.role == 'pending';
+      // 只有管理員可以修改用戶資料（例如：開通帳號）
+      allow update, delete: if isAdmin();
+    }
+
+    // ── 每月薪資資料 ──────────────────────────────────────
+    match /monthlyData/{month} {
+      // 管理員可以讀寫所有月份資料
+      allow read, write: if isAdmin();
+
+      // 營業額資料（只有管理員可以存取）
+      match /data/{section} {
+        allow read, write: if isAdmin();
+      }
+
+      // 員工個人時數資料
+      match /employees/{empKey} {
+        // 管理員可以讀寫所有員工資料
+        allow read, write: if isAdmin();
+        // 員工只能讀寫自己的時數資料
+        allow read, write: if isOwner(empKey);
+      }
+    }
+
+    // ── Yufu 帳簿：分類 ───────────────────────────────────
+    match /yufu_categories/{docId} {
+      allow read, write: if hasYufuAccess();
+    }
+
+    // ── Yufu 帳簿：帳戶 ───────────────────────────────────
+    match /yufu_accounts/{docId} {
+      allow read, write: if hasYufuAccess();
+    }
+
+    // ── Yufu 帳簿：交易紀錄 ───────────────────────────────
+    match /yufu_transactions/{docId} {
+      allow read, write: if hasYufuAccess();
+    }
+
+    // ── Mitty Girls 帳簿：分類 ────────────────────────────
+    match /mitty_categories/{docId} {
+      allow read, write: if hasMittyAccess();
+    }
+
+    // ── Mitty Girls 帳簿：帳戶 ────────────────────────────
+    match /mitty_accounts/{docId} {
+      allow read, write: if hasMittyAccess();
+    }
+
+    // ── Mitty Girls 帳簿：交易紀錄 ───────────────────────
+    match /mitty_transactions/{docId} {
+      allow read, write: if hasMittyAccess();
+    }
+
+    // ── 廠商資料（倫、斐、管理員可存取）─────────────────
+    match /vendors/{docId} {
+      allow read, write: if request.auth != null && (
+        isAdmin() ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.employeeKey == 'lun' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.employeeKey == 'fei'
+      );
+    }
+
+    // ── 排班填報（員工填寫可排班日期）────────────────────
+    match /scheduling/{yearMonth}/employees/{empKey} {
+      // 管理員可以讀寫所有員工的排班資料
+      allow read, write: if isAdmin();
+      // 所有登入員工都可以「讀取」排班資料（讓每人看到同事可排班日期）
+      allow read: if request.auth != null;
+      // 員工只能「修改」自己的排班資料
+      allow write: if isOwner(empKey);
+    }
+  }
+}
