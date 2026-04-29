@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mitty HQ</title>
+  <title>Mitty Base</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
@@ -524,7 +524,7 @@
 ═══════════════════════════════════ -->
 <div id="adminView" class="view">
   <div class="app-header">
-    <h1 style="display:flex;align-items:center;gap:8px"><img src="logo.png" alt="Mitty" style="height:28px;object-fit:contain;vertical-align:middle"> HQ</h1>
+    <h1 style="display:flex;align-items:center;gap:8px"><img src="logo.png" alt="Mitty" style="height:28px;object-fit:contain;vertical-align:middle"> Base</h1>
     <div class="header-right">
       <span class="user-badge" id="adminUserName"></span>
       <button class="btn-logout" onclick="doLogout()">登出</button>
@@ -1900,7 +1900,8 @@ function initEmployee() {
   const now = new Date();
   document.getElementById('empMonth').value =
     now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
-  document.getElementById('empDisplayName').textContent = currentUserData.name || '';
+  const _dnEl = document.getElementById('empDisplayName'); if (_dnEl) _dnEl.textContent = currentUserData.name || '';
+  const _wnEl = document.getElementById('empWelcomeName'); if (_wnEl) _wnEl.textContent = currentUserData.name || '';
   document.getElementById('empUserName').textContent    = currentUserData.name || '';
 
   // 有 Yufu 存取權的員工顯示入口按鈕（已移至頁面頂端快速入口，底部按鈕已移除）
