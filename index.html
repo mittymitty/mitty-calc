@@ -820,7 +820,11 @@
 
     <!-- 銷售分析（員工唯讀，手機版） -->
     <div class="sched-section" id="empSalesSection" style="margin-top:20px;">
-      <h3>📊 銷售分析</h3>
+      <button onclick="toggleEmpSales(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;">
+        <h3 style="margin:0">📊 銷售分析</h3>
+        <span id="empSalesArrow" style="font-size:1.1rem;color:#888;transition:transform .2s">▼</span>
+      </button>
+      <div id="empSalesContent" style="display:none">
       <!-- 週切換 -->
       <div class="sales-week-tabs" style="margin-top:12px;">
         <button class="sales-week-tab" onclick="empSalesSetWeek(0)">3/23–3/29</button>
@@ -3988,6 +3992,18 @@ function mittyShowMsg(id, msg) {
       }
     });
   }
+
+  window.toggleEmpSales = function(btn) {
+    var content = document.getElementById('empSalesContent');
+    var arrow = document.getElementById('empSalesArrow');
+    var isOpen = content.style.display !== 'none';
+    content.style.display = isOpen ? 'none' : 'block';
+    arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+    if (!isOpen) {
+      // 第一次展開時初始化圖表
+      if (typeof window.initEmpSalesChart === 'function') window.initEmpSalesChart();
+    }
+  };
 
   window.toggleAnalysis = function(btn) {
     btn.classList.toggle('open');
