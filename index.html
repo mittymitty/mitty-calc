@@ -426,9 +426,13 @@
     .sched-empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; }
 
     /* ── 銷售分析 ── */
-    .sales-week-tabs { display: flex; gap: 8px; margin: 16px 0 20px; flex-wrap: wrap; }
+    .sales-week-tabs { display: flex; gap: 8px; margin: 16px 0 20px; flex-wrap: wrap; align-items: center; }
     .sales-week-tab { padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--card); color: var(--text-sub); font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; font-family: 'Noto Sans TC', sans-serif; }
     .sales-week-tab.active { background: var(--green); color: #fff; border-color: var(--green); }
+    .sales-week-tab.week-old { display: none; }
+    .sales-week-tab.week-old.show { display: inline-flex; }
+    .week-expand-btn { padding: 7px 12px; border-radius: 20px; border: 1.5px dashed var(--border); background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; font-family: 'Noto Sans TC', sans-serif; letter-spacing: .05em; white-space: nowrap; }
+    .week-expand-btn:hover { border-color: var(--green); color: var(--green); }
     .sales-stats-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
     .sales-stat-card { flex: 1; min-width: 120px; background: var(--card); border-radius: var(--r-md); box-shadow: var(--shadow-sm); padding: 12px 14px; }
     .sales-stat-label { font-size: 11px; color: var(--text-sub); margin-bottom: 3px; }
@@ -3895,8 +3899,31 @@ function mittyShowMsg(id, msg) {
   window.initSalesChart = function() {
     if (sInitialized) return;
     sInitialized = true;
+    initWeekTabsCollapse('#tab-sales .sales-week-tabs', 'sales');
     salesSetWeek(5);
   };
+
+  // ── 週按鈕收合（自動隱藏舊週，只顯示最近3週 + 趨勢比較）──
+  function initWeekTabsCollapse(selector, prefix) {
+    const container = document.querySelector(selector);
+    if (!container) return;
+    const tabs = Array.from(container.querySelectorAll('.sales-week-tab:not([onclick*="all"])'));
+    const SHOW_RECENT = 3;
+    if (tabs.length <= SHOW_RECENT) return; // 週數不多時不需要收合
+    const oldTabs = tabs.slice(0, tabs.length - SHOW_RECENT);
+    oldTabs.forEach(t => t.classList.add('week-old'));
+    // 插入展開按鈕
+    const expandBtn = document.createElement('button');
+    expandBtn.className = 'week-expand-btn';
+    expandBtn.id = `${prefix}-expand-btn`;
+    expandBtn.textContent = `+ ${oldTabs.length} 週`;
+    expandBtn.onclick = function() {
+      const isOpen = oldTabs[0].classList.contains('show');
+      oldTabs.forEach(t => t.classList.toggle('show', !isOpen));
+      expandBtn.textContent = isOpen ? `+ ${oldTabs.length} 週` : `− 收合`;
+    };
+    container.insertBefore(expandBtn, container.firstChild);
+  }
 
   // ── 員工版（唯讀，es- 前綴） ──
   let esCharts = {};
@@ -3928,6 +3955,7 @@ function mittyShowMsg(id, msg) {
   window.initEmpSalesChart = function() {
     if (esInitialized) return;
     esInitialized = true;
+    initWeekTabsCollapse('#empSalesSection .sales-week-tabs', 'emp');
     empSalesSetWeek(5);
   };
 
