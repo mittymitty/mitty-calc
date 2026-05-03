@@ -669,10 +669,26 @@
         <div class="sales-two-col">
           <div class="sales-card"><div class="sales-chart-label">各品牌銷售金額</div><canvas id="s-barBrand"></canvas></div>
           <div class="sales-card"><div class="sales-chart-label">各品牌金額佔比</div><canvas id="s-pieBrand"></canvas></div>
+          <!-- 品項件數統計（可展開） -->
+          <div class="sales-card" id="s-brandItemsCard" style="padding:0;overflow:hidden;">
+            <button onclick="toggleSBrandItems(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:14px 16px;cursor:pointer;font-family:inherit;">
+              <span style="font-size:0.88rem;font-weight:600;color:var(--text);">📦 品項銷售件數</span>
+              <span style="font-size:0.9rem;color:#888;transition:transform .2s" id="sBrandItemsArrow">▼</span>
+            </button>
+            <div id="sBrandItemsBody" style="display:none;padding:0 16px 16px;"></div>
+          </div>
         </div>
 
         <p class="sales-section-title">特選新品</p>
         <div class="sales-card"><div class="sales-chart-label">各分類銷售金額</div><canvas id="s-barSpecial" style="max-height:220px"></canvas></div>
+        <!-- 褲款 / 裙款品項排行（可展開） -->
+        <div class="sales-card" style="padding:0;overflow:hidden;">
+          <button onclick="toggleSSpecialRanking(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:14px 16px;cursor:pointer;font-family:inherit;">
+            <span style="font-size:0.88rem;font-weight:600;color:var(--text);">👖 褲款 ／ 裙款 款式排行</span>
+            <span style="font-size:0.9rem;color:#888;transition:transform .2s" id="sSpecialRankingArrow">▼</span>
+          </button>
+          <div id="sSpecialRankingBody" style="display:none;padding:0 16px 16px;"></div>
+        </div>
 
         <p class="sales-section-title">二手古著品項</p>
         <div class="sales-card"><div class="sales-chart-label">銷售金額前10名（由高至低）</div><canvas id="s-barVintage" style="max-height:280px"></canvas></div>
@@ -850,8 +866,24 @@
         <p class="sales-section-title">品牌系列</p>
         <div class="sales-card"><div class="sales-chart-label">各品牌銷售金額</div><canvas id="es-barBrand" style="max-height:200px"></canvas></div>
         <div class="sales-card"><div class="sales-chart-label">各品牌金額佔比</div><canvas id="es-pieBrand" style="max-height:220px"></canvas></div>
+        <!-- 品項件數統計（可展開） -->
+        <div class="sales-card" id="es-brandItemsCard" style="padding:0;overflow:hidden;">
+          <button onclick="toggleEsBrandItems(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:14px 16px;cursor:pointer;font-family:inherit;">
+            <span style="font-size:0.88rem;font-weight:600;color:var(--text);">📦 品項銷售件數</span>
+            <span style="font-size:0.9rem;color:#888;transition:transform .2s" id="esBrandItemsArrow">▼</span>
+          </button>
+          <div id="esBrandItemsBody" style="display:none;padding:0 16px 16px;"></div>
+        </div>
         <p class="sales-section-title">特選新品</p>
         <div class="sales-card"><div class="sales-chart-label">各分類銷售金額</div><canvas id="es-barSpecial" style="max-height:200px"></canvas></div>
+        <!-- 褲款 / 裙款品項排行（可展開） -->
+        <div class="sales-card" style="padding:0;overflow:hidden;">
+          <button onclick="toggleEsSpecialRanking(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:14px 16px;cursor:pointer;font-family:inherit;">
+            <span style="font-size:0.88rem;font-weight:600;color:var(--text);">👖 褲款 ／ 裙款 款式排行</span>
+            <span style="font-size:0.9rem;color:#888;transition:transform .2s" id="esSpecialRankingArrow">▼</span>
+          </button>
+          <div id="esSpecialRankingBody" style="display:none;padding:0 16px 16px;"></div>
+        </div>
         <p class="sales-section-title">二手古著品項</p>
         <div class="sales-card"><div class="sales-chart-label">銷售金額前10名</div><canvas id="es-barVintage" style="max-height:260px"></canvas></div>
         <div class="sales-card"><div class="sales-chart-label">金額佔比（前8名）</div><canvas id="es-pieVintage" style="max-height:220px"></canvas></div>
@@ -887,11 +919,18 @@
       </div><!-- end empSalesContent -->
     </div>
 
+    <!-- 底部快速入口（斐/倫專用，帳簿 + 廠商管理，由 initEmployee 填入） -->
+    <div id="empBottomActions" style="display:none; padding: 16px 14px 8px;"></div>
+
   </div><!-- end container mydata -->
   </div><!-- end empPanelMyData -->
 
   <!-- 員工 Tab 面板：廠商管理 -->
   <div id="empPanelVendor" class="emp-tab-panel" style="display:none;">
+    <div class="app-header" style="position:sticky;top:0;z-index:100;">
+      <h1 style="font-size:1rem;color:var(--green);">🏭 廠商管理</h1>
+      <button class="btn-logout" onclick="switchEmpTab('mydata')">← 返回</button>
+    </div>
     <div class="container">
       <div class="vendor-emp-sheet" style="padding-top:0;">
         <div class="vendor-brand-tabs" style="margin-top:16px;">
@@ -1929,20 +1968,21 @@ function initEmployee() {
     loadLeaveData();
   }
 
-  // 斐 / 倫：顯示帳簿入口 + 廠商 Tab bar
-  const quickEl = document.getElementById('empTopQuickAccess');
-  const tabBar  = document.getElementById('empTabBar');
-  if (quickEl) {
-    quickEl.style.display = 'none';
-    quickEl.innerHTML = '';
+  // 斐 / 倫：底部顯示帳簿 + 廠商管理按鈕（tabBar 永遠隱藏）
+  const bottomEl = document.getElementById('empBottomActions');
+  if (bottomEl) {
+    bottomEl.style.display = 'none';
+    bottomEl.innerHTML = '';
     if (currentUserData.employeeKey === 'fei') {
-      quickEl.style.display = 'block';
-      quickEl.innerHTML = `<button class="yufu-entry-btn" style="display:block;margin-top:0;border-color:var(--green);color:var(--green);font-size:1.05rem;padding:18px;" onclick="openYufuView('employee')">📒 Yufu 帳簿記帳</button>`;
-      if (tabBar) { tabBar.style.display = 'flex'; }
+      bottomEl.style.display = 'block';
+      bottomEl.innerHTML = `
+        <button class="yufu-entry-btn" style="display:block;width:100%;margin-bottom:10px;border-color:var(--green);color:var(--green);font-size:1rem;padding:16px;" onclick="openYufuView('employee')">📒 Yufu 帳簿記帳</button>
+        <button class="yufu-entry-btn" style="display:block;width:100%;border-color:var(--gold);color:var(--gold);font-size:1rem;padding:16px;" onclick="switchEmpTab('vendor')">🏭 廠商管理</button>`;
     } else if (currentUserData.employeeKey === 'lun') {
-      quickEl.style.display = 'block';
-      quickEl.innerHTML = `<button class="yufu-entry-btn" style="display:block;margin-top:0;border-color:var(--green);color:var(--green);font-size:1.05rem;padding:18px;" onclick="openMittyView('employee')">👗 Mitty Girls 帳簿記帳</button>`;
-      if (tabBar) { tabBar.style.display = 'flex'; }
+      bottomEl.style.display = 'block';
+      bottomEl.innerHTML = `
+        <button class="yufu-entry-btn" style="display:block;width:100%;margin-bottom:10px;border-color:var(--green);color:var(--green);font-size:1rem;padding:16px;" onclick="openMittyView('employee')">👗 Mitty Girls 帳簿記帳</button>
+        <button class="yufu-entry-btn" style="display:block;width:100%;border-color:var(--gold);color:var(--gold);font-size:1rem;padding:16px;" onclick="switchEmpTab('vendor')">🏭 廠商管理</button>`;
     }
   }
 
@@ -3798,6 +3838,15 @@ function mittyShowMsg(id, msg) {
       { 'Polo 襯衫': 29, '條紋襯衫': 14, '外套': 11, '縮腰上衣': 16, '格紋襯衫': 25, '領帶': 16, '短T': 6, '古巴襯衫': 12, '素色襯衫': 9, '短版上衣': 8, 'Y2K 襯衫': 8, '防風罩衫': 6, '背心': 3, '花襯衫': 5, '衛衣': 1, '燈芯絨': 0, '毛衣': 0, '帽子': 1, '老美縮口': 2 },
       { 'Polo 襯衫': 35, '條紋襯衫': 25, '外套': 5, '縮腰上衣': 34, '格紋襯衫': 28, '領帶': 26, '短T': 12, '古巴襯衫': 16, '素色襯衫': 7, '短版上衣': 11, 'Y2K 襯衫': 12, '防風罩衫': 5, '背心': 1, '花襯衫': 2, '衛衣': 1, '燈芯絨': 0, '毛衣': 0, '帽子': 0, '老美縮口': 5 },
     ],
+    // ── 品牌品項件數（每週 Mitty girls / yufu 各品項銷售件數）──
+    brand_mg_items: [
+      {}, {}, {}, {}, {},
+      { '購物籃的好貨胸章': 7, '甜心長袖': 5, 'Horse 好事中國結襯衫': 5, '在看啥金屬釦條紋短褲': 4, '奶油旋律髮夾': 4, '斜肩薄長袖': 4, '蕾絲鈕扣領帶': 3, '愛與和平拿破崙結碎花背心': 3, '鈕扣斜肩薄長袖': 2, '絲綢連衣裙': 1, '夏日布紋胸章': 1, '連帽修身上衣': 1, '棉花糖布標髮圈': 1, '你是我的天使綁繩項鍊': 1, '修身白襯衫': 1, '蕾絲拼布條紋連帽上衣': 1 },
+    ],
+    brand_yufu_items: [
+      {}, {}, {}, {}, {},
+      { 'Bizan Angle shirt': 10, 'Bizan Angle tie': 4, 'Bizan Angle shirt (small)': 3, 'Bizan ink damage shirt': 3, 'DEMON CAT Crop Top': 2, 'DEMON CAT soft chaos tee': 1, 'Bizan embroidery cap': 1, 'Garment-Dyed L/S shirt': 1, 'Pin it on cap': 1, 'Distressed Patchwork cap': 1 },
+    ],
   };
 
   const sColors = {
@@ -3875,15 +3924,17 @@ function mittyShowMsg(id, msg) {
 
   function esRenderKPI(w) {
     if (w === 'all') {
-      document.getElementById('es-kpi-brand').textContent = sFmt(sData.group_amt.reduce((s,d)=>s+d.品牌,0));
-      document.getElementById('es-kpi-brand-sub').textContent = '三週合計';
-      document.getElementById('es-kpi-special').textContent = sFmt(sData.group_amt.reduce((s,d)=>s+d.特選,0));
-      document.getElementById('es-kpi-special-sub').textContent = '三週合計';
-      document.getElementById('es-kpi-vintage').textContent = sFmt(sData.group_amt.reduce((s,d)=>s+d.古著,0));
-      document.getElementById('es-kpi-vintage-sub').textContent = '三週合計';
-      const total = sData.group_amt.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
+      const last3 = sData.group_amt.slice(-3);
+      const nLabel = `近${last3.length}週合計`;
+      document.getElementById('es-kpi-brand').textContent = sFmt(last3.reduce((s,d)=>s+d.品牌,0));
+      document.getElementById('es-kpi-brand-sub').textContent = nLabel;
+      document.getElementById('es-kpi-special').textContent = sFmt(last3.reduce((s,d)=>s+d.特選,0));
+      document.getElementById('es-kpi-special-sub').textContent = nLabel;
+      document.getElementById('es-kpi-vintage').textContent = sFmt(last3.reduce((s,d)=>s+d.古著,0));
+      document.getElementById('es-kpi-vintage-sub').textContent = nLabel;
+      const total = last3.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
       document.getElementById('es-kpi-total').textContent = sFmt(total);
-      document.getElementById('es-kpi-total-sub').textContent = '三週總營收';
+      document.getElementById('es-kpi-total-sub').textContent = `近${last3.length}週總營收`;
     } else {
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
@@ -3983,7 +4034,50 @@ function mittyShowMsg(id, msg) {
             '</div>';
         }).join('');
     }
+    // 品項件數統計
+    esFillBrandItems(w);
   }
+
+  function esFillBrandItems(w) {
+    const body = document.getElementById('esBrandItemsBody');
+    if (!body) return;
+    const mgData = sData.brand_mg_items && sData.brand_mg_items[w];
+    const yuData = sData.brand_yufu_items && sData.brand_yufu_items[w];
+    const hasData = (mgData && Object.keys(mgData).length > 0) || (yuData && Object.keys(yuData).length > 0);
+    if (!hasData) {
+      body.innerHTML = '<p style="color:#bbb;font-size:0.82rem;padding:4px 0 8px;">本週尚無品項明細資料</p>';
+      return;
+    }
+    let html = '';
+    const renderItems = (title, data, color) => {
+      if (!data || Object.keys(data).length === 0) return '';
+      const max = Math.max(...Object.values(data));
+      const sorted = Object.entries(data).sort((a,b) => b[1]-a[1]);
+      return `<p style="font-size:0.78rem;font-weight:700;color:${color};margin:10px 0 8px;letter-spacing:.05em">${title}</p>` +
+        sorted.map(([k,v]) => {
+          const pct = Math.round(v/max*100);
+          return `<div style="margin-bottom:7px">
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:3px">
+              <span style="color:var(--text)">${k}</span>
+              <span style="font-weight:700;color:${color}">${v} 件</span>
+            </div>
+            <div style="height:5px;background:#eee;border-radius:3px">
+              <div style="height:5px;width:${pct}%;background:${color};border-radius:3px;transition:width .4s"></div>
+            </div></div>`;
+        }).join('');
+    };
+    html += renderItems('Mitty girls', mgData, '#2d5a27');
+    html += renderItems('Yufu', yuData, '#b38b59');
+    body.innerHTML = html;
+  }
+
+  window.toggleEsBrandItems = function(btn) {
+    const body = document.getElementById('esBrandItemsBody');
+    const arrow = document.getElementById('esBrandItemsArrow');
+    const open = body.style.display === 'block';
+    body.style.display = open ? 'none' : 'block';
+    arrow.style.transform = open ? '' : 'rotate(180deg)';
+  };
 
   function esMakeGroupedBar(id, labels, datasets) {
     return new Chart(document.getElementById(id), {
@@ -4060,15 +4154,17 @@ function mittyShowMsg(id, msg) {
 
   function sRenderKPI(w) {
     if (w === 'all') {
-      document.getElementById('s-kpi-brand').textContent = sFmt(sData.group_amt.reduce((s,d)=>s+d.品牌,0));
-      document.getElementById('s-kpi-brand-sub').textContent = '三週合計';
-      document.getElementById('s-kpi-special').textContent = sFmt(sData.group_amt.reduce((s,d)=>s+d.特選,0));
-      document.getElementById('s-kpi-special-sub').textContent = '三週合計';
-      document.getElementById('s-kpi-vintage').textContent = sFmt(sData.group_amt.reduce((s,d)=>s+d.古著,0));
-      document.getElementById('s-kpi-vintage-sub').textContent = '三週合計';
-      const total = sData.group_amt.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
+      const last3 = sData.group_amt.slice(-3);
+      const nLabel = `近${last3.length}週合計`;
+      sAnimateNum(document.getElementById('s-kpi-brand'), last3.reduce((s,d)=>s+d.品牌,0), sFmt);
+      document.getElementById('s-kpi-brand-sub').textContent = nLabel;
+      sAnimateNum(document.getElementById('s-kpi-special'), last3.reduce((s,d)=>s+d.特選,0), sFmt);
+      document.getElementById('s-kpi-special-sub').textContent = nLabel;
+      sAnimateNum(document.getElementById('s-kpi-vintage'), last3.reduce((s,d)=>s+d.古著,0), sFmt);
+      document.getElementById('s-kpi-vintage-sub').textContent = nLabel;
+      const total = last3.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
       sAnimateNum(document.getElementById('s-kpi-total'), total, sFmt);
-      document.getElementById('s-kpi-total-sub').textContent = '三週總營收';
+      document.getElementById('s-kpi-total-sub').textContent = `近${last3.length}週總營收`;
     } else {
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
@@ -4174,7 +4270,47 @@ function mittyShowMsg(id, msg) {
             '</div>';
         }).join('');
     }
+    // 品項件數統計
+    sFillBrandItems(w);
   }
+
+  function sFillBrandItems(w) {
+    const body = document.getElementById('sBrandItemsBody');
+    if (!body) return;
+    const mgData = sData.brand_mg_items && sData.brand_mg_items[w];
+    const yuData = sData.brand_yufu_items && sData.brand_yufu_items[w];
+    const hasData = (mgData && Object.keys(mgData).length > 0) || (yuData && Object.keys(yuData).length > 0);
+    if (!hasData) {
+      body.innerHTML = '<p style="color:#bbb;font-size:0.82rem;padding:4px 0 8px;">本週尚無品項明細資料</p>';
+      return;
+    }
+    const renderItems = (title, data, color) => {
+      if (!data || Object.keys(data).length === 0) return '';
+      const max = Math.max(...Object.values(data));
+      const sorted = Object.entries(data).sort((a,b) => b[1]-a[1]);
+      return `<p style="font-size:0.78rem;font-weight:700;color:${color};margin:10px 0 8px;letter-spacing:.05em">${title}</p>` +
+        sorted.map(([k,v]) => {
+          const pct = Math.round(v/max*100);
+          return `<div style="margin-bottom:7px">
+            <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:3px">
+              <span style="color:var(--text)">${k}</span>
+              <span style="font-weight:700;color:${color}">${v} 件</span>
+            </div>
+            <div style="height:5px;background:#eee;border-radius:3px">
+              <div style="height:5px;width:${pct}%;background:${color};border-radius:3px;transition:width .4s"></div>
+            </div></div>`;
+        }).join('');
+    };
+    body.innerHTML = renderItems('Mitty girls', mgData, '#2d5a27') + renderItems('Yufu', yuData, '#b38b59');
+  }
+
+  window.toggleSBrandItems = function(btn) {
+    const body = document.getElementById('sBrandItemsBody');
+    const arrow = document.getElementById('sBrandItemsArrow');
+    const open = body.style.display === 'block';
+    body.style.display = open ? 'none' : 'block';
+    arrow.style.transform = open ? '' : 'rotate(180deg)';
+  };
 
   function sMakeGroupedBar(id, labels, datasets) {
     return new Chart(document.getElementById(id), {
