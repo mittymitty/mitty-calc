@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mitty Base</title>
+  <title>Mitty App</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
@@ -340,7 +340,7 @@
     .sched-mode-btn.active-travel { background: #e6921a; color: #fff; border-color: #e6921a; }
     .sched-emp-dots { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; max-width: 100%; }
     .sched-emp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .sched-travel-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: transparent; border: 1.5px solid #e6921a; }
+    .sched-travel-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: transparent !important; border-width: 1.5px; border-style: solid; }
     .sched-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 12px; padding: 10px 12px; background: var(--border-light); border-radius: var(--r-md); }
     .sched-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--text-sub); }
     .sched-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
@@ -561,7 +561,7 @@
 ═══════════════════════════════════ -->
 <div id="adminView" class="view">
   <div class="app-header">
-    <h1 style="display:flex;align-items:center;gap:8px"><img src="logo.png" alt="Mitty" style="height:28px;object-fit:contain;vertical-align:middle"> Base</h1>
+    <h1 style="display:flex;align-items:center;gap:8px"><img src="logo.png" alt="Mitty" style="height:28px;object-fit:contain;vertical-align:middle"> App</h1>
     <div class="header-right">
       <span class="user-badge" id="adminUserName"></span>
       <button class="btn-logout" onclick="doLogout()">登出</button>
@@ -680,8 +680,8 @@
           <h3>📋 排班確認</h3>
           <div class="final-sched-mode-toggle">
             <button class="final-mode-btn active-remove" id="finalModeRemoveBtn" onclick="setFinalSchedMode('remove')">✂️ 刪除／復原</button>
-            <button class="final-mode-btn" id="finalModeCheckBtn"  onclick="setFinalSchedMode('check')">✓ 標早班</button>
-            <button class="final-mode-btn" id="finalModeCircleBtn" onclick="setFinalSchedMode('circle')">○ 標晚班</button>
+            <button class="final-mode-btn" id="finalModeCheckBtn"  onclick="setFinalSchedMode('check')">✓ 標記</button>
+            <button class="final-mode-btn" id="finalModeCircleBtn" onclick="setFinalSchedMode('circle')">○ 標記</button>
           </div>
           <div class="emp-day-counts" id="empDayCounts"></div>
           <div class="sched-cal-grid admin-sched-grid" id="finalSchedCalendar"></div>
@@ -1457,7 +1457,7 @@ const PT = [
   { key:'tong',  name:'童', rate:200, pct:0.02 }
 ];
 const FT = [
-  { key:'nian', name:'鯰 (店長)', salary:63000, insurance:2135 },
+  { key:'nian', name:'鯰 (店長)', salary:67000, insurance:2135 },
   { key:'lun',  name:'倫 (阿倫)', salary:60000, insurance:2088 }
 ];
 const EMP_KEYS = [
@@ -3633,7 +3633,7 @@ function renderEmpSchedCalendar() {
     const dotsHtml = (otherAvailKeys.length > 0 || otherTravelKeys.length > 0)
       ? `<div class="sched-emp-dots">
           ${otherAvailKeys.map(k=>`<span class="sched-emp-dot" style="background:${SCHED_COLORS[k]||'#999'}" title="${EMP_NAMES[k]||k}"></span>`).join('')}
-          ${otherTravelKeys.map(k=>`<span class="sched-travel-dot" title="${EMP_NAMES[k]||k} ✈️"></span>`).join('')}
+          ${otherTravelKeys.map(k=>`<span class="sched-travel-dot" style="border-color:${SCHED_COLORS[k]||'#999'};" title="${EMP_NAMES[k]||k} ✈️"></span>`).join('')}
         </div>`
       : '';
     const innerIcon = isTravel ? `<span class="sched-travel-icon">✈️</span>` : '';
@@ -3651,9 +3651,8 @@ function renderEmpSchedCalendar() {
         ${EMP_NAMES[k] || k}
       </span>`
     ).join('');
-    legendHtml += `<span class="sched-legend-item">
-      <span class="sched-legend-dot" style="background:#fff3e0;border:1.5px solid #e6921a;"></span>
-      出國／不可排
+    legendHtml += `<span class="sched-legend-item" style="color:#aaa;">
+      ✈️ 出國／不可排（點圓點可看誰）
     </span>`;
     legend.innerHTML = legendHtml;
   }
@@ -3968,7 +3967,7 @@ window.saveFinalSchedule = async function() {
   if (btn) btn.disabled = false;
 };
 
-// ── 下載班表（月曆格式）─────────────────────────────────
+// ── 下載班表（桌機月曆 + 手機清單，響應式）────────────
 window.downloadSchedule = function() {
   const ym  = `${adminSchedYear}-${String(adminSchedMonth).padStart(2,'0')}`;
   const [year, month] = ym.split('-').map(Number);
@@ -3976,68 +3975,123 @@ window.downloadSchedule = function() {
   const firstDay      = new Date(year, month-1, 1).getDay();
   const allEmps       = [...PT, ...FT];
   const wdNames       = ['日','一','二','三','四','五','六'];
+  const wdFull        = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
 
-  // 建立月曆 cells 陣列
+  // ── 桌機：月曆格子 ───────────────────────────────────
   const cells = [];
-  for (let i = 0; i < firstDay; i++) cells.push(null); // 空白
+  for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
-  while (cells.length % 7 !== 0) cells.push(null); // 補尾
+  while (cells.length % 7 !== 0) cells.push(null);
 
-  // 建立週列
+  const thCells = wdNames.map((wd, i) => {
+    const color = (i===0||i===6) ? '#e8b4b4' : '#fff';
+    return `<th class="cal-th">${wd}</th>`;
+  }).join('');
+
   let calRows = '';
   for (let r = 0; r < cells.length / 7; r++) {
-    let rowHtml = '<tr>';
+    let row = '<tr>';
     for (let c = 0; c < 7; c++) {
       const d = cells[r * 7 + c];
-      const isWknd = (c === 0 || c === 6);
+      const isWknd = c === 0 || c === 6;
       if (d === null) {
-        rowHtml += `<td style="background:#fafaf8;border:1px solid #e4dfd6;"></td>`;
+        row += `<td class="cal-empty"></td>`;
       } else {
         const dayData   = adminFinalSchedule[d] || {};
         const scheduled = allEmps.filter(emp => finalStateIsActive(dayData[emp.key]));
-        const numColor  = isWknd ? '#c0392b' : '#333';
-        const bgColor   = isWknd ? '#fdf8f2' : '#fff';
         const tags = scheduled.map(emp => {
-          const state  = dayData[emp.key];
-          const marker = finalStateMarker(state);
+          const marker = finalStateMarker(dayData[emp.key]);
           const name   = emp.name.replace(/\s*\(.*?\)/g,'');
           const color  = SCHED_COLORS[emp.key] || '#aaa';
-          return `<div style="padding:1px 5px;border-radius:8px;background:${color};color:#fff;font-size:10px;font-weight:700;margin:1px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${marker}${name}</div>`;
+          return `<div class="cal-tag" style="background:${color}">${marker}${name}</div>`;
         }).join('');
-        rowHtml += `<td style="background:${bgColor};border:1px solid #e4dfd6;padding:5px 4px;vertical-align:top;min-width:68px;min-height:70px;">
-          <div style="font-size:12px;font-weight:700;color:${numColor};margin-bottom:3px;">${d}</div>
-          ${tags}
-        </td>`;
+        row += `<td class="cal-day${isWknd?' wknd':''}">
+          <div class="cal-num${isWknd?' wknd-num':''}">${d}</div>${tags}</td>`;
       }
     }
-    rowHtml += '</tr>';
-    calRows += rowHtml;
+    row += '</tr>';
+    calRows += row;
   }
 
-  const thCells = wdNames.map((wd, i) => {
-    const color = (i===0||i===6) ? '#c0392b' : '#fff';
-    return `<th style="padding:7px 4px;text-align:center;font-size:12px;color:${color};background:#2d5a27;">${wd}</th>`;
-  }).join('');
+  // ── 手機：直列清單 ───────────────────────────────────
+  let listItems = '';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dow     = (firstDay + d - 1) % 7;
+    const dayData = adminFinalSchedule[d] || {};
+    const scheduled = allEmps.filter(emp => finalStateIsActive(dayData[emp.key]));
+    if (scheduled.length === 0) continue;
+    const isWknd = dow === 0 || dow === 6;
+    const tags = scheduled.map(emp => {
+      const marker = finalStateMarker(dayData[emp.key]);
+      const name   = emp.name.replace(/\s*\(.*?\)/g,'');
+      const color  = SCHED_COLORS[emp.key] || '#aaa';
+      return `<span class="list-tag" style="background:${color}">${marker}${name}</span>`;
+    }).join('');
+    listItems += `<div class="list-row${isWknd?' list-wknd':''}">
+      <div class="list-date">
+        <span class="list-d${isWknd?' list-d-wknd':''}">${d}</span>
+        <span class="list-wd">${wdNames[dow]}</span>
+      </div>
+      <div class="list-tags">${tags}</div>
+    </div>`;
+  }
 
   const html = `<!DOCTYPE html><html lang="zh-Hant"><head>
-  <meta charset="UTF-8">
-  <title>MITTY ${year}年${month}月 班表</title>
-  <style>
-    body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; margin: 24px; color: #222; background:#f4f1ec; }
-    h1 { font-size: 18px; color: #2d5a27; margin-bottom: 6px; letter-spacing: 1px; }
-    .legend { font-size: 11px; color: #888; margin-bottom: 14px; }
-    table { border-collapse: collapse; width: 100%; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.07); }
-    td { height: 72px; }
-    @media print { body { margin: 10px; background:#fff; } }
-  </style>
-  </head><body>
-  <h1>🗓 MITTY ${year}年${month}月 班表</h1>
-  <p class="legend">✓ 早班　○ 晚班　（無標記 = 班別未指定）</p>
-  <table>
-    <thead><tr>${thCells}</tr></thead>
-    <tbody>${calRows}</tbody>
-  </table>
-  </body></html>`;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MITTY ${year}年${month}月 班表</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans TC','Microsoft JhengHei',sans-serif; background:#f4f1ec; color:#222; padding: 16px; }
+  h1 { font-size: 20px; color: #2d5a27; margin-bottom: 4px; }
+  .legend { font-size: 12px; color: #999; margin-bottom: 16px; }
+
+  /* ── 桌機月曆 ── */
+  .cal-wrap { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+  table { border-collapse: collapse; width: 100%; }
+  .cal-th { background:#2d5a27; color:#fff; text-align:center; padding:10px 4px; font-size:14px; font-weight:600; }
+  .cal-th:first-child,.cal-th:last-child { color:#e8b4b4; }
+  .cal-empty { background:#fafaf8; border:1px solid #ece8e2; }
+  .cal-day { border:1px solid #ece8e2; padding:8px 6px; vertical-align:top; min-height:90px; background:#fff; }
+  .cal-day.wknd { background:#fdf8f2; }
+  .cal-num { font-size:15px; font-weight:700; color:#333; margin-bottom:5px; }
+  .cal-num.wknd-num { color:#c0392b; }
+  .cal-tag { padding:3px 7px; border-radius:10px; color:#fff; font-size:12px; font-weight:700; margin:2px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* ── 手機清單（預設隱藏）── */
+  .list-wrap { display: none; }
+  .list-row { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:#fff; border-radius:12px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+  .list-row.list-wknd { background:#fdf8f2; }
+  .list-date { display:flex; flex-direction:column; align-items:center; min-width:36px; padding-top:2px; }
+  .list-d { font-size:22px; font-weight:800; color:#2d5a27; line-height:1.1; }
+  .list-d.list-d-wknd { color:#c0392b; }
+  .list-wd { font-size:11px; color:#aaa; font-weight:500; margin-top:2px; }
+  .list-tags { display:flex; flex-wrap:wrap; gap:6px; padding-top:4px; }
+  .list-tag { padding:5px 12px; border-radius:20px; color:#fff; font-size:14px; font-weight:700; }
+
+  /* ── 響應式切換 ── */
+  @media (max-width: 640px) {
+    body { padding: 12px; }
+    h1 { font-size: 18px; }
+    .cal-wrap { display: none; }
+    .list-wrap { display: block; }
+  }
+  @media print {
+    body { background:#fff; padding:10px; }
+    .list-wrap { display: none; }
+    .cal-wrap { display: block; }
+  }
+</style>
+</head><body>
+<h1>🗓 MITTY ${year}年${month}月 班表</h1>
+<p class="legend">✓ 標記A　○ 標記B</p>
+
+<div class="cal-wrap">
+  <table><thead><tr>${thCells}</tr></thead><tbody>${calRows}</tbody></table>
+</div>
+
+<div class="list-wrap">${listItems}</div>
+</body></html>`;
 
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
   const url  = URL.createObjectURL(blob);
