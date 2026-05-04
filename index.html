@@ -332,8 +332,15 @@
     .sched-cal-day.sun { color: #e74c3c; }
     .sched-cal-day.sat { color: #3498db; }
     .sched-cal-day.selected.sun, .sched-cal-day.selected.sat { color: #fff; }
+    .sched-cal-day.travel { background: #fff3e0; border-color: #e6921a; color: #b35a00 !important; font-weight: 600; }
+    .sched-cal-day.travel .sched-travel-icon { font-size: 0.65rem; line-height: 1; }
+    .sched-mode-toggle { display: flex; gap: 6px; margin: 10px 0 6px; }
+    .sched-mode-btn { flex: 1; padding: 9px 6px; border: 1.5px solid var(--border); border-radius: var(--r-md); background: var(--card); color: var(--text-sub); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .sched-mode-btn.active-avail { background: var(--green); color: #fff; border-color: var(--green); }
+    .sched-mode-btn.active-travel { background: #e6921a; color: #fff; border-color: #e6921a; }
     .sched-emp-dots { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; max-width: 100%; }
     .sched-emp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .sched-travel-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: transparent; border: 1.5px solid #e6921a; }
     .sched-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 12px; padding: 10px 12px; background: var(--border-light); border-radius: var(--r-md); }
     .sched-legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--text-sub); }
     .sched-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
@@ -424,6 +431,32 @@
     .sched-notes-row .sched-emp-tag { display: inline-block; min-width: 40px; text-align: center; flex-shrink: 0; }
     .sched-notes-text { font-size: 0.85rem; color: #555; line-height: 1.6; white-space: pre-wrap; }
     .sched-empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9rem; }
+
+    /* ── 排班確認月曆（管理員專用）── */
+    .final-sched-wrap { margin-top: 24px; border-top: 2px solid var(--border); padding-top: 20px; }
+    .final-sched-wrap h3 { color: var(--green); font-size: 0.95rem; margin: 0 0 12px; }
+    .emp-day-counts { display: flex; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 14px; padding: 10px 12px; background: var(--green-bg); border-radius: var(--r-md); }
+    .emp-day-count-item { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; }
+    .emp-day-count-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .emp-day-count-num { font-weight: 700; color: var(--green-dark); }
+    .final-sched-day { border: 1px solid var(--border-light); border-radius: var(--r-sm); min-height: 52px; padding: 4px 3px; background: #fff; overflow: hidden; }
+    .final-sched-day.weekend { background: #fdfaf5; }
+    .final-sched-tag { display: block; padding: 2px 5px; border-radius: 10px; font-size: 0.68rem; font-weight: 600; margin: 1px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: all .15s; color: #fff; user-select: none; }
+    .final-sched-tag:hover { opacity: 0.8; }
+    .final-sched-tag.removed { background: #ddd !important; color: #999 !important; text-decoration: line-through; }
+    .final-sched-mode-toggle { display: flex; gap: 6px; margin-bottom: 12px; }
+    .final-mode-btn { flex: 1; padding: 8px 4px; border: 1.5px solid var(--border); border-radius: var(--r-md); background: var(--card); color: var(--text-sub); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .final-mode-btn.active-remove { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+    .final-mode-btn.active-check  { background: #2d5a27; color: #fff; border-color: #2d5a27; }
+    .final-mode-btn.active-circle { background: #b38b59; color: #fff; border-color: #b38b59; }
+    .final-sched-save-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .final-sched-save-btn { padding: 10px 20px; background: var(--green); color: #fff; border: none; border-radius: var(--r-md); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background .2s; }
+    .final-sched-save-btn:hover { background: var(--green-light); }
+    .final-sched-save-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .final-sched-dl-btn { padding: 10px 20px; background: var(--card); color: var(--green); border: 1.5px solid var(--green); border-radius: var(--r-md); font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+    .final-sched-dl-btn:hover { background: var(--green-bg); }
+    .final-sched-dl-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .final-sched-status { font-size: 0.85rem; }
 
     /* ── 銷售分析 ── */
     .sales-week-tabs { display: flex; gap: 8px; margin: 16px 0 20px; flex-wrap: wrap; align-items: center; }
@@ -639,7 +672,25 @@
           <span id="adminSchedLabel">—</span>
           <button onclick="adminSchedNext()">›</button>
         </div>
+        <!-- 上半：員工回報檢視 -->
         <div id="adminSchedCalendar"><p class="sched-empty-state">👆 切換到此分頁即自動載入</p></div>
+
+        <!-- 下半：排班確認月曆 -->
+        <div class="final-sched-wrap" id="finalSchedWrap" style="display:none;">
+          <h3>📋 排班確認</h3>
+          <div class="final-sched-mode-toggle">
+            <button class="final-mode-btn active-remove" id="finalModeRemoveBtn" onclick="setFinalSchedMode('remove')">✂️ 刪除／復原</button>
+            <button class="final-mode-btn" id="finalModeCheckBtn"  onclick="setFinalSchedMode('check')">✓ 標早班</button>
+            <button class="final-mode-btn" id="finalModeCircleBtn" onclick="setFinalSchedMode('circle')">○ 標晚班</button>
+          </div>
+          <div class="emp-day-counts" id="empDayCounts"></div>
+          <div class="sched-cal-grid admin-sched-grid" id="finalSchedCalendar"></div>
+          <div class="final-sched-save-row">
+            <button class="final-sched-save-btn" id="finalSchedSaveBtn" onclick="saveFinalSchedule()">💾 儲存排班</button>
+            <button class="final-sched-dl-btn" id="finalSchedDlBtn" onclick="downloadSchedule()">📥 下載班表</button>
+            <span class="final-sched-status" id="finalSchedStatus"></span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -832,7 +883,11 @@ Mitty girls 本週特別突出，44 件創近期新高。胸章跟 Horse 好事�
     <!-- 排班填寫（所有員工） -->
     <div class="sched-section">
       <h3>📅 排班可用日期填寫</h3>
-      <p class="hint-text">點選下個月中可以排班的日期，月底前填好讓老闆排班</p>
+      <div class="sched-mode-toggle">
+        <button class="sched-mode-btn active-avail" id="schedModeAvailBtn" onclick="setSchedMode('avail')">🟢 可排班</button>
+        <button class="sched-mode-btn" id="schedModeTravelBtn" onclick="setSchedMode('travel')">✈️ 出國／不可排</button>
+      </div>
+      <p class="hint-text" id="schedHintText">點選可以排班的日期，月底前填好讓老闆排班</p>
       <div class="sched-month-nav">
         <button onclick="schedPrevMonth()">‹</button>
         <span id="schedMonthLabel">—</span>
@@ -840,8 +895,8 @@ Mitty girls 本週特別突出，44 件創近期新高。胸章跟 Horse 好事�
       </div>
       <div id="empSchedCalendar" class="sched-cal-grid"></div>
       <div id="schedColorLegend" class="sched-legend"></div>
-      <p class="sched-notes-label">📝 備註（例如某天只能早班、可能需要請假等）</p>
-      <textarea class="schedule-textarea" id="empSchedNotes" placeholder="例：5/3 只能上早班&#10;5/15~5/17 可能需要請假"></textarea>
+      <p class="sched-notes-label">📝 備註（例如某天只能早班、出國日期說明等）</p>
+      <textarea class="schedule-textarea" id="empSchedNotes" placeholder="例：5/3 只能上早班&#10;5/15~5/17 出國日本"></textarea>
       <button class="btn-submit" style="margin-top:14px;" onclick="saveSchedData()">送出排班意願</button>
       <p id="schedSaveStatus" class="save-status"></p>
     </div>
@@ -3522,7 +3577,10 @@ const EMP_NAMES = {
 let schedYear = null;
 let schedMonth = null;
 let schedSelectedDays = new Set();
+let schedTravelDays   = new Set(); // 出國／不可排 日期
+let schedMode         = 'avail';   // 'avail' | 'travel'
 let schedOthersData = {}; // { empKey: Set<day> } 其他員工的可排班日期
+let schedOthersTravelData = {}; // { empKey: Set<day> } 其他員工的出國日期
 
 function initSchedSection() {
   const now = new Date();
@@ -3530,9 +3588,23 @@ function initSchedSection() {
   if (m > 12) { m = 1; y++; }
   schedYear = y; schedMonth = m;
   schedSelectedDays = new Set();
+  schedTravelDays   = new Set();
+  setSchedMode('avail');
   renderEmpSchedCalendar();
   loadSchedData();
 }
+
+window.setSchedMode = function(mode) {
+  schedMode = mode;
+  const availBtn  = document.getElementById('schedModeAvailBtn');
+  const travelBtn = document.getElementById('schedModeTravelBtn');
+  const hint      = document.getElementById('schedHintText');
+  if (availBtn)  { availBtn.className  = 'sched-mode-btn' + (mode==='avail'  ? ' active-avail'  : ''); }
+  if (travelBtn) { travelBtn.className = 'sched-mode-btn' + (mode==='travel' ? ' active-travel' : ''); }
+  if (hint) hint.textContent = mode === 'travel'
+    ? '點選出國或不可排班的日期（可跨月標記，提前讓老闆知道）'
+    : '點選可以排班的日期，月底前填好讓老闆排班';
+};
 
 function renderEmpSchedCalendar() {
   const lbl = document.getElementById('schedMonthLabel');
@@ -3546,38 +3618,57 @@ function renderEmpSchedCalendar() {
   wdLabels.forEach(d => { html += `<div class="sched-cal-header">${d}</div>`; });
   for (let i=0; i<firstDay; i++) html += '<div class="sched-cal-empty"></div>';
   for (let d=1; d<=daysInMonth; d++) {
-    const dow  = (firstDay + d - 1) % 7;
-    const sel  = schedSelectedDays.has(d);
-    const cls  = ['sched-cal-day', sel?'selected':'', dow===0?'sun':dow===6?'sat':''].filter(Boolean).join(' ');
-    // 顯示其他員工當天的可排班點點
-    const otherKeys = Object.keys(schedOthersData).filter(k => schedOthersData[k].has(d));
-    const dotsHtml = otherKeys.length > 0
-      ? `<div class="sched-emp-dots">${otherKeys.map(k=>`<span class="sched-emp-dot" style="background:${SCHED_COLORS[k]||'#999'}" title="${k}"></span>`).join('')}</div>`
+    const dow    = (firstDay + d - 1) % 7;
+    const isSel  = schedSelectedDays.has(d);
+    const isTravel = schedTravelDays.has(d);
+    // 決定 class：出國優先顯示
+    let dayCls = 'sched-cal-day';
+    if (isTravel) dayCls += ' travel';
+    else if (isSel) dayCls += ' selected';
+    if (dow===0) dayCls += ' sun';
+    if (dow===6) dayCls += ' sat';
+    // 其他員工的可排班點點
+    const otherAvailKeys  = Object.keys(schedOthersData).filter(k => schedOthersData[k].has(d));
+    const otherTravelKeys = Object.keys(schedOthersTravelData).filter(k => schedOthersTravelData[k].has(d));
+    const dotsHtml = (otherAvailKeys.length > 0 || otherTravelKeys.length > 0)
+      ? `<div class="sched-emp-dots">
+          ${otherAvailKeys.map(k=>`<span class="sched-emp-dot" style="background:${SCHED_COLORS[k]||'#999'}" title="${EMP_NAMES[k]||k}"></span>`).join('')}
+          ${otherTravelKeys.map(k=>`<span class="sched-travel-dot" title="${EMP_NAMES[k]||k} ✈️"></span>`).join('')}
+        </div>`
       : '';
-    html += `<div class="${cls}" onclick="toggleSchedDay(${d})"><span>${d}</span>${dotsHtml}</div>`;
+    const innerIcon = isTravel ? `<span class="sched-travel-icon">✈️</span>` : '';
+    html += `<div class="${dayCls}" onclick="toggleSchedDay(${d})"><span>${d}</span>${innerIcon}${dotsHtml}</div>`;
   }
   cal.innerHTML = html;
 
-  // 渲染顏色說明（只顯示其他員工，不含自己）
+  // 圖例：其他員工（可排班色點） + 出國說明
   const legend = document.getElementById('schedColorLegend');
   if (legend) {
     const otherEmpKeys = Object.keys(SCHED_COLORS).filter(k => k !== currentUserData?.employeeKey);
-    if (otherEmpKeys.length > 0) {
-      legend.innerHTML = otherEmpKeys.map(k =>
-        `<span class="sched-legend-item">
-          <span class="sched-legend-dot" style="background:${SCHED_COLORS[k]}"></span>
-          ${EMP_NAMES[k] || k}
-        </span>`
-      ).join('');
-    } else {
-      legend.innerHTML = '';
-    }
+    let legendHtml = otherEmpKeys.map(k =>
+      `<span class="sched-legend-item">
+        <span class="sched-legend-dot" style="background:${SCHED_COLORS[k]}"></span>
+        ${EMP_NAMES[k] || k}
+      </span>`
+    ).join('');
+    legendHtml += `<span class="sched-legend-item">
+      <span class="sched-legend-dot" style="background:#fff3e0;border:1.5px solid #e6921a;"></span>
+      出國／不可排
+    </span>`;
+    legend.innerHTML = legendHtml;
   }
 }
 
 window.toggleSchedDay = function(day) {
-  if (schedSelectedDays.has(day)) schedSelectedDays.delete(day);
-  else schedSelectedDays.add(day);
+  if (schedMode === 'travel') {
+    // 出國模式：切換出國，同時移除可排班
+    if (schedTravelDays.has(day)) { schedTravelDays.delete(day); }
+    else { schedTravelDays.add(day); schedSelectedDays.delete(day); }
+  } else {
+    // 可排班模式：切換可排班，同時移除出國
+    if (schedSelectedDays.has(day)) { schedSelectedDays.delete(day); }
+    else { schedSelectedDays.add(day); schedTravelDays.delete(day); }
+  }
   renderEmpSchedCalendar();
 };
 
@@ -3585,6 +3676,7 @@ window.schedPrevMonth = function() {
   schedMonth--;
   if (schedMonth < 1) { schedMonth = 12; schedYear--; }
   schedSelectedDays = new Set();
+  schedTravelDays   = new Set();
   renderEmpSchedCalendar();
   loadSchedData();
 };
@@ -3593,6 +3685,7 @@ window.schedNextMonth = function() {
   schedMonth++;
   if (schedMonth > 12) { schedMonth = 1; schedYear++; }
   schedSelectedDays = new Set();
+  schedTravelDays   = new Set();
   renderEmpSchedCalendar();
   loadSchedData();
 };
@@ -3601,11 +3694,12 @@ async function loadSchedData() {
   if (!currentUserData?.employeeKey) return;
   const ym = `${schedYear}-${String(schedMonth).padStart(2,'0')}`;
   try {
-    // 同時讀取所有員工的排班資料
     const allKeys = Object.keys(SCHED_COLORS);
     const snaps = await Promise.all(allKeys.map(k => getDoc(doc(db,'scheduling',ym,'employees',k))));
-    schedSelectedDays = new Set();
-    schedOthersData = {};
+    schedSelectedDays    = new Set();
+    schedTravelDays      = new Set();
+    schedOthersData      = {};
+    schedOthersTravelData = {};
     let myDataFound = false;
     snaps.forEach((snap, i) => {
       const key = allKeys[i];
@@ -3613,11 +3707,13 @@ async function loadSchedData() {
       const data = snap.data();
       if (key === currentUserData.employeeKey) {
         (data.availableDays||[]).forEach(day => schedSelectedDays.add(day));
+        (data.travelDays||[]).forEach(day => schedTravelDays.add(day));
         const notesEl = document.getElementById('empSchedNotes');
         if (notesEl) notesEl.value = data.notes || '';
         myDataFound = true;
       } else {
-        schedOthersData[key] = new Set(data.availableDays||[]);
+        schedOthersData[key]       = new Set(data.availableDays||[]);
+        schedOthersTravelData[key] = new Set(data.travelDays||[]);
       }
     });
     if (!myDataFound) {
@@ -3638,6 +3734,7 @@ window.saveSchedData = async function() {
   try {
     await setDoc(doc(db,'scheduling',ym,'employees',currentUserData.employeeKey), {
       availableDays: Array.from(schedSelectedDays).sort((a,b)=>a-b),
+      travelDays:    Array.from(schedTravelDays).sort((a,b)=>a-b),
       notes:         document.getElementById('empSchedNotes').value.trim(),
       empName:       currentUserData.name || '',
       updatedAt:     new Date().toISOString()
@@ -3652,6 +3749,9 @@ window.saveSchedData = async function() {
 // ── 管理員端狀態 ──────────────────────────────────────────
 let adminSchedYear  = null;
 let adminSchedMonth = null;
+
+// 排班確認資料：{ day: { empKey: true=排班中 / false=已刪除 } }
+let adminFinalSchedule = {};
 
 function initAdminSched() {
   const now = new Date();
@@ -3679,18 +3779,274 @@ async function loadAdminSchedData() {
   if (lbl) lbl.textContent = `${adminSchedYear}年${adminSchedMonth}月`;
   const cal = document.getElementById('adminSchedCalendar');
   if (cal) cal.innerHTML = '<p class="sched-empty-state">⏳ 載入中…</p>';
+  const wrap = document.getElementById('finalSchedWrap');
+  if (wrap) wrap.style.display = 'none';
   try {
     const allEmps = [...PT, ...FT];
     const schedData = {};
-    for (const emp of allEmps) {
+    await Promise.all(allEmps.map(async emp => {
       const snap = await getDoc(doc(db,'scheduling',ym,'employees',emp.key));
       if (snap.exists()) schedData[emp.key] = snap.data();
-    }
+    }));
     renderAdminSchedCalendar(ym, schedData);
+    await loadFinalSchedule(ym, schedData);
   } catch(e) {
     if (cal) cal.innerHTML = `<p class="sched-empty-state" style="color:#e74c3c;">載入失敗：${e.message}</p>`;
   }
 }
+
+// ── 排班確認：從員工回報 + 已儲存刪除紀錄建立狀態 ───────
+async function loadFinalSchedule(ym, schedData) {
+  const wrap = document.getElementById('finalSchedWrap');
+  if (!wrap) return;
+  const allEmps = [...PT, ...FT];
+  const [year, month] = ym.split('-').map(Number);
+  const daysInMonth = new Date(year, month, 0).getDate();
+
+  // 從員工回報建立基底（所有有標可排班的日期，預設 true）
+  adminFinalSchedule = {};
+  for (let d = 1; d <= daysInMonth; d++) {
+    adminFinalSchedule[d] = {};
+    allEmps.forEach(emp => {
+      const avail = schedData[emp.key]?.availableDays || [];
+      if (avail.includes(d)) adminFinalSchedule[d][emp.key] = true;
+    });
+  }
+
+  // 疊加已儲存的刪除紀錄
+  try {
+    const snap = await getDoc(doc(db,'finalSchedule',ym));
+    if (snap.exists()) {
+      const saved = snap.data().schedule || {};
+      Object.keys(saved).forEach(dayStr => {
+        const d = Number(dayStr);
+        if (!adminFinalSchedule[d]) return;
+        Object.keys(saved[dayStr]).forEach(empKey => {
+          if (adminFinalSchedule[d][empKey] !== undefined) {
+            adminFinalSchedule[d][empKey] = saved[dayStr][empKey];
+          }
+        });
+      });
+    }
+  } catch(e) { console.error('loadFinalSchedule:', e); }
+
+  wrap.style.display = 'block';
+  renderFinalSchedCalendar(ym);
+}
+
+// ── 狀態輔助
+function finalStateIsActive(cur) {
+  return cur === true || cur === 'active' || cur === 'check' || cur === 'circle';
+}
+function finalStateMarker(cur) {
+  if (cur === 'check')  return '✓ ';
+  if (cur === 'circle') return '○ ';
+  return '';
+}
+
+// ── 排班確認操作模式：'remove' | 'check' | 'circle'
+let finalSchedMode = 'remove';
+
+window.setFinalSchedMode = function(mode) {
+  finalSchedMode = mode;
+  const ids = { remove:'finalModeRemoveBtn', check:'finalModeCheckBtn', circle:'finalModeCircleBtn' };
+  const cls = { remove:'active-remove', check:'active-check', circle:'active-circle' };
+  Object.keys(ids).forEach(m => {
+    const btn = document.getElementById(ids[m]);
+    if (!btn) return;
+    btn.className = 'final-mode-btn' + (m === mode ? ' ' + cls[m] : '');
+  });
+};
+
+// ── 排班確認：渲染月曆 ──────────────────────────────────
+function renderFinalSchedCalendar(ym) {
+  const [year, month] = ym.split('-').map(Number);
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const firstDay    = new Date(year, month-1, 1).getDay();
+  const allEmps     = [...PT, ...FT];
+
+  // 計算每人確認上班天數（只計 active 狀態）
+  const counts = {};
+  allEmps.forEach(emp => { counts[emp.key] = 0; });
+  for (let d = 1; d <= daysInMonth; d++) {
+    allEmps.forEach(emp => {
+      if (finalStateIsActive(adminFinalSchedule[d]?.[emp.key])) counts[emp.key]++;
+    });
+  }
+
+  // 渲染天數統計列
+  const countEl = document.getElementById('empDayCounts');
+  if (countEl) {
+    countEl.innerHTML = allEmps.map(emp =>
+      `<span class="emp-day-count-item">
+        <span class="emp-day-count-dot" style="background:${SCHED_COLORS[emp.key]||'#aaa'}"></span>
+        <span>${emp.name.replace(/\s*\(.*?\)/g,'')}</span>
+        <span class="emp-day-count-num">${counts[emp.key]} 天</span>
+      </span>`
+    ).join('');
+  }
+
+  // 渲染月曆
+  const cal = document.getElementById('finalSchedCalendar');
+  if (!cal) return;
+  const wdLabels = ['日','一','二','三','四','五','六'];
+  let html = '';
+  wdLabels.forEach(d => { html += `<div class="sched-cal-header">${d}</div>`; });
+  for (let i=0; i<firstDay; i++) html += '<div class="sched-cal-empty"></div>';
+  for (let d=1; d<=daysInMonth; d++) {
+    const dow     = (firstDay + d - 1) % 7;
+    const weekend = dow===0||dow===6;
+    const numCls  = (dow===0||dow===6) ? 'sched-day-num red' : 'sched-day-num';
+    const dayData = adminFinalSchedule[d] || {};
+    const tags = allEmps
+      .filter(emp => dayData[emp.key] !== undefined)
+      .map(emp => {
+        const state  = dayData[emp.key];
+        const active = finalStateIsActive(state);
+        const marker = finalStateMarker(state);
+        const cls    = 'final-sched-tag' + (active ? '' : ' removed');
+        const bg     = active ? (SCHED_COLORS[emp.key]||'#aaa') : '#ccc';
+        const name   = emp.name.replace(/\s*\(.*?\)/g,'');
+        return `<span class="${cls}" style="background:${bg}" onclick="toggleFinalSchedEmp(${d},'${emp.key}')">${marker}${name}</span>`;
+      }).join('');
+    html += `<div class="final-sched-day${weekend?' weekend':''}">
+      <div class="${numCls}">${d}</div>
+      ${tags}
+    </div>`;
+  }
+  cal.innerHTML = html;
+}
+
+// ── 點擊員工標籤：依目前模式動作 ─────────────────────
+window.toggleFinalSchedEmp = function(day, empKey) {
+  if (!adminFinalSchedule[day] || adminFinalSchedule[day][empKey] === undefined) return;
+  const cur = adminFinalSchedule[day][empKey];
+  let next;
+  if (finalSchedMode === 'remove') {
+    // 刪除/復原：有排班 → removed；removed → active
+    next = finalStateIsActive(cur) ? 'removed' : 'active';
+  } else if (finalSchedMode === 'check') {
+    // 標早班：不是 check → check；已經是 check → 取消回 active
+    next = (cur === 'check') ? 'active' : 'check';
+    if (cur === false || cur === 'removed') next = 'check'; // 刪除狀態也能標
+  } else {
+    // 標晚班：不是 circle → circle；已經是 circle → 取消回 active
+    next = (cur === 'circle') ? 'active' : 'circle';
+    if (cur === false || cur === 'removed') next = 'circle';
+  }
+  adminFinalSchedule[day][empKey] = next;
+  const ym = `${adminSchedYear}-${String(adminSchedMonth).padStart(2,'0')}`;
+  renderFinalSchedCalendar(ym);
+};
+
+// ── 儲存排班確認 ────────────────────────────────────────
+window.saveFinalSchedule = async function() {
+  const ym     = `${adminSchedYear}-${String(adminSchedMonth).padStart(2,'0')}`;
+  const btn    = document.getElementById('finalSchedSaveBtn');
+  const status = document.getElementById('finalSchedStatus');
+  if (btn) btn.disabled = true;
+  if (status) { status.style.color='#aaa'; status.textContent='儲存中…'; }
+  try {
+    // 儲存所有非 active 的狀態（check / circle / removed）
+    const toSave = {};
+    Object.keys(adminFinalSchedule).forEach(dayStr => {
+      const dayData = adminFinalSchedule[dayStr];
+      const nonDefault = Object.keys(dayData).filter(k => {
+        const s = dayData[k];
+        return s !== true && s !== 'active';
+      });
+      if (nonDefault.length > 0) {
+        toSave[dayStr] = {};
+        nonDefault.forEach(k => { toSave[dayStr][k] = dayData[k]; });
+      }
+    });
+    await setDoc(doc(db,'finalSchedule',ym), { schedule: toSave, savedAt: new Date().toISOString() });
+    if (status) { status.style.color='#2d5a27'; status.textContent='✅ 已儲存'; }
+  } catch(e) {
+    if (status) { status.style.color='#c0392b'; status.textContent='❌ 儲存失敗'; }
+  }
+  if (btn) btn.disabled = false;
+};
+
+// ── 下載班表（月曆格式）─────────────────────────────────
+window.downloadSchedule = function() {
+  const ym  = `${adminSchedYear}-${String(adminSchedMonth).padStart(2,'0')}`;
+  const [year, month] = ym.split('-').map(Number);
+  const daysInMonth   = new Date(year, month, 0).getDate();
+  const firstDay      = new Date(year, month-1, 1).getDay();
+  const allEmps       = [...PT, ...FT];
+  const wdNames       = ['日','一','二','三','四','五','六'];
+
+  // 建立月曆 cells 陣列
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null); // 空白
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  while (cells.length % 7 !== 0) cells.push(null); // 補尾
+
+  // 建立週列
+  let calRows = '';
+  for (let r = 0; r < cells.length / 7; r++) {
+    let rowHtml = '<tr>';
+    for (let c = 0; c < 7; c++) {
+      const d = cells[r * 7 + c];
+      const isWknd = (c === 0 || c === 6);
+      if (d === null) {
+        rowHtml += `<td style="background:#fafaf8;border:1px solid #e4dfd6;"></td>`;
+      } else {
+        const dayData   = adminFinalSchedule[d] || {};
+        const scheduled = allEmps.filter(emp => finalStateIsActive(dayData[emp.key]));
+        const numColor  = isWknd ? '#c0392b' : '#333';
+        const bgColor   = isWknd ? '#fdf8f2' : '#fff';
+        const tags = scheduled.map(emp => {
+          const state  = dayData[emp.key];
+          const marker = finalStateMarker(state);
+          const name   = emp.name.replace(/\s*\(.*?\)/g,'');
+          const color  = SCHED_COLORS[emp.key] || '#aaa';
+          return `<div style="padding:1px 5px;border-radius:8px;background:${color};color:#fff;font-size:10px;font-weight:700;margin:1px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${marker}${name}</div>`;
+        }).join('');
+        rowHtml += `<td style="background:${bgColor};border:1px solid #e4dfd6;padding:5px 4px;vertical-align:top;min-width:68px;min-height:70px;">
+          <div style="font-size:12px;font-weight:700;color:${numColor};margin-bottom:3px;">${d}</div>
+          ${tags}
+        </td>`;
+      }
+    }
+    rowHtml += '</tr>';
+    calRows += rowHtml;
+  }
+
+  const thCells = wdNames.map((wd, i) => {
+    const color = (i===0||i===6) ? '#c0392b' : '#fff';
+    return `<th style="padding:7px 4px;text-align:center;font-size:12px;color:${color};background:#2d5a27;">${wd}</th>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html lang="zh-Hant"><head>
+  <meta charset="UTF-8">
+  <title>MITTY ${year}年${month}月 班表</title>
+  <style>
+    body { font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif; margin: 24px; color: #222; background:#f4f1ec; }
+    h1 { font-size: 18px; color: #2d5a27; margin-bottom: 6px; letter-spacing: 1px; }
+    .legend { font-size: 11px; color: #888; margin-bottom: 14px; }
+    table { border-collapse: collapse; width: 100%; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.07); }
+    td { height: 72px; }
+    @media print { body { margin: 10px; background:#fff; } }
+  </style>
+  </head><body>
+  <h1>🗓 MITTY ${year}年${month}月 班表</h1>
+  <p class="legend">✓ 早班　○ 晚班　（無標記 = 班別未指定）</p>
+  <table>
+    <thead><tr>${thCells}</tr></thead>
+    <tbody>${calRows}</tbody>
+  </table>
+  </body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `MITTY_班表_${year}${String(month).padStart(2,'0')}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 function renderAdminSchedCalendar(ym, schedData) {
   const [year, month] = ym.split('-').map(Number);
@@ -3698,13 +4054,17 @@ function renderAdminSchedCalendar(ym, schedData) {
   const firstDay      = new Date(year, month-1, 1).getDay();
   const allEmps       = [...PT, ...FT];
 
-  // 建立 日期 → 員工陣列 對應
-  const dayEmps = {};
-  for (let d=1; d<=daysInMonth; d++) dayEmps[d] = [];
+  // 建立 日期 → 可排班員工 / 出國員工 對應
+  const dayEmps   = {};
+  const dayTravel = {};
+  for (let d=1; d<=daysInMonth; d++) { dayEmps[d] = []; dayTravel[d] = []; }
   allEmps.forEach(emp => {
     const data = schedData[emp.key];
     if (data?.availableDays) {
       data.availableDays.forEach(day => { if (dayEmps[day]) dayEmps[day].push(emp); });
+    }
+    if (data?.travelDays) {
+      data.travelDays.forEach(day => { if (dayTravel[day]) dayTravel[day].push(emp); });
     }
   });
 
@@ -3717,16 +4077,32 @@ function renderAdminSchedCalendar(ym, schedData) {
   wdLabels.forEach(d => { html += `<div class="sched-cal-header">${d}</div>`; });
   for (let i=0; i<firstDay; i++) html += '<div class="sched-cal-empty"></div>';
   for (let d=1; d<=daysInMonth; d++) {
-    const dow     = (firstDay + d - 1) % 7;
-    const weekend = dow===0||dow===6;
-    const emps    = dayEmps[d]||[];
-    const numCls  = (dow===0||dow===6) ? 'sched-day-num red' : 'sched-day-num';
+    const dow       = (firstDay + d - 1) % 7;
+    const weekend   = dow===0||dow===6;
+    const emps      = dayEmps[d]||[];
+    const travelers = dayTravel[d]||[];
+    const numCls    = (dow===0||dow===6) ? 'sched-day-num red' : 'sched-day-num';
     html += `<div class="sched-admin-day${weekend?' weekend':''}">
       <div class="${numCls}">${d}</div>
       ${emps.map(emp=>`<span class="sched-emp-tag" style="background:${SCHED_COLORS[emp.key]||'#aaa'}">${emp.name.replace(/\s*\(.*?\)/g,'')}</span>`).join('')}
+      ${travelers.map(emp=>`<span class="sched-emp-tag" style="background:#e6921a;opacity:0.85">✈️ ${emp.name.replace(/\s*\(.*?\)/g,'')}</span>`).join('')}
     </div>`;
   }
   html += '</div>';
+
+  // 出國彙整區
+  const travelRows = allEmps
+    .filter(emp => (schedData[emp.key]?.travelDays||[]).length > 0)
+    .map(emp => {
+      const days = (schedData[emp.key].travelDays||[]).sort((a,b)=>a-b);
+      return `<div class="sched-notes-row">
+        <span class="sched-emp-tag" style="background:#e6921a">✈️ ${emp.name.replace(/\s*\(.*?\)/g,'')}</span>
+        <span class="sched-notes-text">${days.join('、')} 日</span>
+      </div>`;
+    }).join('');
+  if (travelRows) {
+    html += `<div class="sched-notes-block"><h4>✈️ 出國／不可排彙整</h4>${travelRows}</div>`;
+  }
 
   // 備註區
   const notesRows = allEmps
