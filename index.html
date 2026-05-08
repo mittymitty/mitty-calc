@@ -4013,84 +4013,45 @@ window.downloadSchedule = function() {
     calRows += row;
   }
 
-  // ── 手機：直列清單 ───────────────────────────────────
-  let listItems = '';
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dow     = (firstDay + d - 1) % 7;
-    const dayData = adminFinalSchedule[d] || {};
-    const scheduled = allEmps.filter(emp => finalStateIsActive(dayData[emp.key]));
-    if (scheduled.length === 0) continue;
-    const isWknd = dow === 0 || dow === 6;
-    const tags = scheduled.map(emp => {
-      const marker = finalStateMarker(dayData[emp.key]);
-      const name   = emp.name.replace(/\s*\(.*?\)/g,'');
-      const color  = SCHED_COLORS[emp.key] || '#aaa';
-      return `<span class="list-tag" style="background:${color}">${marker}${name}</span>`;
-    }).join('');
-    listItems += `<div class="list-row${isWknd?' list-wknd':''}">
-      <div class="list-date">
-        <span class="list-d${isWknd?' list-d-wknd':''}">${d}</span>
-        <span class="list-wd">${wdNames[dow]}</span>
-      </div>
-      <div class="list-tags">${tags}</div>
-    </div>`;
-  }
-
   const html = `<!DOCTYPE html><html lang="zh-Hant"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MITTY ${year}年${month}月 班表</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Noto Sans TC','Microsoft JhengHei',sans-serif; background:#f4f1ec; color:#222; padding: 16px; }
-  h1 { font-size: 20px; color: #2d5a27; margin-bottom: 4px; }
-  .legend { font-size: 12px; color: #999; margin-bottom: 16px; }
-
-  /* ── 桌機月曆 ── */
-  .cal-wrap { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.08); }
-  table { border-collapse: collapse; width: 100%; }
-  .cal-th { background:#2d5a27; color:#fff; text-align:center; padding:10px 4px; font-size:14px; font-weight:600; }
-  .cal-th:first-child,.cal-th:last-child { color:#e8b4b4; }
+  body { font-family: 'Noto Sans TC','Microsoft JhengHei',sans-serif; background:#f4f1ec; color:#222; padding: 12px; }
+  h1 { font-size: 18px; color: #2d5a27; margin-bottom: 3px; }
+  .legend { font-size: 11px; color: #aaa; margin-bottom: 12px; }
+  .scroll-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+  table { border-collapse: collapse; min-width: 560px; width: 100%; background:#fff; }
+  .cal-th { background:#2d5a27; color:#fff; text-align:center; padding:8px 2px; font-size:13px; font-weight:600; white-space:nowrap; }
+  .cal-th:first-child,.cal-th:last-child { color:#f4a0a0; }
   .cal-empty { background:#fafaf8; border:1px solid #ece8e2; }
-  .cal-day { border:1px solid #ece8e2; padding:8px 6px; vertical-align:top; min-height:90px; background:#fff; }
+  .cal-day { border:1px solid #ece8e2; padding:6px 4px; vertical-align:top; background:#fff; width:14.28%; }
   .cal-day.wknd { background:#fdf8f2; }
-  .cal-num { font-size:15px; font-weight:700; color:#333; margin-bottom:5px; }
+  .cal-num { font-size:13px; font-weight:700; color:#333; margin-bottom:4px; line-height:1; }
   .cal-num.wknd-num { color:#c0392b; }
-  .cal-tag { padding:3px 7px; border-radius:10px; color:#fff; font-size:12px; font-weight:700; margin:2px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-  /* ── 手機清單（預設隱藏）── */
-  .list-wrap { display: none; }
-  .list-row { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:#fff; border-radius:12px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
-  .list-row.list-wknd { background:#fdf8f2; }
-  .list-date { display:flex; flex-direction:column; align-items:center; min-width:36px; padding-top:2px; }
-  .list-d { font-size:22px; font-weight:800; color:#2d5a27; line-height:1.1; }
-  .list-d.list-d-wknd { color:#c0392b; }
-  .list-wd { font-size:11px; color:#aaa; font-weight:500; margin-top:2px; }
-  .list-tags { display:flex; flex-wrap:wrap; gap:6px; padding-top:4px; }
-  .list-tag { padding:5px 12px; border-radius:20px; color:#fff; font-size:14px; font-weight:700; }
-
-  /* ── 響應式切換 ── */
-  @media (max-width: 640px) {
-    body { padding: 12px; }
-    h1 { font-size: 18px; }
-    .cal-wrap { display: none; }
-    .list-wrap { display: block; }
+  .cal-tag { padding:2px 5px; border-radius:8px; color:#fff; font-size:11px; font-weight:700; margin:1px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+  @media (min-width: 640px) {
+    body { padding: 20px; }
+    h1 { font-size: 20px; }
+    .cal-th { padding: 10px 4px; font-size: 14px; }
+    .cal-day { padding: 8px 6px; }
+    .cal-num { font-size: 15px; }
+    .cal-tag { font-size: 12px; padding: 3px 7px; }
   }
   @media print {
-    body { background:#fff; padding:10px; }
-    .list-wrap { display: none; }
-    .cal-wrap { display: block; }
+    body { background:#fff; padding: 10px; }
+    .scroll-wrap { box-shadow: none; overflow: visible; }
+    table { min-width: 0; }
   }
 </style>
 </head><body>
 <h1>🗓 MITTY ${year}年${month}月 班表</h1>
 <p class="legend">✓ 標記A　○ 標記B</p>
-
-<div class="cal-wrap">
+<div class="scroll-wrap">
   <table><thead><tr>${thCells}</tr></thead><tbody>${calRows}</tbody></table>
 </div>
-
-<div class="list-wrap">${listItems}</div>
 </body></html>`;
 
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
