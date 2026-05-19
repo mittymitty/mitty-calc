@@ -697,7 +697,7 @@
     <!-- 銷售分析分頁 -->
     <div class="tab-panel" id="tab-sales">
       <!-- 週切換 -->
-      <div class="sales-week-tabs">
+      <div class="sales-week-tabs" id="s-week-tabs">
         <button class="sales-week-tab" onclick="salesSetWeek(0)">3/23–3/29</button>
         <button class="sales-week-tab" onclick="salesSetWeek(1)">3/30–4/5</button>
         <button class="sales-week-tab" onclick="salesSetWeek(2)">4/6–4/12</button>
@@ -714,7 +714,6 @@
         <div class="sales-stat-card"><div class="sales-stat-label">品牌系列</div><div class="sales-stat-value" id="s-kpi-brand" style="color:#2d5a27"></div><div class="sales-stat-sub" id="s-kpi-brand-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">特選新品</div><div class="sales-stat-value" id="s-kpi-special" style="color:#8B5E2A"></div><div class="sales-stat-sub" id="s-kpi-special-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">二手古著</div><div class="sales-stat-value" id="s-kpi-vintage" style="color:#555"></div><div class="sales-stat-sub" id="s-kpi-vintage-sub"></div></div>
-        <div class="sales-stat-card"><div class="sales-stat-label">週總營收</div><div class="sales-stat-value" id="s-kpi-total" style="color:var(--green-dark)"></div><div class="sales-stat-sub" id="s-kpi-total-sub"></div></div>
       </div>
 
       <!-- 單週圖表 -->
@@ -757,6 +756,12 @@
 
       <!-- 三週趨勢 -->
       <div id="sales-trend-view" style="display:none">
+        <div class="sales-week-tabs" id="s-trend-range" style="margin:0 0 14px;">
+          <span style="font-size:13px; color:var(--text-sub); align-self:center;">顯示範圍：</span>
+          <button class="sales-week-tab" onclick="setSTrendRange(8)">最近 8 週</button>
+          <button class="sales-week-tab active" onclick="setSTrendRange(12)">最近 12 週</button>
+          <button class="sales-week-tab" onclick="setSTrendRange('all')">全部</button>
+        </div>
         <p class="sales-section-title">三大品類週比較</p>
         <div class="sales-trend-card"><div class="sales-chart-label">各品類週銷售金額（並排比較）</div><canvas id="s-trendGroup"></canvas></div>
 
@@ -914,7 +919,7 @@ Mitty girls 41 件 / $33,850，是近期最強一週。最大功臣是「Horse �
       </button>
       <div id="empSalesContent" style="display:none">
       <!-- 週切換 -->
-      <div class="sales-week-tabs" style="margin-top:12px;">
+      <div class="sales-week-tabs" id="es-week-tabs" style="margin-top:12px;">
         <button class="sales-week-tab" onclick="empSalesSetWeek(0)">3/23–3/29</button>
         <button class="sales-week-tab" onclick="empSalesSetWeek(1)">3/30–4/5</button>
         <button class="sales-week-tab" onclick="empSalesSetWeek(2)">4/6–4/12</button>
@@ -930,7 +935,6 @@ Mitty girls 41 件 / $33,850，是近期最強一週。最大功臣是「Horse �
         <div class="sales-stat-card"><div class="sales-stat-label">品牌系列</div><div class="sales-stat-value" id="es-kpi-brand" style="color:#2d5a27"></div><div class="sales-stat-sub" id="es-kpi-brand-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">特選新品</div><div class="sales-stat-value" id="es-kpi-special" style="color:#8B5E2A"></div><div class="sales-stat-sub" id="es-kpi-special-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">二手古著</div><div class="sales-stat-value" id="es-kpi-vintage" style="color:#555"></div><div class="sales-stat-sub" id="es-kpi-vintage-sub"></div></div>
-        <div class="sales-stat-card"><div class="sales-stat-label">週總營收</div><div class="sales-stat-value" id="es-kpi-total" style="color:var(--green-dark)"></div><div class="sales-stat-sub" id="es-kpi-total-sub"></div></div>
       </div>
       <!-- 單週圖表（手機：全部單欄） -->
       <div id="emp-sales-single-view">
@@ -964,7 +968,13 @@ Mitty girls 41 件 / $33,850，是近期最強一週。最大功臣是「Horse �
       </div>
       <!-- 三週趨勢 -->
       <div id="emp-sales-trend-view" style="display:none">
-        <p class="sales-section-title" style="margin-top:20px;">三大品類週比較</p>
+        <div class="sales-week-tabs" id="es-trend-range" style="margin:14px 0;">
+          <span style="font-size:13px; color:var(--text-sub); align-self:center;">顯示範圍：</span>
+          <button class="sales-week-tab" onclick="setEsTrendRange(8)">最近 8 週</button>
+          <button class="sales-week-tab active" onclick="setEsTrendRange(12)">最近 12 週</button>
+          <button class="sales-week-tab" onclick="setEsTrendRange('all')">全部</button>
+        </div>
+        <p class="sales-section-title" style="margin-top:6px;">三大品類週比較</p>
         <div class="sales-trend-card"><div class="sales-chart-label">各品類週銷售金額</div><canvas id="es-trendGroup"></canvas></div>
         <p class="sales-section-title">品牌系列週比較</p>
         <div class="sales-trend-card"><div class="sales-chart-label">各品牌週銷售金額</div><canvas id="es-trendBrand"></canvas></div>
@@ -4316,7 +4326,7 @@ function mittyShowMsg(id, msg) {
   }
 
   window.salesSetWeek = function(w) {
-    document.querySelectorAll('#tab-sales .sales-week-tab').forEach((t,i) => {
+    document.querySelectorAll('#s-week-tabs .sales-week-tab').forEach((t,i) => {
       t.classList.toggle('active', i === (w === 'all' ? 4 : w));
     });
     sDestroyAll();
@@ -4336,7 +4346,7 @@ function mittyShowMsg(id, msg) {
   window.initSalesChart = function() {
     if (sInitialized) return;
     sInitialized = true;
-    initWeekTabsCollapse('#tab-sales .sales-week-tabs', 'sales');
+    initWeekTabsCollapse('#s-week-tabs', 'sales');
     salesSetWeek(7);
   };
 
@@ -4372,7 +4382,7 @@ function mittyShowMsg(id, msg) {
   }
 
   window.empSalesSetWeek = function(w) {
-    document.querySelectorAll('#empSalesSection .sales-week-tab').forEach((t,i) => {
+    document.querySelectorAll('#es-week-tabs .sales-week-tab').forEach((t,i) => {
       t.classList.toggle('active', i === (w === 'all' ? 4 : w));
     });
     esDestroyAll();
@@ -4392,7 +4402,7 @@ function mittyShowMsg(id, msg) {
   window.initEmpSalesChart = function() {
     if (esInitialized) return;
     esInitialized = true;
-    initWeekTabsCollapse('#empSalesSection .sales-week-tabs', 'emp');
+    initWeekTabsCollapse('#es-week-tabs', 'emp');
     empSalesSetWeek(7);
   };
 
@@ -4406,21 +4416,15 @@ function mittyShowMsg(id, msg) {
       document.getElementById('es-kpi-special-sub').textContent = nLabel;
       document.getElementById('es-kpi-vintage').textContent = sFmt(last3.reduce((s,d)=>s+d.古著,0));
       document.getElementById('es-kpi-vintage-sub').textContent = nLabel;
-      const total = last3.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
-      document.getElementById('es-kpi-total').textContent = sFmt(total);
-      document.getElementById('es-kpi-total-sub').textContent = `近${last3.length}週總營收`;
     } else {
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
-      const totalQ = q.品牌 + q.特選 + q.古著;
       document.getElementById('es-kpi-brand').textContent = sFmt(g.品牌);
       document.getElementById('es-kpi-brand-sub').textContent = `${q.品牌} 件 / ${(g.品牌/total*100).toFixed(1)}%`;
       document.getElementById('es-kpi-special').textContent = sFmt(g.特選);
       document.getElementById('es-kpi-special-sub').textContent = `${q.特選} 件 / ${(g.特選/total*100).toFixed(1)}%`;
       document.getElementById('es-kpi-vintage').textContent = sFmt(g.古著);
       document.getElementById('es-kpi-vintage-sub').textContent = `${q.古著} 件 / ${(g.古著/total*100).toFixed(1)}%`;
-      document.getElementById('es-kpi-total').textContent = sFmt(total);
-      document.getElementById('es-kpi-total-sub').textContent = `${totalQ} 件`;
     }
   }
 
@@ -4645,23 +4649,45 @@ function mittyShowMsg(id, msg) {
     body.classList.toggle('open');
   };
 
+  let esTrendRange = 12;
+  window.setEsTrendRange = function(r) {
+    esTrendRange = r;
+    document.querySelectorAll('#es-trend-range .sales-week-tab').forEach(b => {
+      const v = b.getAttribute('onclick').match(/setEsTrendRange\(([^)]+)\)/)[1].replace(/['"]/g,'');
+      const rv = v === 'all' ? 'all' : parseInt(v);
+      b.classList.toggle('active', rv === r);
+    });
+    ['trendGroup','trendBrand','trendSpecial','trendVintage'].forEach(k => {
+      if (esCharts[k]) { esCharts[k].destroy(); delete esCharts[k]; }
+    });
+    esRenderTrend();
+  };
+
   function esRenderTrend() {
-    esCharts.trendGroup = esMakeGroupedBar('es-trendGroup', sWeekLabels, [
-      { label: '品牌系列', data: sData.group_amt.map(d=>d.品牌), qtyData: sData.group_qty.map(d=>d.品牌), backgroundColor: sColors.mix[0], borderRadius: 5 },
-      { label: '特選新品', data: sData.group_amt.map(d=>d.特選), qtyData: sData.group_qty.map(d=>d.特選), backgroundColor: sColors.mix[1], borderRadius: 5 },
-      { label: '二手古著', data: sData.group_amt.map(d=>d.古著), qtyData: sData.group_qty.map(d=>d.古著), backgroundColor: sColors.mix[2], borderRadius: 5 },
+    const n = esTrendRange;
+    const slc = (a) => n === 'all' ? a : a.slice(-n);
+    const labels = slc(sWeekLabels);
+    const ga = slc(sData.group_amt), gq = slc(sData.group_qty);
+    const ba = slc(sData.brand_amt), bq = slc(sData.brand_qty);
+    const sa = slc(sData.special_amt), sq = slc(sData.special_qty);
+    const va = slc(sData.vintage_amt), vq = slc(sData.vintage_qty);
+
+    esCharts.trendGroup = esMakeGroupedBar('es-trendGroup', labels, [
+      { label: '品牌系列', data: ga.map(d=>d.品牌), qtyData: gq.map(d=>d.品牌), backgroundColor: sColors.mix[0], borderRadius: 5 },
+      { label: '特選新品', data: ga.map(d=>d.特選), qtyData: gq.map(d=>d.特選), backgroundColor: sColors.mix[1], borderRadius: 5 },
+      { label: '二手古著', data: ga.map(d=>d.古著), qtyData: gq.map(d=>d.古著), backgroundColor: sColors.mix[2], borderRadius: 5 },
     ]);
     const brandKeys = ['yufu','Mitty girls','Masako','Babyboomer'];
-    esCharts.trendBrand = esMakeGroupedBar('es-trendBrand', sWeekLabels, brandKeys.map((k,i) => ({
-      label: k, data: sData.brand_amt.map(d=>d[k]||0), qtyData: sData.brand_qty.map(d=>d[k]||0), backgroundColor: sColors.green[i], borderRadius: 5
+    esCharts.trendBrand = esMakeGroupedBar('es-trendBrand', labels, brandKeys.map((k,i) => ({
+      label: k, data: ba.map(d=>d[k]||0), qtyData: bq.map(d=>d[k]||0), backgroundColor: sColors.green[i], borderRadius: 5
     })));
     const specKeys = ['特選－褲款','特選－墨鏡','特選－裙款','特選－腰鏈褲鏈','特選－領巾'];
-    esCharts.trendSpecial = esMakeGroupedBar('es-trendSpecial', sWeekLabels, specKeys.map((k,i) => ({
-      label: k.replace('特選－',''), data: sData.special_amt.map(d=>d[k]||0), qtyData: sData.special_qty.map(d=>d[k]||0), backgroundColor: sColors.gold[i], borderRadius: 5
+    esCharts.trendSpecial = esMakeGroupedBar('es-trendSpecial', labels, specKeys.map((k,i) => ({
+      label: k.replace('特選－',''), data: sa.map(d=>d[k]||0), qtyData: sq.map(d=>d[k]||0), backgroundColor: sColors.gold[i], borderRadius: 5
     })));
     const vintTop8 = ['Polo 襯衫','條紋襯衫','外套','縮腰上衣','格紋襯衫','領帶','短T','古巴襯衫'];
-    esCharts.trendVintage = esMakeGroupedBar('es-trendVintage', sWeekLabels, vintTop8.map((k,i) => ({
-      label: k, data: sData.vintage_amt.map(d=>d[k]||0), qtyData: sData.vintage_qty.map(d=>d[k]||0), backgroundColor: sColors.trend[i], borderRadius: 5
+    esCharts.trendVintage = esMakeGroupedBar('es-trendVintage', labels, vintTop8.map((k,i) => ({
+      label: k, data: va.map(d=>d[k]||0), qtyData: vq.map(d=>d[k]||0), backgroundColor: sColors.trend[i], borderRadius: 5
     })));
   }
 
@@ -4690,21 +4716,15 @@ function mittyShowMsg(id, msg) {
       document.getElementById('s-kpi-special-sub').textContent = nLabel;
       sAnimateNum(document.getElementById('s-kpi-vintage'), last3.reduce((s,d)=>s+d.古著,0), sFmt);
       document.getElementById('s-kpi-vintage-sub').textContent = nLabel;
-      const total = last3.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
-      sAnimateNum(document.getElementById('s-kpi-total'), total, sFmt);
-      document.getElementById('s-kpi-total-sub').textContent = `近${last3.length}週總營收`;
     } else {
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
-      const totalQ = q.品牌 + q.特選 + q.古著;
       sAnimateNum(document.getElementById('s-kpi-brand'), g.品牌, sFmt);
       document.getElementById('s-kpi-brand-sub').textContent = `${q.品牌} 件 / ${(g.品牌/total*100).toFixed(1)}%`;
       sAnimateNum(document.getElementById('s-kpi-special'), g.特選, sFmt);
       document.getElementById('s-kpi-special-sub').textContent = `${q.特選} 件 / ${(g.特選/total*100).toFixed(1)}%`;
       sAnimateNum(document.getElementById('s-kpi-vintage'), g.古著, sFmt);
       document.getElementById('s-kpi-vintage-sub').textContent = `${q.古著} 件 / ${(g.古著/total*100).toFixed(1)}%`;
-      document.getElementById('s-kpi-total').textContent = sFmt(total);
-      document.getElementById('s-kpi-total-sub').textContent = `${totalQ} 件`;
     }
   }
 
@@ -4862,26 +4882,54 @@ function mittyShowMsg(id, msg) {
     });
   }
 
+  let sTrendRange = 12; // 預設顯示最近 12 週
+  function sliceForTrend(arr, n) {
+    return n === 'all' ? arr : arr.slice(-n);
+  }
+  window.setSTrendRange = function(r) {
+    sTrendRange = r;
+    document.querySelectorAll('#s-trend-range .sales-week-tab').forEach(b => {
+      const v = b.getAttribute('onclick').match(/setSTrendRange\(([^)]+)\)/)[1].replace(/['"]/g,'');
+      const rv = v === 'all' ? 'all' : parseInt(v);
+      b.classList.toggle('active', rv === r);
+    });
+    ['trendGroup','trendBrand','trendSpecial','trendVintage'].forEach(k => {
+      if (sCharts[k]) { sCharts[k].destroy(); delete sCharts[k]; }
+    });
+    sRenderTrend();
+  };
+
   function sRenderTrend() {
-    sCharts.trendGroup = sMakeGroupedBar('s-trendGroup', sWeekLabels, [
-      { label: '品牌系列', data: sData.group_amt.map(d=>d.品牌), qtyData: sData.group_qty.map(d=>d.品牌), backgroundColor: sColors.mix[0], borderRadius: 5 },
-      { label: '特選新品', data: sData.group_amt.map(d=>d.特選), qtyData: sData.group_qty.map(d=>d.特選), backgroundColor: sColors.mix[1], borderRadius: 5 },
-      { label: '二手古著', data: sData.group_amt.map(d=>d.古著), qtyData: sData.group_qty.map(d=>d.古著), backgroundColor: sColors.mix[2], borderRadius: 5 },
+    const n = sTrendRange;
+    const labels = sliceForTrend(sWeekLabels, n);
+    const ga = sliceForTrend(sData.group_amt, n);
+    const gq = sliceForTrend(sData.group_qty, n);
+    const ba = sliceForTrend(sData.brand_amt, n);
+    const bq = sliceForTrend(sData.brand_qty, n);
+    const sa = sliceForTrend(sData.special_amt, n);
+    const sq = sliceForTrend(sData.special_qty, n);
+    const va = sliceForTrend(sData.vintage_amt, n);
+    const vq = sliceForTrend(sData.vintage_qty, n);
+
+    sCharts.trendGroup = sMakeGroupedBar('s-trendGroup', labels, [
+      { label: '品牌系列', data: ga.map(d=>d.品牌), qtyData: gq.map(d=>d.品牌), backgroundColor: sColors.mix[0], borderRadius: 5 },
+      { label: '特選新品', data: ga.map(d=>d.特選), qtyData: gq.map(d=>d.特選), backgroundColor: sColors.mix[1], borderRadius: 5 },
+      { label: '二手古著', data: ga.map(d=>d.古著), qtyData: gq.map(d=>d.古著), backgroundColor: sColors.mix[2], borderRadius: 5 },
     ]);
 
     const brandKeys = ['yufu','Mitty girls','Masako','Babyboomer'];
-    sCharts.trendBrand = sMakeGroupedBar('s-trendBrand', sWeekLabels, brandKeys.map((k,i) => ({
-      label: k, data: sData.brand_amt.map(d=>d[k]||0), qtyData: sData.brand_qty.map(d=>d[k]||0), backgroundColor: sColors.green[i], borderRadius: 5
+    sCharts.trendBrand = sMakeGroupedBar('s-trendBrand', labels, brandKeys.map((k,i) => ({
+      label: k, data: ba.map(d=>d[k]||0), qtyData: bq.map(d=>d[k]||0), backgroundColor: sColors.green[i], borderRadius: 5
     })));
 
     const specKeys = ['特選－褲款','特選－墨鏡','特選－裙款','特選－腰鏈褲鏈','特選－領巾'];
-    sCharts.trendSpecial = sMakeGroupedBar('s-trendSpecial', sWeekLabels, specKeys.map((k,i) => ({
-      label: k.replace('特選－',''), data: sData.special_amt.map(d=>d[k]||0), qtyData: sData.special_qty.map(d=>d[k]||0), backgroundColor: sColors.gold[i], borderRadius: 5
+    sCharts.trendSpecial = sMakeGroupedBar('s-trendSpecial', labels, specKeys.map((k,i) => ({
+      label: k.replace('特選－',''), data: sa.map(d=>d[k]||0), qtyData: sq.map(d=>d[k]||0), backgroundColor: sColors.gold[i], borderRadius: 5
     })));
 
     const vintTop8 = ['Polo 襯衫','條紋襯衫','外套','縮腰上衣','格紋襯衫','領帶','短T','古巴襯衫'];
-    sCharts.trendVintage = sMakeGroupedBar('s-trendVintage', sWeekLabels, vintTop8.map((k,i) => ({
-      label: k, data: sData.vintage_amt.map(d=>d[k]||0), qtyData: sData.vintage_qty.map(d=>d[k]||0), backgroundColor: sColors.trend[i], borderRadius: 5
+    sCharts.trendVintage = sMakeGroupedBar('s-trendVintage', labels, vintTop8.map((k,i) => ({
+      label: k, data: va.map(d=>d[k]||0), qtyData: vq.map(d=>d[k]||0), backgroundColor: sColors.trend[i], borderRadius: 5
     })));
   }
   // ══════════════════════════════════════════════════════════
