@@ -1132,26 +1132,6 @@ Mitty girls 41 件 / $33,850，是近期最強一週。最大功臣是「Horse �
         <label>年度</label>
         <select id="yufu-year-select" onchange="yufuLoadDashboard()"></select>
       </div>
-      <div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-label">💰 本年度收入</div><div class="kpi-value" id="yufu-kpi-rev">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">📦 毛利</div><div class="kpi-value" id="yufu-kpi-gross">—</div><div class="kpi-sub" id="yufu-kpi-gross-pct"></div></div>
-        <div class="kpi-card"><div class="kpi-label">🏆 本年度淨利</div><div class="kpi-value" id="yufu-kpi-net">—</div><div class="kpi-sub" id="yufu-kpi-net-pct"></div></div>
-        <div class="kpi-card"><div class="kpi-label">💸 總支出</div><div class="kpi-value" id="yufu-kpi-expense">—</div></div>
-      </div>
-      <div class="chart-container">
-        <div class="chart-title">每月營收與損益</div>
-        <canvas id="yufu-bar-chart" height="220"></canvas>
-      </div>
-      <div class="two-col">
-        <div class="chart-container" style="margin-bottom:0">
-          <div class="chart-title">支出結構</div>
-          <canvas id="yufu-doughnut-chart" height="200"></canvas>
-        </div>
-        <div class="section-card" style="margin-bottom:0">
-          <h3 style="margin-top:0; font-size:0.88rem;">📌 年度亮點</h3>
-          <div id="yufu-highlights"><p class="empty-state" style="padding:16px;">尚無資料</p></div>
-        </div>
-      </div>
       <div class="chart-container" style="margin-top:14px;">
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;">
           <div class="chart-title" style="margin-bottom:0;">每週銷售曲線</div>
@@ -1246,6 +1226,10 @@ Mitty girls 41 件 / $33,850，是近期最強一週。最大功臣是「Horse �
         </div>
       </div>
       <div style="margin-top:14px;" id="yufu-pnl-summary"></div>
+      <div class="chart-container" style="margin-top:14px;">
+        <div class="chart-title">每月營收與損益</div>
+        <canvas id="yufu-bar-chart" height="220"></canvas>
+      </div>
     </div>
 
     <!-- ── 設定 ── -->
@@ -1308,26 +1292,6 @@ Mitty girls 41 件 / $33,850，是近期最強一週。最大功臣是「Horse �
       <div class="year-row">
         <label>年度</label>
         <select id="mitty-year-select" onchange="mittyLoadDashboard()"></select>
-      </div>
-      <div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-label">💰 本年度收入</div><div class="kpi-value" id="mitty-kpi-rev">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">📦 毛利</div><div class="kpi-value" id="mitty-kpi-gross">—</div><div class="kpi-sub" id="mitty-kpi-gross-pct"></div></div>
-        <div class="kpi-card"><div class="kpi-label">🏆 本年度淨利</div><div class="kpi-value" id="mitty-kpi-net">—</div><div class="kpi-sub" id="mitty-kpi-net-pct"></div></div>
-        <div class="kpi-card"><div class="kpi-label">💸 總支出</div><div class="kpi-value" id="mitty-kpi-expense">—</div></div>
-      </div>
-      <div class="chart-container">
-        <div class="chart-title">每月營收與損益</div>
-        <canvas id="mitty-bar-chart" height="220"></canvas>
-      </div>
-      <div class="two-col">
-        <div class="chart-container" style="margin-bottom:0">
-          <div class="chart-title">支出結構</div>
-          <canvas id="mitty-doughnut-chart" height="200"></canvas>
-        </div>
-        <div class="section-card" style="margin-bottom:0">
-          <h3 style="margin-top:0; font-size:0.88rem;">📌 年度亮點</h3>
-          <div id="mitty-highlights"><p class="empty-state" style="padding:16px;">尚無資料</p></div>
-        </div>
       </div>
       <div class="chart-container" style="margin-top:14px;">
         <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;">
@@ -1423,6 +1387,10 @@ Mitty girls 41 件 / $33,850，是近期最強一週。最大功臣是「Horse �
         </div>
       </div>
       <div style="margin-top:14px;" id="mitty-pnl-summary"></div>
+      <div class="chart-container" style="margin-top:14px;">
+        <div class="chart-title">每月營收與損益</div>
+        <canvas id="mitty-bar-chart" height="220"></canvas>
+      </div>
     </div>
 
     <!-- ── 設定 ── -->
@@ -2309,7 +2277,7 @@ let yufuPrevView = 'admin';
 let yufuCats     = [];   // cached categories
 let yufuAccts    = [];   // cached accounts
 let yufuTxns     = [];   // cached transactions
-let yufuChartBar = null, yufuChartDonut = null, yufuChartLine = null;
+let yufuChartBar = null, yufuChartLine = null;
 
 // ── Yufu 存取判斷 ─────────────────────────────────────────
 function hasYufuAccess() {
@@ -2331,7 +2299,6 @@ window.openYufuView = function(fromView) {
 window.closeYufuView = function() {
   // 摧毀圖表釋放記憶體
   if (yufuChartBar)  { yufuChartBar.destroy();  yufuChartBar  = null; }
-  if (yufuChartDonut){ yufuChartDonut.destroy(); yufuChartDonut= null; }
   if (yufuChartLine) { yufuChartLine.destroy();  yufuChartLine = null; }
   hideAll();
   if (yufuPrevView === 'employee') {
@@ -2402,100 +2369,6 @@ function yufuLoadDashboard() {
 
   yearSel.innerHTML = (years.length ? years : [currentYear])
     .map(y => `<option value="${y}" ${y===currentYear?'selected':''}>${y} 年</option>`).join('');
-
-  const yearTxns = yufuTxns.filter(t => t.txn_date.startsWith(currentYear));
-
-  let totalRev=0, totalCost=0, totalExp=0;
-  yearTxns.forEach(t => {
-    if (t.main_category==='收入') totalRev  += t.amount;
-    else if (t.main_category==='成本') totalCost += t.amount;
-    else if (t.main_category==='費用') totalExp  += t.amount;
-  });
-  const grossProfit = totalRev + totalCost;
-  const netProfit   = totalRev + totalCost + totalExp;
-
-  document.getElementById('yufu-kpi-rev').textContent      = yufuFmt(totalRev);
-  document.getElementById('yufu-kpi-gross').textContent     = yufuFmt(grossProfit);
-  document.getElementById('yufu-kpi-gross-pct').textContent = totalRev ? `${(netProfit/totalRev*100).toFixed(1)}% 純利率` : '';
-  document.getElementById('yufu-kpi-net').textContent       = yufuFmt(netProfit);
-  document.getElementById('yufu-kpi-net-pct').textContent   = totalRev ? `${(netProfit/totalRev*100).toFixed(1)}% 淨利率` : '';
-  document.getElementById('yufu-kpi-expense').textContent   = yufuFmt(Math.abs(totalCost + totalExp));
-
-  // 月度資料
-  const monthly = {};
-  for (let m=1;m<=12;m++) monthly[m] = {rev:0, cost:0, exp:0};
-  yearTxns.forEach(t => {
-    const m = parseInt(t.txn_date.slice(5,7));
-    if (t.main_category==='收入') monthly[m].rev  += t.amount;
-    else if (t.main_category==='成本') monthly[m].cost += t.amount;
-    else if (t.main_category==='費用') monthly[m].exp  += t.amount;
-  });
-
-  const labels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-
-  // 長條圖
-  if (yufuChartBar) yufuChartBar.destroy();
-  const barCtx = document.getElementById('yufu-bar-chart');
-  if (barCtx) {
-    yufuChartBar = new Chart(barCtx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          { label:'收入', data: labels.map((_,i) => monthly[i+1].rev), backgroundColor:'rgba(46,134,222,0.8)' },
-          { label:'成本', data: labels.map((_,i) => Math.abs(monthly[i+1].cost)), backgroundColor:'rgba(243,156,18,0.8)' },
-          { label:'費用', data: labels.map((_,i) => Math.abs(monthly[i+1].exp)), backgroundColor:'rgba(231,76,60,0.8)' }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position:'bottom', labels:{ font:{size:11} } } },
-        scales: { y: { ticks: { callback: v => 'NT$'+v.toLocaleString('zh-TW') } } }
-      }
-    });
-  }
-
-  // 甜甜圈圖（支出結構）
-  const expByCat = {};
-  yearTxns.filter(t => ['成本','費用'].includes(t.main_category)).forEach(t => {
-    expByCat[t.category_name] = (expByCat[t.category_name]||0) + Math.abs(t.amount);
-  });
-  if (yufuChartDonut) yufuChartDonut.destroy();
-  const donutCtx = document.getElementById('yufu-doughnut-chart');
-  if (donutCtx && Object.keys(expByCat).length > 0) {
-    yufuChartDonut = new Chart(donutCtx, {
-      type: 'doughnut',
-      data: {
-        labels: Object.keys(expByCat),
-        datasets: [{ data: Object.values(expByCat),
-          backgroundColor:['#e74c3c','#f39c12','#3498db','#9b59b6','#1abc9c','#e67e22','#2ecc71','#e91e63','#00bcd4','#ff9800'] }]
-      },
-      options: { responsive: true, plugins: { legend: { position:'bottom', labels:{font:{size:11}} } } }
-    });
-  } else if (donutCtx && Object.keys(expByCat).length === 0) {
-    const ctx2 = donutCtx.getContext('2d');
-    ctx2.clearRect(0,0,donutCtx.width,donutCtx.height);
-    ctx2.fillStyle = '#ccc'; ctx2.textAlign = 'center';
-    ctx2.fillText('尚無支出資料', donutCtx.width/2, donutCtx.height/2);
-  }
-
-  // 年度亮點
-  let maxRevMonth=0, maxRevVal=0, minNetMonth=0, minNetVal=Infinity;
-  for (let m=1;m<=12;m++) {
-    if (monthly[m].rev > maxRevVal) { maxRevVal = monthly[m].rev; maxRevMonth = m; }
-    const net = monthly[m].rev + monthly[m].cost + monthly[m].exp;
-    if ((monthly[m].rev+monthly[m].cost+monthly[m].exp !== 0) && net < minNetVal) {
-      minNetVal = net; minNetMonth = m;
-    }
-  }
-  const hlEl = document.getElementById('yufu-highlights');
-  if (hlEl) {
-    hlEl.innerHTML = (yearTxns.length === 0) ? '<p class="empty-state" style="padding:16px;">尚無資料</p>' :
-      `<p style="font-size:0.82rem; color:#666; margin-bottom:8px;"><strong>💰 最高收入月份</strong><br>
-        ${maxRevMonth ? labels[maxRevMonth-1]+'：'+yufuFmt(maxRevVal) : '—'}</p>
-       <p style="font-size:0.82rem; color:#666; margin-bottom:8px;"><strong>📉 最低損益月份</strong><br>
-        ${minNetMonth && minNetVal!==Infinity ? labels[minNetMonth-1]+'：'+yufuFmt(minNetVal) : '—'}</p>`;
-  }
 
   // 每週銷售曲線（資料來源：店面 POS，由銷售分析模組提供）
   if (yufuChartLine) yufuChartLine.destroy();
@@ -2856,6 +2729,37 @@ function yufuLoadPnL() {
       <div class="stat-row"><span>費用合計</span><span style="color:#e74c3c">${yufuFmt(expT)}</span></div>
       <div class="stat-row total"><span>本期損益</span><span style="color:${netT>=0?'var(--green)':'#e74c3c'}">${yufuFmt(netT)}</span></div>
     </div>`;
+
+  // 每月營收與損益（長條圖）
+  const monthly = {};
+  for (let m=1;m<=12;m++) monthly[m] = {rev:0, cost:0, exp:0};
+  yearTxns.forEach(t => {
+    const mn = parseInt(t.txn_date.slice(5,7));
+    if (t.main_category==='收入') monthly[mn].rev  += t.amount;
+    else if (t.main_category==='成本') monthly[mn].cost += t.amount;
+    else if (t.main_category==='費用') monthly[mn].exp  += t.amount;
+  });
+  const monthLabels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  if (yufuChartBar) yufuChartBar.destroy();
+  const barCtx = document.getElementById('yufu-bar-chart');
+  if (barCtx) {
+    yufuChartBar = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: monthLabels,
+        datasets: [
+          { label:'收入', data: monthLabels.map((_,i) => monthly[i+1].rev), backgroundColor:'rgba(46,134,222,0.8)' },
+          { label:'成本', data: monthLabels.map((_,i) => Math.abs(monthly[i+1].cost)), backgroundColor:'rgba(243,156,18,0.8)' },
+          { label:'費用', data: monthLabels.map((_,i) => Math.abs(monthly[i+1].exp)), backgroundColor:'rgba(231,76,60,0.8)' }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position:'bottom', labels:{ font:{size:11} } } },
+        scales: { y: { ticks: { callback: v => 'NT$'+v.toLocaleString('zh-TW') } } }
+      }
+    });
+  }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2996,7 +2900,7 @@ let mittyPrevView = 'admin';
 let mittyCats     = [];
 let mittyAccts    = [];
 let mittyTxns     = [];
-let mittyChartBar = null, mittyChartDonut = null, mittyChartLine = null;
+let mittyChartBar = null, mittyChartLine = null;
 
 // ── Mitty Girls 存取判斷 ──────────────────────────────────
 function hasMittyAccess() {
@@ -3017,7 +2921,6 @@ window.openMittyView = function(fromView) {
 
 window.closeMittyView = function() {
   if (mittyChartBar)   { mittyChartBar.destroy();   mittyChartBar   = null; }
-  if (mittyChartDonut) { mittyChartDonut.destroy();  mittyChartDonut = null; }
   if (mittyChartLine)  { mittyChartLine.destroy();   mittyChartLine  = null; }
   hideAll();
   if (mittyPrevView === 'employee') {
@@ -3098,96 +3001,6 @@ function mittyLoadDashboard() {
 
   yearSel.innerHTML = (years.length ? years : [currentYear])
     .map(y => `<option value="${y}" ${y===currentYear?'selected':''}>${y} 年</option>`).join('');
-
-  const yearTxns = mittyTxns.filter(t => t.txn_date.startsWith(currentYear));
-
-  let totalRev=0, totalCost=0, totalExp=0;
-  yearTxns.forEach(t => {
-    if (t.main_category==='收入') totalRev  += t.amount;
-    else if (t.main_category==='成本') totalCost += t.amount;
-    else if (t.main_category==='費用') totalExp  += t.amount;
-  });
-  const grossProfit = totalRev + totalCost;
-  const netProfit   = totalRev + totalCost + totalExp;
-
-  document.getElementById('mitty-kpi-rev').textContent      = mittyFmt(totalRev);
-  document.getElementById('mitty-kpi-gross').textContent     = mittyFmt(grossProfit);
-  document.getElementById('mitty-kpi-gross-pct').textContent = totalRev ? `${(netProfit/totalRev*100).toFixed(1)}% 純利率` : '';
-  document.getElementById('mitty-kpi-net').textContent       = mittyFmt(netProfit);
-  document.getElementById('mitty-kpi-net-pct').textContent   = totalRev ? `${(netProfit/totalRev*100).toFixed(1)}% 淨利率` : '';
-  document.getElementById('mitty-kpi-expense').textContent   = mittyFmt(Math.abs(totalCost + totalExp));
-
-  const monthly = {};
-  for (let m=1;m<=12;m++) monthly[m] = {rev:0, cost:0, exp:0};
-  yearTxns.forEach(t => {
-    const m = parseInt(t.txn_date.slice(5,7));
-    if (t.main_category==='收入') monthly[m].rev  += t.amount;
-    else if (t.main_category==='成本') monthly[m].cost += t.amount;
-    else if (t.main_category==='費用') monthly[m].exp  += t.amount;
-  });
-
-  const labels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-
-  if (mittyChartBar) mittyChartBar.destroy();
-  const barCtx = document.getElementById('mitty-bar-chart');
-  if (barCtx) {
-    mittyChartBar = new Chart(barCtx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          { label:'收入', data: labels.map((_,i) => monthly[i+1].rev), backgroundColor:'rgba(46,134,222,0.8)' },
-          { label:'成本', data: labels.map((_,i) => Math.abs(monthly[i+1].cost)), backgroundColor:'rgba(243,156,18,0.8)' },
-          { label:'費用', data: labels.map((_,i) => Math.abs(monthly[i+1].exp)), backgroundColor:'rgba(231,76,60,0.8)' }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position:'bottom', labels:{ font:{size:11} } } },
-        scales: { y: { ticks: { callback: v => 'NT$'+v.toLocaleString('zh-TW') } } }
-      }
-    });
-  }
-
-  const expByCat = {};
-  yearTxns.filter(t => ['成本','費用'].includes(t.main_category)).forEach(t => {
-    expByCat[t.category_name] = (expByCat[t.category_name]||0) + Math.abs(t.amount);
-  });
-  if (mittyChartDonut) mittyChartDonut.destroy();
-  const donutCtx = document.getElementById('mitty-doughnut-chart');
-  if (donutCtx && Object.keys(expByCat).length > 0) {
-    mittyChartDonut = new Chart(donutCtx, {
-      type: 'doughnut',
-      data: {
-        labels: Object.keys(expByCat),
-        datasets: [{ data: Object.values(expByCat),
-          backgroundColor:['#e74c3c','#f39c12','#3498db','#9b59b6','#1abc9c','#e67e22','#2ecc71','#e91e63','#00bcd4','#ff9800'] }]
-      },
-      options: { responsive: true, plugins: { legend: { position:'bottom', labels:{font:{size:11}} } } }
-    });
-  } else if (donutCtx && Object.keys(expByCat).length === 0) {
-    const ctx2 = donutCtx.getContext('2d');
-    ctx2.clearRect(0,0,donutCtx.width,donutCtx.height);
-    ctx2.fillStyle = '#ccc'; ctx2.textAlign = 'center';
-    ctx2.fillText('尚無支出資料', donutCtx.width/2, donutCtx.height/2);
-  }
-
-  let maxRevMonth=0, maxRevVal=0, minNetMonth=0, minNetVal=Infinity;
-  for (let m=1;m<=12;m++) {
-    if (monthly[m].rev > maxRevVal) { maxRevVal = monthly[m].rev; maxRevMonth = m; }
-    const net = monthly[m].rev + monthly[m].cost + monthly[m].exp;
-    if ((monthly[m].rev+monthly[m].cost+monthly[m].exp !== 0) && net < minNetVal) {
-      minNetVal = net; minNetMonth = m;
-    }
-  }
-  const hlEl = document.getElementById('mitty-highlights');
-  if (hlEl) {
-    hlEl.innerHTML = (yearTxns.length === 0) ? '<p class="empty-state" style="padding:16px;">尚無資料</p>' :
-      `<p style="font-size:0.82rem; color:#666; margin-bottom:8px;"><strong>💰 最高收入月份</strong><br>
-        ${maxRevMonth ? labels[maxRevMonth-1]+'：'+mittyFmt(maxRevVal) : '—'}</p>
-       <p style="font-size:0.82rem; color:#666; margin-bottom:8px;"><strong>📉 最低損益月份</strong><br>
-        ${minNetMonth && minNetVal!==Infinity ? labels[minNetMonth-1]+'：'+mittyFmt(minNetVal) : '—'}</p>`;
-  }
 
   // 每週銷售曲線（資料來源：店面 POS，由銷售分析模組提供）
   if (mittyChartLine) mittyChartLine.destroy();
@@ -3541,6 +3354,37 @@ function mittyLoadPnL() {
       <div class="stat-row"><span>費用合計</span><span style="color:#e74c3c">${mittyFmt(expT)}</span></div>
       <div class="stat-row total"><span>本期損益</span><span style="color:${netT>=0?'var(--green)':'#e74c3c'}">${mittyFmt(netT)}</span></div>
     </div>`;
+
+  // 每月營收與損益（長條圖）
+  const monthly = {};
+  for (let m=1;m<=12;m++) monthly[m] = {rev:0, cost:0, exp:0};
+  yearTxns.forEach(t => {
+    const mn = parseInt(t.txn_date.slice(5,7));
+    if (t.main_category==='收入') monthly[mn].rev  += t.amount;
+    else if (t.main_category==='成本') monthly[mn].cost += t.amount;
+    else if (t.main_category==='費用') monthly[mn].exp  += t.amount;
+  });
+  const monthLabels = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  if (mittyChartBar) mittyChartBar.destroy();
+  const barCtx = document.getElementById('mitty-bar-chart');
+  if (barCtx) {
+    mittyChartBar = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: monthLabels,
+        datasets: [
+          { label:'收入', data: monthLabels.map((_,i) => monthly[i+1].rev), backgroundColor:'rgba(46,134,222,0.8)' },
+          { label:'成本', data: monthLabels.map((_,i) => Math.abs(monthly[i+1].cost)), backgroundColor:'rgba(243,156,18,0.8)' },
+          { label:'費用', data: monthLabels.map((_,i) => Math.abs(monthly[i+1].exp)), backgroundColor:'rgba(231,76,60,0.8)' }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position:'bottom', labels:{ font:{size:11} } } },
+        scales: { y: { ticks: { callback: v => 'NT$'+v.toLocaleString('zh-TW') } } }
+      }
+    });
+  }
 }
 
 // ══════════════════════════════════════════════════════════
