@@ -35,7 +35,21 @@
     }
     html { scroll-behavior: smooth; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; overscroll-behavior-y: none; }
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background:
+        radial-gradient(ellipse 600px 400px at top left, rgba(45,90,39,0.07), transparent 60%),
+        radial-gradient(ellipse 500px 400px at bottom right, rgba(179,139,89,0.05), transparent 60%),
+        linear-gradient(rgba(45,90,39,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(45,90,39,0.028) 1px, transparent 1px),
+        #f4f1ec;
+      background-size: auto, auto, 28px 28px, 28px 28px, auto;
+      background-attachment: fixed, fixed, auto, auto, auto;
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior-y: none;
+    }
     input, button, select, textarea { font-family: 'Noto Sans TC', sans-serif; }
     input[type=number] { -moz-appearance: textfield; }
     input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
@@ -78,31 +92,57 @@
     .btn-logout:hover { background: var(--border-light); }
 
     .container { max-width: 800px; margin: 0 auto; padding: 0 14px; }
+    @media (min-width: 640px) {
+      .container { max-width: 1080px; padding: 0 28px; }
+    }
 
     /* ── 分頁標籤 → 底部導覽（手機優先）── */
     .tab-bar {
       position: fixed; bottom: 0; left: 0; right: 0;
-      display: flex; border-top: 1px solid var(--border);
-      background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      display: flex; border-top: 1px solid rgba(45,90,39,0.10);
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(14px) saturate(180%); -webkit-backdrop-filter: blur(14px) saturate(180%);
       z-index: 100; padding-bottom: env(safe-area-inset-bottom, 0px);
-      box-shadow: 0 -2px 16px rgba(0,0,0,0.06); height: calc(var(--bnav-h) + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -2px 16px rgba(30,62,26,0.06); height: calc(var(--bnav-h) + env(safe-area-inset-bottom, 0px));
     }
     .tab-btn {
+      position: relative;
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 6px 2px; background: none; border: none; cursor: pointer; color: var(--text-muted);
-      gap: 2px; transition: color .2s; font-size: 0.6rem; font-family: 'Noto Sans TC', sans-serif; font-weight: 500;
+      gap: 2px; transition: color .2s, transform .15s; font-size: 0.85rem; font-family: 'Noto Sans TC', sans-serif; font-weight: 500; letter-spacing: 0.5px;
       border-bottom: none; margin-bottom: 0;
     }
-    .tab-btn.active { color: var(--green); }
+    .tab-btn::before {
+      content: ''; position: absolute; top: 0; left: 32%; right: 32%;
+      height: 2.5px; background: transparent; border-radius: 0 0 4px 4px;
+      transition: background .2s;
+    }
+    .tab-btn.active { color: var(--green); font-weight: 600; }
+    .tab-btn.active::before { background: var(--green); }
+    .tab-btn.active .tab-icon { transform: scale(1.08); }
     .tab-btn.yufu-tab { color: var(--gold-light); }
     .tab-btn.yufu-tab:hover { background: transparent; }
-    .tab-icon { font-size: 1.3rem; line-height: 1; display: block; }
+    .tab-icon { font-size: 1.3rem; line-height: 1; display: block; transition: transform .15s; }
     .tab-label { display: block; }
-    /* 桌機版：還原成頂部橫向 tab */
+    /* 桌機版：頂部橫向 tab — 毛玻璃 + active 淡綠膠囊 */
     @media (min-width: 640px) {
-      .tab-bar { position: sticky; top: 53px; height: auto; border-top: none; border-bottom: 2px solid var(--border); background: var(--card); backdrop-filter: none; box-shadow: none; padding-bottom: 0; }
-      .tab-btn { flex-direction: row; gap: 5px; padding: 11px 8px; font-size: 0.88rem; color: #888; border-bottom: 3px solid transparent; margin-bottom: -2px; }
-      .tab-btn.active { border-bottom-color: var(--green); }
+      .tab-bar {
+        position: sticky; top: 53px; height: auto;
+        border-top: none; border-bottom: 1px solid rgba(45,90,39,0.10);
+        background: rgba(255,255,255,0.80); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
+        box-shadow: 0 1px 6px rgba(30,62,26,0.04);
+        padding: 10px 16px; gap: 4px; justify-content: center; flex-wrap: wrap;
+      }
+      .tab-btn {
+        flex: 0 0 auto; flex-direction: row; gap: 6px;
+        padding: 10px 20px; font-size: 0.92rem; font-weight: 600;
+        color: var(--text-sub);
+        border-radius: 10px; border-bottom: none; margin-bottom: 0;
+        transition: background .2s, color .2s;
+      }
+      .tab-btn::before { display: none; }
+      .tab-btn:hover { background: rgba(45,90,39,0.06); color: var(--green); }
+      .tab-btn.active { background: var(--green-bg); color: var(--green); }
+      .tab-btn.active .tab-icon { transform: none; }
       .tab-icon { font-size: 1rem; }
       .view { padding-bottom: 80px; }
     }
@@ -112,7 +152,7 @@
     /* ── 區塊標題 ── */
     h2 { font-size: 0.95rem; margin: 22px 0 12px; padding: 8px 12px; background: var(--green-bg); border-left: 4px solid var(--green); color: var(--green); border-radius: 0 var(--r-sm) var(--r-sm) 0; font-weight: 700; }
     h3 { font-size: 0.92rem; margin: 14px 0 10px; color: var(--gold); font-weight: 600; }
-    .section-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px 16px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+    .section-card { background: var(--card); border: 1px solid rgba(45,90,39,0.10); border-radius: 18px; padding: 18px 16px; box-shadow: 0 1px 3px rgba(30,62,26,0.04), 0 6px 20px rgba(30,62,26,0.05); margin-bottom: 16px; }
 
     /* ── 輸入列 ── */
     .input-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; gap: 12px; }
@@ -271,7 +311,7 @@
     .empty-state { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.9rem; }
 
     /* 班表記錄文字框 */
-    .schedule-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px 16px; margin: 10px 0 16px; box-shadow: var(--shadow-sm); }
+    .schedule-card { background: var(--card); border: 1px solid rgba(45,90,39,0.10); border-radius: 18px; padding: 18px 16px; margin: 10px 0 16px; box-shadow: 0 1px 3px rgba(30,62,26,0.04), 0 6px 20px rgba(30,62,26,0.05); }
     .schedule-card h3 { color: var(--green); margin: 0 0 10px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; font-size: 0.95rem; }
     .schedule-card p.hint-text { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px; }
     .schedule-textarea { width: 100%; min-height: 150px; padding: 12px; border: 1.5px solid var(--border); border-radius: var(--r-md); font-size: 0.92rem; font-family: 'Noto Sans TC', monospace; line-height: 1.7; background: #fafaf8; resize: vertical; transition: border-color .2s; }
@@ -316,7 +356,7 @@
     .leave-display .leave-badge { background: #e67e22; color: #fff; border-radius: 5px; padding: 2px 8px; font-size: 0.78rem; font-weight: 600; }
 
     /* ── 排班系統（員工端）── */
-    .sched-section { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px 16px; margin: 16px 0; box-shadow: var(--shadow-sm); }
+    .sched-section { background: var(--card); border: 1px solid rgba(45,90,39,0.10); border-radius: 18px; padding: 18px 16px; margin: 16px 0; box-shadow: 0 1px 3px rgba(30,62,26,0.04), 0 6px 20px rgba(30,62,26,0.05); }
     .sched-section h3 { color: var(--green); margin: 0 0 4px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; font-size: 0.95rem; }
     .sched-section .hint-text { font-size: 0.82rem; color: var(--text-muted); margin: 6px 0 10px; }
     .sched-month-nav { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 12px 0 10px; }
@@ -472,17 +512,17 @@
     .sales-stat-value { font-size: 16px; font-weight: 600; }
     .sales-stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
     .sales-section-title { font-size: 13px; font-weight: 600; color: var(--green-dark); margin: 24px 0 10px; padding-left: 10px; border-left: 3px solid var(--green); }
-    .sales-card { background: var(--card); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); padding: 16px 18px; margin-bottom: 14px; }
+    .sales-card { background: var(--card); border: 1px solid rgba(45,90,39,0.08); border-radius: 18px; box-shadow: 0 1px 3px rgba(30,62,26,0.04), 0 6px 20px rgba(30,62,26,0.05); padding: 16px 18px; margin-bottom: 14px; }
     .sales-chart-label { font-size: 11px; color: var(--text-sub); margin-bottom: 10px; }
     .sales-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .sales-card canvas { max-height: 260px; }
-    .sales-trend-card { background: var(--card); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); padding: 16px 18px; margin-bottom: 14px; }
+    .sales-trend-card { background: var(--card); border: 1px solid rgba(45,90,39,0.08); border-radius: 18px; box-shadow: 0 1px 3px rgba(30,62,26,0.04), 0 6px 20px rgba(30,62,26,0.05); padding: 16px 18px; margin-bottom: 14px; }
     .sales-trend-card canvas { max-height: 240px; }
     /* 桌機版（管理員）：維持兩欄 */
     @media (min-width: 640px) {
       .sales-two-col { grid-template-columns: 1fr 1fr; }
     }
-    /* 手機版：全部單欄 */
+    /* 手機版：全部單欄 + 卡片陰影放輕 */
     @media (max-width: 639px) {
       .sales-two-col { grid-template-columns: 1fr; }
       .sales-stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -490,6 +530,14 @@
       .sales-stat-value { font-size: 14px; }
       .sales-card canvas { max-height: 220px !important; }
       .sales-trend-card canvas { max-height: 200px !important; }
+      .section-card,
+      .sales-card,
+      .sales-trend-card,
+      .sched-section,
+      .schedule-card {
+        box-shadow: 0 1px 2px rgba(30,62,26,0.04), 0 3px 10px rgba(30,62,26,0.04);
+        border-radius: 16px;
+      }
     }
 
     /* ── 折疊分析文字 ── */
@@ -570,22 +618,22 @@
   <!-- 底部導覽 -->
   <nav class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('salary')">
-      <span class="tab-icon">💰</span><span class="tab-label">薪資</span>
+      <span class="tab-label">薪資</span>
     </button>
     <button class="tab-btn" onclick="switchTab('users')">
-      <span class="tab-icon">👥</span><span class="tab-label">帳號</span>
+      <span class="tab-label">團隊</span>
     </button>
     <button class="tab-btn" onclick="switchTab('sched')">
-      <span class="tab-icon">📅</span><span class="tab-label">排班</span>
+      <span class="tab-label">班表</span>
     </button>
     <button class="tab-btn" onclick="switchTab('sales')">
-      <span class="tab-icon">📊</span><span class="tab-label">銷售分析</span>
+      <span class="tab-label">營收</span>
     </button>
     <button class="tab-btn yufu-tab" onclick="openYufuView('admin')">
-      <span class="tab-icon">📒</span><span class="tab-label">Yufu</span>
+      <span class="tab-label">Yufu</span>
     </button>
     <button class="tab-btn yufu-tab" onclick="openMittyView('admin')">
-      <span class="tab-icon">👗</span><span class="tab-label">Girls</span>
+      <span class="tab-label">Girls</span>
     </button>
   </nav>
   <div class="container">
@@ -598,7 +646,7 @@
       </div>
       <div class="holiday-hint" id="adminHolidayHint"></div>
 
-      <h2>一、營業額計算</h2>
+      <h2>營收結算</h2>
       <div class="section-card">
         <h3>店面營收</h3>
         <div class="input-row"><label>網站店面營收</label><input type="number" id="shopRev" placeholder="0" oninput="adminCalc()"></div>
@@ -618,7 +666,7 @@
         </div>
       </div>
 
-      <h2>二、薪資計算</h2>
+      <h2>薪資明細</h2>
       <div class="section-card">
         <div class="input-row"><label>晚班總時數</label><input type="number" id="nightHours" step="0.5" placeholder="0" oninput="adminCalc()"></div>
         <div class="bonus-banner">每小時獎金基數：<strong id="bonusBase">0</strong> 元</div>
@@ -628,7 +676,7 @@
         <div id="adminFtList"></div>
       </div>
 
-      <h2>三、勞健保自付額查詢</h2>
+      <h2>勞健保級距</h2>
       <button class="toggle-btn" onclick="toggleIns()">展開 / 收起 完整級距表</button>
       <div id="insTable">
         <div class="table-wrap">
