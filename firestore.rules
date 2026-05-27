@@ -121,11 +121,6 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
 
-    // ── 店面共用：開店 SOP 每日打勾紀錄 ───────────────────
-    match /storeSopLogs/{dayKey} {
-      allow read, write: if request.auth != null;
-    }
-
     // ── 店面共用：開會紀錄 ────────────────────────────────
     match /storeMeetingNotes/{docId} {
       allow read, write: if request.auth != null;
