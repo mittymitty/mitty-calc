@@ -412,6 +412,95 @@
     .emp-tab-btn:hover:not(.active) { color: var(--text); }
     .emp-tab-panel { display: block; }
 
+    /* ── 店面 Store 介面 ── */
+    .store-tab-bar {
+      display: flex; background: #fff; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 99; overflow-x: auto;
+    }
+    .store-tab-btn {
+      flex: 1 0 auto; min-width: 80px; padding: 12px 8px; background: none; border: none;
+      border-bottom: 3px solid transparent; font-size: 0.88rem; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; transition: all .2s; font-family: inherit;
+      white-space: nowrap; position: relative;
+    }
+    .store-tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+    .store-tab-btn:hover:not(.active) { color: var(--text); }
+    .store-tab-badge {
+      display: inline-block; min-width: 18px; padding: 1px 6px; margin-left: 4px;
+      border-radius: 9px; background: #d9534f; color: #fff; font-size: 0.7rem; font-weight: 700;
+    }
+    .store-tab-panel { display: block; }
+
+    .store-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: 16px 14px; box-shadow: var(--shadow-sm);
+    }
+    .store-empty { color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 0; margin: 0; }
+    .store-msg-input-row { display: flex; flex-direction: column; gap: 8px; }
+    .store-msg-author {
+      padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r-sm);
+      font-size: 0.88rem; background: var(--card); font-family: inherit;
+    }
+    .store-msg-textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-sm);
+      font-size: 0.92rem; font-family: inherit; resize: vertical; min-height: 60px;
+    }
+    .store-msg-list { display: flex; flex-direction: column; gap: 10px; }
+    .store-msg-item {
+      background: #f9faf8; border: 1px solid var(--border-light); border-radius: var(--r-md);
+      padding: 12px 14px; position: relative;
+    }
+    .store-msg-item.resolved { background: #f3f4f1; opacity: 0.7; }
+    .store-msg-item.resolved .store-msg-body { text-decoration: line-through; color: var(--text-muted); }
+    .store-msg-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+      font-size: 0.78rem; color: var(--text-muted);
+    }
+    .store-msg-author-tag { font-weight: 600; color: var(--green); }
+    .store-msg-body { font-size: 0.95rem; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+    .store-msg-actions { display: flex; gap: 6px; margin-top: 10px; }
+    .store-msg-action-btn {
+      flex: 1; padding: 6px 10px; border-radius: var(--r-sm); border: 1px solid var(--border);
+      background: #fff; cursor: pointer; font-size: 0.8rem; font-family: inherit; transition: all .15s;
+    }
+    .store-msg-action-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+    .store-msg-action-btn.danger { color: #c0392b; border-color: #e8c0bc; }
+    .store-msg-action-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-xs); }
+
+    .store-sop-hint {
+      background: #fef7e0; border-left: 3px solid var(--gold); border-radius: var(--r-sm);
+      padding: 10px 12px; margin: 10px 0; font-size: 0.85rem; color: #6b4f1e;
+    }
+    .store-sop-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+    .store-sop-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 12px; border-radius: var(--r-sm);
+      background: #fff; border: 1px solid var(--border-light); cursor: pointer;
+      transition: all .15s; user-select: none;
+    }
+    .store-sop-item:hover { border-color: var(--green); background: #fafdf9; }
+    .store-sop-item.done { background: #eef5ec; border-color: #c8e0c0; }
+    .store-sop-item.done .store-sop-label { text-decoration: line-through; color: var(--text-muted); }
+    .store-sop-checkbox {
+      width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700;
+      background: #fff; color: transparent; transition: all .15s;
+    }
+    .store-sop-item.done .store-sop-checkbox {
+      background: var(--green); border-color: var(--green); color: #fff;
+    }
+    .store-sop-label { flex: 1; font-size: 0.92rem; color: var(--text); }
+    .store-sop-meta { font-size: 0.72rem; color: var(--text-muted); }
+
+    .store-meeting-list { display: flex; flex-direction: column; gap: 12px; }
+    .store-meeting-item {
+      background: #f9faf8; border: 1px solid var(--border-light); border-radius: var(--r-md);
+      padding: 14px 14px;
+    }
+    .store-meeting-title { font-weight: 600; font-size: 0.98rem; color: var(--text); margin-bottom: 4px; }
+    .store-meeting-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; }
+    .store-meeting-content { font-size: 0.92rem; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+    .store-meeting-actions { margin-top: 10px; display: flex; gap: 6px; justify-content: flex-end; }
+
     .vendor-brand-tab { padding: 8px 20px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--card); color: var(--text-sub); font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all .2s; font-family: 'Noto Sans TC', sans-serif; white-space: nowrap; }
     .vendor-brand-tab.active { background: var(--green); color: #fff; border-color: var(--green); font-weight: 600; }
     .vendor-brand-tab:hover:not(.active) { border-color: var(--green); color: var(--green); }
@@ -1111,6 +1200,114 @@ Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Biza
 </div>
 
 <!-- ══════════════════════════════════
+     店面共用帳號介面（山羊先生）
+═══════════════════════════════════ -->
+<div id="storeView" class="view">
+  <div class="app-header">
+    <h1 style="display:flex;align-items:center;gap:8px">
+      <img src="logo.png" alt="Mitty" style="height:28px;object-fit:contain;vertical-align:middle">
+      店面系統
+    </h1>
+    <div class="header-right">
+      <span class="user-badge" id="storeUserName"></span>
+      <button class="btn-logout" onclick="doLogout()">登出</button>
+    </div>
+  </div>
+
+  <div id="storeTabBar" class="store-tab-bar">
+    <button class="store-tab-btn active" onclick="switchStoreTab('sales')">📊 銷售</button>
+    <button class="store-tab-btn" onclick="switchStoreTab('board')">💬 留言板<span class="store-tab-badge" id="storeBoardBadge" style="display:none">0</span></button>
+    <button class="store-tab-btn" onclick="switchStoreTab('sop')">✅ 開店 SOP</button>
+    <button class="store-tab-btn" onclick="switchStoreTab('meeting')">📒 開會紀錄</button>
+  </div>
+
+  <!-- 銷售（重用 emp 版銷售區塊：透過 JS 把 #empSalesSection 移到這裡） -->
+  <div id="storePanelSales" class="store-tab-panel">
+    <div class="container">
+      <div id="storeSalesHost" style="margin-top:14px"></div>
+    </div>
+  </div>
+
+  <!-- 留言板 -->
+  <div id="storePanelBoard" class="store-tab-panel" style="display:none">
+    <div class="container">
+      <div class="store-card">
+        <h3 style="margin:0 0 10px;color:var(--green);font-size:1rem;">💬 交班留言板</h3>
+        <p style="color:var(--text-muted);font-size:0.82rem;margin:0 0 14px;">寫點交班事項、客人備註、待處理事項。處理完按「✓ 處理」收掉。</p>
+        <div class="store-msg-input-row">
+          <select id="storeMsgAuthor" class="store-msg-author"></select>
+          <textarea id="storeMsgText" class="store-msg-textarea" placeholder="例：3 號試衣間鏡子有刮痕、Sandy 預訂的格紋已到貨待取…" rows="2"></textarea>
+        </div>
+        <button class="btn-primary" onclick="addStoreMessage()" style="margin-top:8px;width:100%">📨 送出留言</button>
+      </div>
+
+      <div class="store-card" style="margin-top:14px">
+        <h4 style="margin:0 0 10px;font-size:0.92rem;">🔔 處理中 <span id="storeMsgActiveCount" style="color:var(--text-muted);font-weight:400">(0)</span></h4>
+        <div id="storeMsgActiveList" class="store-msg-list">
+          <p class="store-empty">載入中…</p>
+        </div>
+      </div>
+
+      <div class="store-card" style="margin-top:14px">
+        <button onclick="toggleStoreResolved(this)" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;">
+          <h4 style="margin:0;font-size:0.92rem;color:var(--text-muted);">📦 已收掉 <span id="storeMsgResolvedCount" style="font-weight:400">(0)</span></h4>
+          <span style="font-size:0.9rem;color:#888;transition:transform .2s" id="storeMsgResolvedArrow">▶</span>
+        </button>
+        <div id="storeMsgResolvedList" class="store-msg-list" style="display:none;margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 開店 SOP -->
+  <div id="storePanelSop" class="store-tab-panel" style="display:none">
+    <div class="container">
+      <div class="store-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h3 style="margin:0;color:var(--green);font-size:1rem">✅ 開店流程</h3>
+          <span id="storeSopDate" style="font-size:0.8rem;color:var(--text-muted)"></span>
+        </div>
+        <p style="color:var(--text-muted);font-size:0.82rem;margin:0 0 6px">完成的項目打勾即可，會自動留下時間與簽名。每天自動重置。</p>
+        <div class="store-sop-hint">
+          ⚠️ 壓線到店：店內燈都開好、音樂、投影、冷氣都準備好之後，才可以下去開樓下門迎接客人。
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0 4px">
+          <label style="font-size:0.82rem;color:var(--text-muted)">值班簽名</label>
+          <select id="storeSopAuthor" class="store-msg-author" style="max-width:160px"></select>
+        </div>
+        <div id="storeSopList" class="store-sop-list">
+          <p class="store-empty">載入中…</p>
+        </div>
+        <div style="text-align:right;margin-top:8px">
+          <button class="btn-link" onclick="resetStoreSopToday()" style="color:var(--text-muted);font-size:0.78rem">🔄 重置今天的紀錄</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 開會紀錄 -->
+  <div id="storePanelMeeting" class="store-tab-panel" style="display:none">
+    <div class="container">
+      <div class="store-card">
+        <h3 style="margin:0 0 10px;color:var(--green);font-size:1rem">📒 開會紀錄</h3>
+        <p style="color:var(--text-muted);font-size:0.82rem;margin:0 0 14px">員工開會、培訓、討論內容都可以記在這。所有人都看得到，可一起累積店裡的決定。</p>
+        <input type="date" id="storeMeetingDate" class="field" style="margin-bottom:8px">
+        <input type="text" id="storeMeetingTitle" class="field" placeholder="會議主題（例：5/26 週會、新品上架討論）" style="margin-bottom:8px">
+        <select id="storeMeetingAuthor" class="store-msg-author" style="margin-bottom:8px;width:100%"></select>
+        <textarea id="storeMeetingContent" class="store-msg-textarea" placeholder="會議內容、決議、行動項目…" rows="6" style="margin-bottom:8px"></textarea>
+        <button class="btn-primary" onclick="addMeetingNote()" style="width:100%">📝 新增紀錄</button>
+      </div>
+
+      <div class="store-card" style="margin-top:14px">
+        <h4 style="margin:0 0 10px;font-size:0.92rem">📚 歷史紀錄</h4>
+        <div id="storeMeetingList" class="store-meeting-list">
+          <p class="store-empty">載入中…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
      Yufu 帳簿 介面（獨立頁面）
 ═══════════════════════════════════ -->
 <div id="yufuView" class="view">
@@ -1572,6 +1769,9 @@ function routeToView() {
   } else if (role === 'employee') {
     document.getElementById('employeeView').style.display = 'block';
     initEmployee();
+  } else if (role === 'store') {
+    document.getElementById('storeView').style.display = 'block';
+    initStore();
   } else {
     document.getElementById('pendingView').classList.remove('hidden');
   }
@@ -1580,7 +1780,7 @@ function routeToView() {
 // ── 顯示控制 ──────────────────────────────────────────────
 function hideAll() {
   ['loginView','signupView','pendingView'].forEach(id => document.getElementById(id).classList.add('hidden'));
-  ['adminView','employeeView','yufuView','mittyView'].forEach(id => document.getElementById(id).style.display = 'none');
+  ['adminView','employeeView','storeView','yufuView','mittyView'].forEach(id => document.getElementById(id).style.display = 'none');
 }
 function showLogin(err) {
   hideAll();
@@ -2036,6 +2236,7 @@ function renderPendingUsers(users) {
       <select class="emp-key-select" id="empkey_${u.uid}">
         <option value="">— 選擇員工 —</option>
         ${EMP_KEYS.map(k=>`<option value="${k.key}">${k.label}</option>`).join('')}
+        <option value="__store__">🏪 店面共用帳號</option>
       </select>
       <button class="btn-save-user" onclick="approveUser('${u.uid}')">開通</button>
     </div>
@@ -2049,18 +2250,22 @@ function renderActiveUsers(users) {
   <div class="user-row">
     <div class="user-info">
       <strong>${u.name}</strong>
-      <small>${u.email} &nbsp;·&nbsp; ${u.role==='admin'?'管理員':'員工'} ${u.employeeKey?`(${u.employeeKey})`:''}
+      <small>${u.email} &nbsp;·&nbsp; ${u.role==='admin'?'管理員':(u.role==='store'?'🏪 店面共用':'員工')} ${u.employeeKey?`(${u.employeeKey})`:''}
       </small>
     </div>
-    <span class="emp-badge ${u.role==='pending'?'pending':''}">${u.role==='admin'?'管理員':'已開通'}</span>
+    <span class="emp-badge ${u.role==='pending'?'pending':''}">${u.role==='admin'?'管理員':(u.role==='store'?'店面':'已開通')}</span>
   </div>`).join('');
 }
 
 window.approveUser = async function(uid) {
   const empKey = document.getElementById(`empkey_${uid}`)?.value;
-  if (!empKey) { alert('請先選擇對應的員工'); return; }
+  if (!empKey) { alert('請先選擇對應的員工或店面帳號'); return; }
   try {
-    await updateDoc(doc(db,'users',uid), { role:'employee', employeeKey:empKey });
+    if (empKey === '__store__') {
+      await updateDoc(doc(db,'users',uid), { role:'store', employeeKey:'' });
+    } else {
+      await updateDoc(doc(db,'users',uid), { role:'employee', employeeKey:empKey });
+    }
     alert('已成功開通！');
     loadUserList();
   } catch(e) { alert('開通失敗：'+e.message); }
@@ -4153,6 +4358,328 @@ function mittyShowMsg(id, msg) {
   const el = document.getElementById(id);
   if (el) { el.style.color='#c0392b'; el.textContent=msg; el.classList.remove('hidden'); }
 }
+
+// ══════════════════════════════════════════════════════════
+//  店面共用帳號（山羊先生）
+// ══════════════════════════════════════════════════════════
+const STORE_SOP_ITEMS = [
+  { id: 'clock',     label: '打卡' },
+  { id: 'sign',      label: '開招牌燈' },
+  { id: 'iron',      label: '開鐵牌' },
+  { id: 'game',      label: '開遊戲間燈' },
+  { id: 'toy',       label: '開玩具區燈' },
+  { id: 'hall',      label: '開走廊燈' },
+  { id: 'mg_hair',   label: '開 Mitty Girls 捲髮燈' },
+  { id: 'projector', label: '開投影區域' },
+  { id: 'ac',        label: '開冷氣' },
+  { id: 'music',     label: '放音樂' },
+  { id: 'check',     label: '確認環境就緒' },
+  { id: 'open_door', label: '開門迎接客人' },
+];
+
+// 員工選單（用於署名）— 從 EMP_KEYS 動態生成
+function storeAuthorOptions(selectedKey) {
+  const opts = [
+    `<option value="山羊先生" ${!selectedKey || selectedKey==='山羊先生' ? 'selected':''}>🐐 山羊先生</option>`
+  ];
+  EMP_KEYS.forEach(k => {
+    const name = k.label.replace(/\s*[（(].+/, '');
+    opts.push(`<option value="${name}" ${selectedKey===name?'selected':''}>${name}</option>`);
+  });
+  return opts.join('');
+}
+
+function storeFillAuthorSelects(defaultName) {
+  ['storeMsgAuthor','storeSopAuthor','storeMeetingAuthor'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (sel) sel.innerHTML = storeAuthorOptions(defaultName);
+  });
+}
+
+function storeTodayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function storeFmtTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const today = new Date();
+  const sameDay = d.toDateString() === today.toDateString();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  if (sameDay) return `今天 ${hh}:${mm}`;
+  return `${d.getMonth()+1}/${d.getDate()} ${hh}:${mm}`;
+}
+
+function initStore() {
+  document.getElementById('storeUserName').textContent = currentUserData.name || '山羊先生';
+
+  // 把 #empSalesSection 搬進 #storeSalesHost（首次顯示時）
+  const host = document.getElementById('storeSalesHost');
+  const empSales = document.getElementById('empSalesSection');
+  if (host && empSales && empSales.parentElement !== host) host.appendChild(empSales);
+  // 預設展開銷售分析
+  const content = document.getElementById('empSalesContent');
+  if (content) content.style.display = 'block';
+  const arrow = document.getElementById('empSalesArrow');
+  if (arrow) arrow.style.transform = 'rotate(180deg)';
+
+  // 填上「值班簽名」下拉（預設山羊先生）
+  storeFillAuthorSelects('山羊先生');
+
+  // 預設今日日期
+  const md = document.getElementById('storeMeetingDate');
+  if (md) md.value = storeTodayKey();
+  const sd = document.getElementById('storeSopDate');
+  if (sd) sd.textContent = storeTodayKey();
+
+  // 預設打開銷售 tab
+  switchStoreTab('sales');
+
+  // 載入各區資料
+  loadStoreMessages();
+  loadStoreSopToday();
+  loadMeetingNotes();
+}
+
+window.switchStoreTab = function(tab) {
+  const tabs = ['sales','board','sop','meeting'];
+  tabs.forEach(t => {
+    const panel = document.getElementById('storePanel' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
+  });
+  document.querySelectorAll('#storeTabBar .store-tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  // 觸發銷售圖表初始化
+  if (tab === 'sales' && typeof window.initEmpSalesChart === 'function') {
+    window.initEmpSalesChart();
+  }
+};
+
+// ── 交班留言板 ─────────────────────────────────────────────
+window.addStoreMessage = async function() {
+  const author = document.getElementById('storeMsgAuthor').value || '山羊先生';
+  const text   = document.getElementById('storeMsgText').value.trim();
+  if (!text) { alert('留言內容不能空白'); return; }
+  try {
+    await addDoc(collection(db, 'storeMessages'), {
+      author, text, status: 'active',
+      createdAt: new Date().toISOString()
+    });
+    document.getElementById('storeMsgText').value = '';
+    await loadStoreMessages();
+  } catch(e) { alert('送出失敗：' + e.message); }
+};
+
+window.resolveStoreMessage = async function(id, action) {
+  const who = document.getElementById('storeMsgAuthor')?.value || '山羊先生';
+  try {
+    await updateDoc(doc(db,'storeMessages',id), {
+      status: 'resolved',
+      resolvedAction: action || 'done',
+      resolvedBy: who,
+      resolvedAt: new Date().toISOString()
+    });
+    await loadStoreMessages();
+  } catch(e) { alert('更新失敗：' + e.message); }
+};
+
+window.restoreStoreMessage = async function(id) {
+  try {
+    await updateDoc(doc(db,'storeMessages',id), {
+      status: 'active', resolvedBy: '', resolvedAt: '', resolvedAction: ''
+    });
+    await loadStoreMessages();
+  } catch(e) { alert('還原失敗：' + e.message); }
+};
+
+window.deleteStoreMessage = async function(id) {
+  if (!confirm('確定要永久刪除這則留言？')) return;
+  try {
+    await deleteDoc(doc(db,'storeMessages',id));
+    await loadStoreMessages();
+  } catch(e) { alert('刪除失敗：' + e.message); }
+};
+
+window.toggleStoreResolved = function(btn) {
+  const list = document.getElementById('storeMsgResolvedList');
+  const arrow = document.getElementById('storeMsgResolvedArrow');
+  const open = list.style.display !== 'none';
+  list.style.display = open ? 'none' : 'flex';
+  if (arrow) arrow.style.transform = open ? 'rotate(0)' : 'rotate(90deg)';
+};
+
+async function loadStoreMessages() {
+  try {
+    const snap = await getDocs(query(collection(db,'storeMessages'), orderBy('createdAt','desc')));
+    const active = [], resolved = [];
+    snap.forEach(d => {
+      const m = { id: d.id, ...d.data() };
+      (m.status === 'resolved' ? resolved : active).push(m);
+    });
+    renderStoreMessages('storeMsgActiveList', active, false);
+    renderStoreMessages('storeMsgResolvedList', resolved, true);
+    document.getElementById('storeMsgActiveCount').textContent = `(${active.length})`;
+    document.getElementById('storeMsgResolvedCount').textContent = `(${resolved.length})`;
+    const badge = document.getElementById('storeBoardBadge');
+    if (badge) {
+      if (active.length > 0) { badge.style.display = 'inline-block'; badge.textContent = active.length; }
+      else { badge.style.display = 'none'; }
+    }
+  } catch(e) { console.error('loadStoreMessages:', e); }
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderStoreMessages(elId, msgs, isResolved) {
+  const el = document.getElementById(elId);
+  if (!msgs.length) {
+    el.innerHTML = `<p class="store-empty">${isResolved ? '尚無已收掉的留言' : '目前沒有待處理留言'}</p>`;
+    return;
+  }
+  el.innerHTML = msgs.map(m => {
+    const time = storeFmtTime(m.createdAt);
+    const actionLabel = m.resolvedAction === 'dismissed' ? '🚫 不需處理' : '✓ 已處理';
+    const resolvedNote = isResolved
+      ? `<div style="margin-top:6px;font-size:0.75rem;color:var(--text-muted)">${actionLabel} · ${escapeHtml(m.resolvedBy||'')} · ${storeFmtTime(m.resolvedAt)}</div>` : '';
+    const actions = isResolved
+      ? `<div class="store-msg-actions">
+           <button class="store-msg-action-btn" onclick="restoreStoreMessage('${m.id}')">↩️ 還原</button>
+           <button class="store-msg-action-btn danger" onclick="deleteStoreMessage('${m.id}')">🗑 刪除</button>
+         </div>`
+      : `<div class="store-msg-actions">
+           <button class="store-msg-action-btn primary" onclick="resolveStoreMessage('${m.id}','done')">✓ 處理完</button>
+           <button class="store-msg-action-btn" onclick="resolveStoreMessage('${m.id}','dismissed')">🚫 不需處理</button>
+         </div>`;
+    return `
+      <div class="store-msg-item ${isResolved?'resolved':''}">
+        <div class="store-msg-header">
+          <span class="store-msg-author-tag">👤 ${escapeHtml(m.author)}</span>
+          <span>${time}</span>
+        </div>
+        <div class="store-msg-body">${escapeHtml(m.text)}</div>
+        ${resolvedNote}
+        ${actions}
+      </div>`;
+  }).join('');
+}
+
+// ── 開店 SOP ──────────────────────────────────────────────
+async function loadStoreSopToday() {
+  const dayKey = storeTodayKey();
+  try {
+    const snap = await getDoc(doc(db,'storeSopLogs', dayKey));
+    const data = snap.exists() ? snap.data() : { items: {} };
+    renderStoreSop(data.items || {});
+  } catch(e) {
+    console.error('loadStoreSopToday:', e);
+    renderStoreSop({});
+  }
+}
+
+function renderStoreSop(items) {
+  const el = document.getElementById('storeSopList');
+  el.innerHTML = STORE_SOP_ITEMS.map(s => {
+    const it = items[s.id];
+    const done = !!(it && it.done);
+    const meta = done
+      ? `<span class="store-sop-meta">${storeFmtTime(it.doneAt)} · ${escapeHtml(it.doneBy||'')}</span>`
+      : '';
+    return `
+      <div class="store-sop-item ${done?'done':''}" onclick="toggleStoreSop('${s.id}')">
+        <div class="store-sop-checkbox">✓</div>
+        <div class="store-sop-label">${escapeHtml(s.label)}</div>
+        ${meta}
+      </div>`;
+  }).join('');
+}
+
+window.toggleStoreSop = async function(itemId) {
+  const dayKey = storeTodayKey();
+  const who = document.getElementById('storeSopAuthor')?.value || '山羊先生';
+  try {
+    const ref = doc(db,'storeSopLogs', dayKey);
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : { items: {} };
+    const items = data.items || {};
+    const currently = !!(items[itemId] && items[itemId].done);
+    if (currently) {
+      items[itemId] = { done: false };
+    } else {
+      items[itemId] = { done: true, doneBy: who, doneAt: new Date().toISOString() };
+    }
+    await setDoc(ref, { items, updatedAt: new Date().toISOString() }, { merge: true });
+    renderStoreSop(items);
+  } catch(e) { alert('儲存失敗：' + e.message); }
+};
+
+window.resetStoreSopToday = async function() {
+  if (!confirm('確定要重置今天的開店紀錄？所有打勾會清空')) return;
+  const dayKey = storeTodayKey();
+  try {
+    await setDoc(doc(db,'storeSopLogs', dayKey), { items: {}, updatedAt: new Date().toISOString() });
+    renderStoreSop({});
+  } catch(e) { alert('重置失敗：' + e.message); }
+};
+
+// ── 開會紀錄 ──────────────────────────────────────────────
+window.addMeetingNote = async function() {
+  const date    = document.getElementById('storeMeetingDate').value || storeTodayKey();
+  const title   = document.getElementById('storeMeetingTitle').value.trim();
+  const author  = document.getElementById('storeMeetingAuthor').value || '山羊先生';
+  const content = document.getElementById('storeMeetingContent').value.trim();
+  if (!title) { alert('請填寫會議主題'); return; }
+  if (!content) { alert('請填寫會議內容'); return; }
+  try {
+    await addDoc(collection(db,'storeMeetingNotes'), {
+      date, title, author, content,
+      createdAt: new Date().toISOString()
+    });
+    document.getElementById('storeMeetingTitle').value = '';
+    document.getElementById('storeMeetingContent').value = '';
+    await loadMeetingNotes();
+  } catch(e) { alert('新增失敗：' + e.message); }
+};
+
+window.deleteMeetingNote = async function(id) {
+  if (!confirm('確定要刪除這筆會議紀錄？')) return;
+  try {
+    await deleteDoc(doc(db,'storeMeetingNotes', id));
+    await loadMeetingNotes();
+  } catch(e) { alert('刪除失敗：' + e.message); }
+};
+
+async function loadMeetingNotes() {
+  try {
+    const snap = await getDocs(query(collection(db,'storeMeetingNotes'), orderBy('date','desc')));
+    const notes = [];
+    snap.forEach(d => notes.push({ id: d.id, ...d.data() }));
+    renderMeetingNotes(notes);
+  } catch(e) { console.error('loadMeetingNotes:', e); }
+}
+
+function renderMeetingNotes(notes) {
+  const el = document.getElementById('storeMeetingList');
+  if (!notes.length) {
+    el.innerHTML = '<p class="store-empty">尚無會議紀錄</p>';
+    return;
+  }
+  el.innerHTML = notes.map(n => `
+    <div class="store-meeting-item">
+      <div class="store-meeting-title">${escapeHtml(n.title)}</div>
+      <div class="store-meeting-meta">📅 ${escapeHtml(n.date||'')} · 👤 ${escapeHtml(n.author||'')}${n.createdAt?` · ${storeFmtTime(n.createdAt)}`:''}</div>
+      <div class="store-meeting-content">${escapeHtml(n.content)}</div>
+      <div class="store-meeting-actions">
+        <button class="store-msg-action-btn danger" onclick="deleteMeetingNote('${n.id}')">🗑 刪除</button>
+      </div>
+    </div>`).join('');
+}
+
+window.initStore = initStore;
 
 // ── 銷售分析圖表 ─────────────────────────────────────────
 (function() {
