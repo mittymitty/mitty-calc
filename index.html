@@ -494,13 +494,21 @@
     .store-sop-item.done .store-sop-detail { color: #b5b5b5; }
     .store-sop-meta { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; align-self: flex-start; }
 
-    .store-meeting-list { display: flex; flex-direction: column; gap: 12px; }
+    .store-meeting-list { display: flex; flex-direction: column; gap: 8px; }
     .store-meeting-item {
       background: #f9faf8; border: 1px solid var(--border-light); border-radius: var(--r-md);
-      padding: 14px 14px;
+      overflow: hidden;
     }
-    .store-meeting-title { font-weight: 600; font-size: 0.98rem; color: var(--text); margin-bottom: 4px; }
-    .store-meeting-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; }
+    .store-meeting-header {
+      width: 100%; padding: 14px 16px; background: none; border: none; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: inherit; text-align: left; transition: background .15s;
+    }
+    .store-meeting-header:hover { background: rgba(45,90,39,0.04); }
+    .store-meeting-title { font-weight: 600; font-size: 0.98rem; color: var(--text); flex: 1; word-break: break-word; }
+    .store-meeting-arrow { color: var(--text-muted); font-size: 0.8rem; flex-shrink: 0; margin-left: 12px; transition: transform .2s; }
+    .store-meeting-body { padding: 0 16px 14px; border-top: 1px solid var(--border-light); }
+    .store-meeting-meta { font-size: 0.78rem; color: var(--text-muted); margin: 10px 0 8px; }
     .store-meeting-content { font-size: 0.92rem; color: var(--text); white-space: pre-wrap; word-break: break-word; }
     .store-meeting-actions { margin-top: 10px; display: flex; gap: 6px; justify-content: flex-end; }
 
@@ -4663,7 +4671,7 @@ window.deleteMeetingNote = async function(id) {
 
 async function loadMeetingNotes() {
   try {
-    const snap = await getDocs(query(collection(db,'storeMeetingNotes'), orderBy('date','desc')));
+    const snap = await getDocs(query(collection(db,'storeMeetingNotes'), orderBy('createdAt','desc')));
     const notes = [];
     snap.forEach(d => notes.push({ id: d.id, ...d.data() }));
     renderMeetingNotes(notes);
@@ -4678,11 +4686,16 @@ function renderMeetingNotes(notes) {
   }
   el.innerHTML = notes.map(n => `
     <div class="store-meeting-item">
-      <div class="store-meeting-title">${escapeHtml(n.title)}</div>
-      <div class="store-meeting-meta">📅 ${escapeHtml(n.date||'')} · 👤 ${escapeHtml(n.author||'')}${n.createdAt?` · ${storeFmtTime(n.createdAt)}`:''}</div>
-      <div class="store-meeting-content">${escapeHtml(n.content)}</div>
-      <div class="store-meeting-actions">
-        <button class="store-msg-action-btn danger" onclick="deleteMeetingNote('${n.id}')">🗑 刪除</button>
+      <button class="store-meeting-header" onclick="toggleMeetingNote('${n.id}')">
+        <span class="store-meeting-title">${escapeHtml(n.title)}</span>
+        <span class="store-meeting-arrow" id="meeting-arrow-${n.id}">▶</span>
+      </button>
+      <div class="store-meeting-body" id="meeting-body-${n.id}" style="display:none">
+        <div class="store-meeting-meta">👤 ${escapeHtml(n.author||'')}${n.createdAt?` · ${storeFmtTime(n.createdAt)}`:''}</div>
+        <div class="store-meeting-content">${escapeHtml(n.content)}</div>
+        <div class="store-meeting-actions">
+          <button class="store-msg-action-btn danger" onclick="deleteMeetingNote('${n.id}')">🗑 刪除</button>
+        </div>
       </div>
     </div>`).join('');
 }
