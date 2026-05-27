@@ -494,6 +494,42 @@
     .store-sop-item.done .store-sop-detail { color: #b5b5b5; }
     .store-sop-meta { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; align-self: flex-start; }
 
+    /* ── 管理員：SOP 履行紀錄 ── */
+    .admin-sop-list { display: flex; flex-direction: column; gap: 8px; }
+    .admin-sop-day {
+      border: 1px solid var(--border-light); border-radius: var(--r-sm); overflow: hidden;
+      background: #fff;
+    }
+    .admin-sop-day-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 14px; cursor: pointer; user-select: none; gap: 12px;
+    }
+    .admin-sop-day-header:hover { background: rgba(45,90,39,0.04); }
+    .admin-sop-day.status-done   { border-left: 4px solid #2d5a27; }
+    .admin-sop-day.status-partial{ border-left: 4px solid #d4a017; background: #fffbef; }
+    .admin-sop-day.status-missed { border-left: 4px solid #c0392b; background: #fdf3f2; }
+    .admin-sop-day.status-future { border-left: 4px solid #e0e0dc; opacity: 0.5; }
+    .admin-sop-day-date { font-weight: 600; font-size: 0.95rem; }
+    .admin-sop-day-status {
+      font-size: 0.78rem; padding: 3px 10px; border-radius: 10px; font-weight: 600;
+    }
+    .status-done .admin-sop-day-status   { background: #d8ecd5; color: #1e4019; }
+    .status-partial .admin-sop-day-status{ background: #fdebbd; color: #6b4f1e; }
+    .status-missed .admin-sop-day-status { background: #fadcd9; color: #8b1d12; }
+    .status-future .admin-sop-day-status { background: #f0f0ed; color: #888; }
+    .admin-sop-day-body {
+      display: none; padding: 6px 14px 14px; border-top: 1px solid var(--border-light);
+      background: #fafaf7;
+    }
+    .admin-sop-day.expanded .admin-sop-day-body { display: block; }
+    .admin-sop-day.expanded .admin-sop-arrow { transform: rotate(90deg); }
+    .admin-sop-arrow { color: var(--text-muted); font-size: 0.8rem; transition: transform .2s; }
+    .admin-sop-detail-list { margin: 8px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; }
+    .admin-sop-detail-list li { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; }
+    .admin-sop-detail-list .check  { color: var(--green); }
+    .admin-sop-detail-list .miss   { color: #c0392b; }
+    .admin-sop-detail-time { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; flex-shrink: 0; }
+
     .store-meeting-list { display: flex; flex-direction: column; gap: 8px; }
     .store-meeting-item {
       background: #f9faf8; border: 1px solid var(--border-light); border-radius: var(--r-md);
@@ -729,6 +765,9 @@
     <button class="tab-btn" onclick="switchTab('sales')">
       <span class="tab-label">營收</span>
     </button>
+    <button class="tab-btn" onclick="switchTab('store')">
+      <span class="tab-label">店面</span>
+    </button>
     <button class="tab-btn yufu-tab" onclick="openYufuView('admin')">
       <span class="tab-label">Yufu</span>
     </button>
@@ -953,6 +992,27 @@ Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Biza
         </div>
       </div>
     </div>
+
+    <!-- 店面 SOP 履行紀錄 -->
+    <div class="tab-panel" id="tab-store">
+      <h2 style="margin-top:8px">🏪 店面 SOP 履行紀錄</h2>
+      <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:14px">
+        看每天開店流程的打勾情況。<strong style="color:#c0392b">紅色＝未執行</strong>（完全沒人打勾）；
+        <strong style="color:#c08a1e">黃色＝部分完成</strong>；<strong style="color:var(--green)">綠色＝全部完成</strong>。
+        點日期可看詳細項目。
+      </p>
+      <div class="month-row">
+        <label>月份</label>
+        <input type="month" id="adminSopMonth" onchange="loadAdminSopLogs()">
+      </div>
+      <div class="section-card" style="margin-top:14px">
+        <div id="adminSopSummary" style="margin-bottom:12px;font-size:0.9rem;color:var(--text-sub)"></div>
+        <div id="adminSopList" class="admin-sop-list">
+          <p style="color:#aaa; font-size:0.88rem;">載入中…</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1281,11 +1341,7 @@ Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Biza
         <div class="store-sop-hint">
           ⚠️ 壓線到店：店內燈都開好、音樂、投影、冷氣都準備好之後，才可以下去開樓下門迎接客人。
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0 4px">
-          <label style="font-size:0.82rem;color:var(--text-muted)">值班簽名</label>
-          <select id="storeSopAuthor" class="store-msg-author" style="max-width:160px"></select>
-        </div>
-        <div id="storeSopList" class="store-sop-list">
+        <div id="storeSopList" class="store-sop-list" style="margin-top:10px">
           <p class="store-empty">載入中…</p>
         </div>
         <div style="text-align:right;margin-top:8px">
@@ -1924,7 +1980,7 @@ window.exitPreviewMode = function() {
 
 // ── 分頁切換 ─────────────────────────────────────────────
 window.switchTab = function(tab) {
-  ['salary', 'users', 'sched', 'sales', 'vendors'].forEach(t => {
+  ['salary', 'users', 'sched', 'sales', 'store', 'vendors'].forEach(t => {
     const btns = document.querySelectorAll(`#adminView .tab-btn`);
     btns.forEach(b => {
       if (b.getAttribute('onclick') === `switchTab('${t}')`) {
@@ -1937,6 +1993,9 @@ window.switchTab = function(tab) {
   if (tab === 'sched') {
     if (!adminSchedYear) initAdminSched();
     else loadAdminSchedData();
+  }
+  if (tab === 'store') {
+    initAdminSop();
   }
   if (tab === 'sales') {
     initSalesChart();
@@ -4396,7 +4455,7 @@ function storeAuthorOptions(selectedKey) {
 }
 
 function storeFillAuthorSelects(defaultName) {
-  ['storeMsgAuthor','storeSopAuthor','storeMeetingAuthor'].forEach(id => {
+  ['storeMsgAuthor','storeMeetingAuthor'].forEach(id => {
     const sel = document.getElementById(id);
     if (sel) sel.innerHTML = storeAuthorOptions(defaultName);
   });
@@ -4608,7 +4667,7 @@ function renderStoreSop(items) {
 
 window.toggleStoreSop = async function(itemId) {
   const dayKey = storeTodayKey();
-  const who = document.getElementById('storeSopAuthor')?.value || '山羊先生';
+  const who = '山羊先生';
   try {
     const ref = doc(db,'storeSopLogs', dayKey);
     const snap = await getDoc(ref);
@@ -4701,6 +4760,101 @@ function renderMeetingNotes(notes) {
 }
 
 window.initStore = initStore;
+
+// ══════════════════════════════════════════════════════════
+//  管理員：店面 SOP 履行紀錄
+// ══════════════════════════════════════════════════════════
+let adminSopInited = false;
+
+function initAdminSop() {
+  const inp = document.getElementById('adminSopMonth');
+  if (!inp) return;
+  if (!inp.value) {
+    const now = new Date();
+    inp.value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  }
+  adminSopInited = true;
+  loadAdminSopLogs();
+}
+
+window.loadAdminSopLogs = async function() {
+  const monthVal = document.getElementById('adminSopMonth').value;
+  if (!monthVal) return;
+  const [y, m] = monthVal.split('-').map(Number);
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const todayKey = storeTodayKey();
+  // 拉這個月所有 storeSopLogs 文件
+  const logs = {};
+  try {
+    const snap = await getDocs(collection(db,'storeSopLogs'));
+    snap.forEach(d => {
+      const id = d.id; // 格式 YYYY-MM-DD
+      if (id.startsWith(monthVal + '-')) logs[id] = d.data();
+    });
+  } catch(e) { console.error('loadAdminSopLogs:', e); }
+
+  // 對每天分類狀態
+  const totalItems = STORE_SOP_ITEMS.length;
+  const days = [];
+  let doneCount = 0, partialCount = 0, missedCount = 0, futureCount = 0;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayKey = `${monthVal}-${String(day).padStart(2,'0')}`;
+    const isFuture = dayKey > todayKey;
+    const log = logs[dayKey];
+    const items = (log && log.items) || {};
+    const checked = STORE_SOP_ITEMS.filter(s => items[s.id] && items[s.id].done).length;
+    let status;
+    if (isFuture) { status = 'future'; futureCount++; }
+    else if (checked === 0) { status = 'missed'; missedCount++; }
+    else if (checked === totalItems) { status = 'done'; doneCount++; }
+    else { status = 'partial'; partialCount++; }
+    days.push({ dayKey, day, checked, total: totalItems, status, items });
+  }
+
+  // 顯示摘要
+  const passedDays = doneCount + partialCount + missedCount;
+  const compliance = passedDays > 0 ? Math.round(doneCount / passedDays * 100) : 0;
+  document.getElementById('adminSopSummary').innerHTML = `
+    本月 ${monthVal}：
+    <span style="color:var(--green);font-weight:600">✓ 全部完成 ${doneCount} 天</span> ·
+    <span style="color:#c08a1e;font-weight:600">⚠ 部分完成 ${partialCount} 天</span> ·
+    <span style="color:#c0392b;font-weight:600">✗ 未執行 ${missedCount} 天</span>
+    <span style="color:var(--text-muted)"> · 完整執行率 ${compliance}%</span>
+  `;
+
+  // 渲染日列表（最新日期在最上面）
+  const el = document.getElementById('adminSopList');
+  el.innerHTML = days.reverse().map(d => {
+    const statusLabel = {
+      done: '✓ 全部完成',
+      partial: `⚠ ${d.checked} / ${d.total}`,
+      missed: '✗ 未執行',
+      future: '— 未到'
+    }[d.status];
+    const detail = STORE_SOP_ITEMS.map(s => {
+      const it = d.items[s.id];
+      const done = !!(it && it.done);
+      const time = done ? `<span class="admin-sop-detail-time">${storeFmtTime(it.doneAt)}${it.doneBy?' · '+escapeHtml(it.doneBy):''}</span>` : '';
+      return `<li><span class="${done?'check':'miss'}">${done?'✓':'✗'}</span>${escapeHtml(s.label)}${time}</li>`;
+    }).join('');
+    return `
+      <div class="admin-sop-day status-${d.status}" data-day="${d.dayKey}">
+        <div class="admin-sop-day-header" onclick="toggleAdminSopDay('${d.dayKey}')">
+          <span class="admin-sop-day-date">${d.dayKey}（${['日','一','二','三','四','五','六'][new Date(d.dayKey+'T00:00:00').getDay()]}）</span>
+          <span class="admin-sop-day-status">${statusLabel}</span>
+          <span class="admin-sop-arrow">▶</span>
+        </div>
+        <div class="admin-sop-day-body">
+          <ul class="admin-sop-detail-list">${detail}</ul>
+        </div>
+      </div>`;
+  }).join('');
+};
+
+window.toggleAdminSopDay = function(dayKey) {
+  const card = document.querySelector(`.admin-sop-day[data-day="${dayKey}"]`);
+  if (card) card.classList.toggle('expanded');
+};
 
 // ── 銷售分析圖表 ─────────────────────────────────────────
 (function() {
