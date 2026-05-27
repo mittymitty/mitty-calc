@@ -467,68 +467,6 @@
     .store-msg-action-btn.danger { color: #c0392b; border-color: #e8c0bc; }
     .store-msg-action-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-xs); }
 
-    .store-sop-hint {
-      background: #fef7e0; border-left: 3px solid var(--gold); border-radius: var(--r-sm);
-      padding: 10px 12px; margin: 10px 0; font-size: 0.85rem; color: #6b4f1e;
-    }
-    .store-sop-list { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
-    .store-sop-item {
-      display: flex; align-items: center; gap: 12px; padding: 12px 12px; border-radius: var(--r-sm);
-      background: #fff; border: 1px solid var(--border-light); cursor: pointer;
-      transition: all .15s; user-select: none;
-    }
-    .store-sop-item:hover { border-color: var(--green); background: #fafdf9; }
-    .store-sop-item.done { background: #eef5ec; border-color: #c8e0c0; }
-    .store-sop-item.done .store-sop-label { text-decoration: line-through; color: var(--text-muted); }
-    .store-sop-checkbox {
-      width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700;
-      background: #fff; color: transparent; transition: all .15s;
-    }
-    .store-sop-item.done .store-sop-checkbox {
-      background: var(--green); border-color: var(--green); color: #fff;
-    }
-    .store-sop-label-wrap { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-    .store-sop-label { font-size: 0.95rem; color: var(--text); font-weight: 500; }
-    .store-sop-detail { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
-    .store-sop-item.done .store-sop-detail { color: #b5b5b5; }
-    .store-sop-meta { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; align-self: flex-start; }
-
-    /* ── 管理員：SOP 履行紀錄 ── */
-    .admin-sop-list { display: flex; flex-direction: column; gap: 8px; }
-    .admin-sop-day {
-      border: 1px solid var(--border-light); border-radius: var(--r-sm); overflow: hidden;
-      background: #fff;
-    }
-    .admin-sop-day-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 14px; cursor: pointer; user-select: none; gap: 12px;
-    }
-    .admin-sop-day-header:hover { background: rgba(45,90,39,0.04); }
-    .admin-sop-day.status-done   { border-left: 4px solid #2d5a27; }
-    .admin-sop-day.status-partial{ border-left: 4px solid #d4a017; background: #fffbef; }
-    .admin-sop-day.status-missed { border-left: 4px solid #c0392b; background: #fdf3f2; }
-    .admin-sop-day.status-future { border-left: 4px solid #e0e0dc; opacity: 0.5; }
-    .admin-sop-day-date { font-weight: 600; font-size: 0.95rem; }
-    .admin-sop-day-status {
-      font-size: 0.78rem; padding: 3px 10px; border-radius: 10px; font-weight: 600;
-    }
-    .status-done .admin-sop-day-status   { background: #d8ecd5; color: #1e4019; }
-    .status-partial .admin-sop-day-status{ background: #fdebbd; color: #6b4f1e; }
-    .status-missed .admin-sop-day-status { background: #fadcd9; color: #8b1d12; }
-    .status-future .admin-sop-day-status { background: #f0f0ed; color: #888; }
-    .admin-sop-day-body {
-      display: none; padding: 6px 14px 14px; border-top: 1px solid var(--border-light);
-      background: #fafaf7;
-    }
-    .admin-sop-day.expanded .admin-sop-day-body { display: block; }
-    .admin-sop-day.expanded .admin-sop-arrow { transform: rotate(90deg); }
-    .admin-sop-arrow { color: var(--text-muted); font-size: 0.8rem; transition: transform .2s; }
-    .admin-sop-detail-list { margin: 8px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; }
-    .admin-sop-detail-list li { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; }
-    .admin-sop-detail-list .check  { color: var(--green); }
-    .admin-sop-detail-list .miss   { color: #c0392b; }
-    .admin-sop-detail-time { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; flex-shrink: 0; }
 
     .store-meeting-list { display: flex; flex-direction: column; gap: 8px; }
     .store-meeting-item {
@@ -765,9 +703,6 @@
     <button class="tab-btn" onclick="switchTab('sales')">
       <span class="tab-label">營收</span>
     </button>
-    <button class="tab-btn" onclick="switchTab('store')">
-      <span class="tab-label">店面</span>
-    </button>
     <button class="tab-btn yufu-tab" onclick="openYufuView('admin')">
       <span class="tab-label">Yufu</span>
     </button>
@@ -989,26 +924,6 @@
 <strong>📌 品牌系列</strong><br>
 Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Bizan Angel shirt 一款狂銷 14 件、加上 Bizan Angel shirt 8 件——Bizan Angel 系列在這個檔期明顯被市場認可，要趕快盤庫存。Mitty girls 40 件 / $27,000 件數持平上週，但單款集中度回到分散狀態（最高的棉花糖布標髮圈、甜心長襪、Horse、斜肩薄長袖都只有 5–6 件），上週 Horse 單款 10 件的爆款效應稍微退溫，可以觀察是不是熱潮過了。Babyboomer 7 件略收（上週 13 件是高點），是自然回落。Masako 寄賣 1 件、整個檔期還是偏靜，下週看能不能跟對方溝通補一批新貨進來。
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 店面 SOP 履行紀錄 -->
-    <div class="tab-panel" id="tab-store">
-      <h2 style="margin-top:8px">🏪 店面 SOP 履行紀錄</h2>
-      <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:14px">
-        看每天開店流程的打勾情況。<strong style="color:#c0392b">紅色＝未執行</strong>（完全沒人打勾）；
-        <strong style="color:#c08a1e">黃色＝部分完成</strong>；<strong style="color:var(--green)">綠色＝全部完成</strong>。
-        點日期可看詳細項目。
-      </p>
-      <div class="month-row">
-        <label>月份</label>
-        <input type="month" id="adminSopMonth" onchange="loadAdminSopLogs()">
-      </div>
-      <div class="section-card" style="margin-top:14px">
-        <div id="adminSopSummary" style="margin-bottom:12px;font-size:0.9rem;color:var(--text-sub)"></div>
-        <div id="adminSopList" class="admin-sop-list">
-          <p style="color:#aaa; font-size:0.88rem;">載入中…</p>
         </div>
       </div>
     </div>
@@ -1288,7 +1203,6 @@ Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Biza
   <div id="storeTabBar" class="store-tab-bar">
     <button class="store-tab-btn active" onclick="switchStoreTab('sales')">📊 銷售</button>
     <button class="store-tab-btn" onclick="switchStoreTab('board')">💬 留言板<span class="store-tab-badge" id="storeBoardBadge" style="display:none">0</span></button>
-    <button class="store-tab-btn" onclick="switchStoreTab('sop')">✅ 開店 SOP</button>
     <button class="store-tab-btn" onclick="switchStoreTab('meeting')">📒 開會紀錄</button>
   </div>
 
@@ -1325,28 +1239,6 @@ Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Biza
           <span style="font-size:0.9rem;color:#888;transition:transform .2s" id="storeMsgResolvedArrow">▶</span>
         </button>
         <div id="storeMsgResolvedList" class="store-msg-list" style="display:none;margin-top:10px"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 開店 SOP -->
-  <div id="storePanelSop" class="store-tab-panel" style="display:none">
-    <div class="container">
-      <div class="store-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <h3 style="margin:0;color:var(--green);font-size:1rem">✅ 開店流程</h3>
-          <span id="storeSopDate" style="font-size:0.8rem;color:var(--text-muted)"></span>
-        </div>
-        <p style="color:var(--text-muted);font-size:0.82rem;margin:0 0 6px">完成的項目打勾即可，會自動留下時間與簽名。每天自動重置。</p>
-        <div class="store-sop-hint">
-          ⚠️ 壓線到店：店內燈都開好、音樂、投影、冷氣都準備好之後，才可以下去開樓下門迎接客人。
-        </div>
-        <div id="storeSopList" class="store-sop-list" style="margin-top:10px">
-          <p class="store-empty">載入中…</p>
-        </div>
-        <div style="text-align:right;margin-top:8px">
-          <button class="btn-link" onclick="resetStoreSopToday()" style="color:var(--text-muted);font-size:0.78rem">🔄 重置今天的紀錄</button>
-        </div>
       </div>
     </div>
   </div>
@@ -1980,7 +1872,7 @@ window.exitPreviewMode = function() {
 
 // ── 分頁切換 ─────────────────────────────────────────────
 window.switchTab = function(tab) {
-  ['salary', 'users', 'sched', 'sales', 'store', 'vendors'].forEach(t => {
+  ['salary', 'users', 'sched', 'sales', 'vendors'].forEach(t => {
     const btns = document.querySelectorAll(`#adminView .tab-btn`);
     btns.forEach(b => {
       if (b.getAttribute('onclick') === `switchTab('${t}')`) {
@@ -1993,9 +1885,6 @@ window.switchTab = function(tab) {
   if (tab === 'sched') {
     if (!adminSchedYear) initAdminSched();
     else loadAdminSchedData();
-  }
-  if (tab === 'store') {
-    initAdminSop();
   }
   if (tab === 'sales') {
     initSalesChart();
@@ -4431,17 +4320,6 @@ function mittyShowMsg(id, msg) {
 // ══════════════════════════════════════════════════════════
 //  店面共用帳號（山羊先生）
 // ══════════════════════════════════════════════════════════
-const STORE_SOP_ITEMS = [
-  { id: 'clock',        label: '打卡' },
-  { id: 'seat_lights',  label: '開座位區燈', detail: '軌道燈、窗戶燈、Mitty Girls 捲髮燈、沙發立燈、投影機' },
-  { id: 'other_lights', label: '玩具區燈、走廊燈、招牌燈、交通燈' },
-  { id: 'game_room',    label: '遊戲間整理和開啟' },
-  { id: 'ac',           label: '開冷氣' },
-  { id: 'music',        label: '放音樂' },
-  { id: 'check',        label: '確認環境就緒' },
-  { id: 'open_door',    label: '開門迎接客人' },
-];
-
 // 員工選單（用於署名）— 從 EMP_KEYS 動態生成
 function storeAuthorOptions(selectedKey) {
   const opts = [
@@ -4493,21 +4371,16 @@ function initStore() {
   // 填上「值班簽名」下拉（預設山羊先生）
   storeFillAuthorSelects('山羊先生');
 
-  // 預設今日日期（SOP 顯示用）
-  const sd = document.getElementById('storeSopDate');
-  if (sd) sd.textContent = storeTodayKey();
-
   // 預設打開銷售 tab
   switchStoreTab('sales');
 
   // 載入各區資料
   loadStoreMessages();
-  loadStoreSopToday();
   loadMeetingNotes();
 }
 
 window.switchStoreTab = function(tab) {
-  const tabs = ['sales','board','sop','meeting'];
+  const tabs = ['sales','board','meeting'];
   tabs.forEach(t => {
     const panel = document.getElementById('storePanel' + t.charAt(0).toUpperCase() + t.slice(1));
     if (panel) panel.style.display = (t === tab) ? 'block' : 'none';
@@ -4631,68 +4504,6 @@ function renderStoreMessages(elId, msgs, isResolved) {
   }).join('');
 }
 
-// ── 開店 SOP ──────────────────────────────────────────────
-async function loadStoreSopToday() {
-  const dayKey = storeTodayKey();
-  try {
-    const snap = await getDoc(doc(db,'storeSopLogs', dayKey));
-    const data = snap.exists() ? snap.data() : { items: {} };
-    renderStoreSop(data.items || {});
-  } catch(e) {
-    console.error('loadStoreSopToday:', e);
-    renderStoreSop({});
-  }
-}
-
-function renderStoreSop(items) {
-  const el = document.getElementById('storeSopList');
-  el.innerHTML = STORE_SOP_ITEMS.map(s => {
-    const it = items[s.id];
-    const done = !!(it && it.done);
-    const meta = done
-      ? `<span class="store-sop-meta">${storeFmtTime(it.doneAt)} · ${escapeHtml(it.doneBy||'')}</span>`
-      : '';
-    const detail = s.detail ? `<div class="store-sop-detail">${escapeHtml(s.detail)}</div>` : '';
-    return `
-      <div class="store-sop-item ${done?'done':''}" onclick="toggleStoreSop('${s.id}')">
-        <div class="store-sop-checkbox">✓</div>
-        <div class="store-sop-label-wrap">
-          <div class="store-sop-label">${escapeHtml(s.label)}</div>
-          ${detail}
-        </div>
-        ${meta}
-      </div>`;
-  }).join('');
-}
-
-window.toggleStoreSop = async function(itemId) {
-  const dayKey = storeTodayKey();
-  const who = '山羊先生';
-  try {
-    const ref = doc(db,'storeSopLogs', dayKey);
-    const snap = await getDoc(ref);
-    const data = snap.exists() ? snap.data() : { items: {} };
-    const items = data.items || {};
-    const currently = !!(items[itemId] && items[itemId].done);
-    if (currently) {
-      items[itemId] = { done: false };
-    } else {
-      items[itemId] = { done: true, doneBy: who, doneAt: new Date().toISOString() };
-    }
-    await setDoc(ref, { items, updatedAt: new Date().toISOString() }, { merge: true });
-    renderStoreSop(items);
-  } catch(e) { alert('儲存失敗：' + e.message); }
-};
-
-window.resetStoreSopToday = async function() {
-  if (!confirm('確定要重置今天的開店紀錄？所有打勾會清空')) return;
-  const dayKey = storeTodayKey();
-  try {
-    await setDoc(doc(db,'storeSopLogs', dayKey), { items: {}, updatedAt: new Date().toISOString() });
-    renderStoreSop({});
-  } catch(e) { alert('重置失敗：' + e.message); }
-};
-
 // ── 開會紀錄 ──────────────────────────────────────────────
 window.addMeetingNote = async function() {
   const title   = document.getElementById('storeMeetingTitle').value.trim();
@@ -4760,101 +4571,6 @@ function renderMeetingNotes(notes) {
 }
 
 window.initStore = initStore;
-
-// ══════════════════════════════════════════════════════════
-//  管理員：店面 SOP 履行紀錄
-// ══════════════════════════════════════════════════════════
-let adminSopInited = false;
-
-function initAdminSop() {
-  const inp = document.getElementById('adminSopMonth');
-  if (!inp) return;
-  if (!inp.value) {
-    const now = new Date();
-    inp.value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
-  }
-  adminSopInited = true;
-  loadAdminSopLogs();
-}
-
-window.loadAdminSopLogs = async function() {
-  const monthVal = document.getElementById('adminSopMonth').value;
-  if (!monthVal) return;
-  const [y, m] = monthVal.split('-').map(Number);
-  const daysInMonth = new Date(y, m, 0).getDate();
-  const todayKey = storeTodayKey();
-  // 拉這個月所有 storeSopLogs 文件
-  const logs = {};
-  try {
-    const snap = await getDocs(collection(db,'storeSopLogs'));
-    snap.forEach(d => {
-      const id = d.id; // 格式 YYYY-MM-DD
-      if (id.startsWith(monthVal + '-')) logs[id] = d.data();
-    });
-  } catch(e) { console.error('loadAdminSopLogs:', e); }
-
-  // 對每天分類狀態
-  const totalItems = STORE_SOP_ITEMS.length;
-  const days = [];
-  let doneCount = 0, partialCount = 0, missedCount = 0, futureCount = 0;
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dayKey = `${monthVal}-${String(day).padStart(2,'0')}`;
-    const isFuture = dayKey > todayKey;
-    const log = logs[dayKey];
-    const items = (log && log.items) || {};
-    const checked = STORE_SOP_ITEMS.filter(s => items[s.id] && items[s.id].done).length;
-    let status;
-    if (isFuture) { status = 'future'; futureCount++; }
-    else if (checked === 0) { status = 'missed'; missedCount++; }
-    else if (checked === totalItems) { status = 'done'; doneCount++; }
-    else { status = 'partial'; partialCount++; }
-    days.push({ dayKey, day, checked, total: totalItems, status, items });
-  }
-
-  // 顯示摘要
-  const passedDays = doneCount + partialCount + missedCount;
-  const compliance = passedDays > 0 ? Math.round(doneCount / passedDays * 100) : 0;
-  document.getElementById('adminSopSummary').innerHTML = `
-    本月 ${monthVal}：
-    <span style="color:var(--green);font-weight:600">✓ 全部完成 ${doneCount} 天</span> ·
-    <span style="color:#c08a1e;font-weight:600">⚠ 部分完成 ${partialCount} 天</span> ·
-    <span style="color:#c0392b;font-weight:600">✗ 未執行 ${missedCount} 天</span>
-    <span style="color:var(--text-muted)"> · 完整執行率 ${compliance}%</span>
-  `;
-
-  // 渲染日列表（最新日期在最上面）
-  const el = document.getElementById('adminSopList');
-  el.innerHTML = days.reverse().map(d => {
-    const statusLabel = {
-      done: '✓ 全部完成',
-      partial: `⚠ ${d.checked} / ${d.total}`,
-      missed: '✗ 未執行',
-      future: '— 未到'
-    }[d.status];
-    const detail = STORE_SOP_ITEMS.map(s => {
-      const it = d.items[s.id];
-      const done = !!(it && it.done);
-      const time = done ? `<span class="admin-sop-detail-time">${storeFmtTime(it.doneAt)}${it.doneBy?' · '+escapeHtml(it.doneBy):''}</span>` : '';
-      return `<li><span class="${done?'check':'miss'}">${done?'✓':'✗'}</span>${escapeHtml(s.label)}${time}</li>`;
-    }).join('');
-    return `
-      <div class="admin-sop-day status-${d.status}" data-day="${d.dayKey}">
-        <div class="admin-sop-day-header" onclick="toggleAdminSopDay('${d.dayKey}')">
-          <span class="admin-sop-day-date">${d.dayKey}（${['日','一','二','三','四','五','六'][new Date(d.dayKey+'T00:00:00').getDay()]}）</span>
-          <span class="admin-sop-day-status">${statusLabel}</span>
-          <span class="admin-sop-arrow">▶</span>
-        </div>
-        <div class="admin-sop-day-body">
-          <ul class="admin-sop-detail-list">${detail}</ul>
-        </div>
-      </div>`;
-  }).join('');
-};
-
-window.toggleAdminSopDay = function(dayKey) {
-  const card = document.querySelector(`.admin-sop-day[data-day="${dayKey}"]`);
-  if (card) card.classList.toggle('expanded');
-};
 
 // ── 銷售分析圖表 ─────────────────────────────────────────
 (function() {
