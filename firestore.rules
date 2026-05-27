@@ -114,5 +114,21 @@ service cloud.firestore {
       // 員工只能「修改」自己的排班資料
       allow write: if isOwner(empKey);
     }
+
+    // ── 店面共用：交班留言板 ─────────────────────────────
+    // 所有已登入帳號（管理員、員工、山羊先生店面帳號）都可讀寫
+    match /storeMessages/{docId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ── 店面共用：開店 SOP 每日打勾紀錄 ───────────────────
+    match /storeSopLogs/{dayKey} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ── 店面共用：開會紀錄 ────────────────────────────────
+    match /storeMeetingNotes/{docId} {
+      allow read, write: if request.auth != null;
+    }
   }
 }
