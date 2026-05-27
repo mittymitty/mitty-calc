@@ -488,8 +488,11 @@
     .store-sop-item.done .store-sop-checkbox {
       background: var(--green); border-color: var(--green); color: #fff;
     }
-    .store-sop-label { flex: 1; font-size: 0.92rem; color: var(--text); }
-    .store-sop-meta { font-size: 0.72rem; color: var(--text-muted); }
+    .store-sop-label-wrap { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .store-sop-label { font-size: 0.95rem; color: var(--text); font-weight: 500; }
+    .store-sop-detail { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+    .store-sop-item.done .store-sop-detail { color: #b5b5b5; }
+    .store-sop-meta { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; align-self: flex-start; }
 
     .store-meeting-list { display: flex; flex-direction: column; gap: 12px; }
     .store-meeting-item {
@@ -1288,9 +1291,8 @@ Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Biza
   <div id="storePanelMeeting" class="store-tab-panel" style="display:none">
     <div class="container">
       <div class="store-card">
-        <h3 style="margin:0 0 10px;color:var(--green);font-size:1rem">📒 開會紀錄</h3>
-        <p style="color:var(--text-muted);font-size:0.82rem;margin:0 0 14px">員工開會、培訓、討論內容都可以記在這。所有人都看得到，可一起累積店裡的決定。</p>
-        <input type="date" id="storeMeetingDate" class="field" style="margin-bottom:8px">
+        <h3 style="margin:0 0 10px;color:var(--green);font-size:1rem">📒 新增開會紀錄</h3>
+        <p style="color:var(--text-muted);font-size:0.82rem;margin:0 0 14px">員工開會、培訓、討論內容都可以記在這。點標題就能展開看內容。</p>
         <input type="text" id="storeMeetingTitle" class="field" placeholder="會議主題（例：5/26 週會、新品上架討論）" style="margin-bottom:8px">
         <select id="storeMeetingAuthor" class="store-msg-author" style="margin-bottom:8px;width:100%"></select>
         <textarea id="storeMeetingContent" class="store-msg-textarea" placeholder="會議內容、決議、行動項目…" rows="6" style="margin-bottom:8px"></textarea>
@@ -4363,18 +4365,14 @@ function mittyShowMsg(id, msg) {
 //  店面共用帳號（山羊先生）
 // ══════════════════════════════════════════════════════════
 const STORE_SOP_ITEMS = [
-  { id: 'clock',     label: '打卡' },
-  { id: 'sign',      label: '開招牌燈' },
-  { id: 'iron',      label: '開鐵牌' },
-  { id: 'game',      label: '開遊戲間燈' },
-  { id: 'toy',       label: '開玩具區燈' },
-  { id: 'hall',      label: '開走廊燈' },
-  { id: 'mg_hair',   label: '開 Mitty Girls 捲髮燈' },
-  { id: 'projector', label: '開投影區域' },
-  { id: 'ac',        label: '開冷氣' },
-  { id: 'music',     label: '放音樂' },
-  { id: 'check',     label: '確認環境就緒' },
-  { id: 'open_door', label: '開門迎接客人' },
+  { id: 'clock',        label: '打卡' },
+  { id: 'seat_lights',  label: '開座位區燈', detail: '軌道燈、窗戶燈、Mitty Girls 捲髮燈、沙發立燈、投影機' },
+  { id: 'other_lights', label: '玩具區燈、走廊燈、招牌燈、交通燈' },
+  { id: 'game_room',    label: '遊戲間整理和開啟' },
+  { id: 'ac',           label: '開冷氣' },
+  { id: 'music',        label: '放音樂' },
+  { id: 'check',        label: '確認環境就緒' },
+  { id: 'open_door',    label: '開門迎接客人' },
 ];
 
 // 員工選單（用於署名）— 從 EMP_KEYS 動態生成
@@ -4428,9 +4426,7 @@ function initStore() {
   // 填上「值班簽名」下拉（預設山羊先生）
   storeFillAuthorSelects('山羊先生');
 
-  // 預設今日日期
-  const md = document.getElementById('storeMeetingDate');
-  if (md) md.value = storeTodayKey();
+  // 預設今日日期（SOP 顯示用）
   const sd = document.getElementById('storeSopDate');
   if (sd) sd.textContent = storeTodayKey();
 
@@ -4589,10 +4585,14 @@ function renderStoreSop(items) {
     const meta = done
       ? `<span class="store-sop-meta">${storeFmtTime(it.doneAt)} · ${escapeHtml(it.doneBy||'')}</span>`
       : '';
+    const detail = s.detail ? `<div class="store-sop-detail">${escapeHtml(s.detail)}</div>` : '';
     return `
       <div class="store-sop-item ${done?'done':''}" onclick="toggleStoreSop('${s.id}')">
         <div class="store-sop-checkbox">✓</div>
-        <div class="store-sop-label">${escapeHtml(s.label)}</div>
+        <div class="store-sop-label-wrap">
+          <div class="store-sop-label">${escapeHtml(s.label)}</div>
+          ${detail}
+        </div>
         ${meta}
       </div>`;
   }).join('');
@@ -4628,7 +4628,6 @@ window.resetStoreSopToday = async function() {
 
 // ── 開會紀錄 ──────────────────────────────────────────────
 window.addMeetingNote = async function() {
-  const date    = document.getElementById('storeMeetingDate').value || storeTodayKey();
   const title   = document.getElementById('storeMeetingTitle').value.trim();
   const author  = document.getElementById('storeMeetingAuthor').value || '山羊先生';
   const content = document.getElementById('storeMeetingContent').value.trim();
@@ -4636,13 +4635,22 @@ window.addMeetingNote = async function() {
   if (!content) { alert('請填寫會議內容'); return; }
   try {
     await addDoc(collection(db,'storeMeetingNotes'), {
-      date, title, author, content,
+      title, author, content,
       createdAt: new Date().toISOString()
     });
     document.getElementById('storeMeetingTitle').value = '';
     document.getElementById('storeMeetingContent').value = '';
     await loadMeetingNotes();
   } catch(e) { alert('新增失敗：' + e.message); }
+};
+
+window.toggleMeetingNote = function(id) {
+  const body = document.getElementById('meeting-body-' + id);
+  const arrow = document.getElementById('meeting-arrow-' + id);
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if (arrow) arrow.style.transform = open ? 'rotate(0)' : 'rotate(90deg)';
 };
 
 window.deleteMeetingNote = async function(id) {
