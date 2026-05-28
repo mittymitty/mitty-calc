@@ -115,6 +115,14 @@ service cloud.firestore {
       allow write: if isOwner(empKey);
     }
 
+    // ── 最終班表（管理員儲存的確認排班）──────────────────
+    match /finalSchedule/{yearMonth} {
+      // 所有登入帳號可讀（員工、店面帳號要看得到班表）
+      allow read: if request.auth != null;
+      // 只有管理員可以儲存／修改
+      allow write: if isAdmin();
+    }
+
     // ── 店面共用：交班留言板 ─────────────────────────────
     // 所有已登入帳號（管理員、員工、山羊先生店面帳號）都可讀寫
     match /storeMessages/{docId} {
