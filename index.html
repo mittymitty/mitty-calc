@@ -582,6 +582,9 @@
     .week-expand-btn:hover { border-color: var(--green); color: var(--green); }
     .sales-stats-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
     .sales-stat-card { flex: 1; min-width: 120px; background: var(--card); border-radius: var(--r-md); box-shadow: var(--shadow-sm); padding: 12px 14px; }
+    .sales-stat-card.sales-stat-total { background: linear-gradient(135deg, #f4f9f2 0%, #e9f1e6 100%); border: 1px solid rgba(45,90,39,0.18); }
+    .sales-stat-card.sales-stat-total .sales-stat-label { color: var(--green-dark); font-weight: 600; }
+    .sales-stat-card.sales-stat-total .sales-stat-value { font-size: 19px; font-weight: 700; letter-spacing: 0.5px; }
     .sales-stat-label { font-size: 11px; color: var(--text-sub); margin-bottom: 3px; }
     .sales-stat-value { font-size: 16px; font-weight: 600; }
     .sales-stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
@@ -829,11 +832,13 @@
         <button class="sales-week-tab" onclick="salesSetWeek(6)">5/4–5/10</button>
         <button class="sales-week-tab" onclick="salesSetWeek(7)">5/11–5/17</button>
         <button class="sales-week-tab" onclick="salesSetWeek(8)">5/18–5/24</button>
+        <button class="sales-week-tab" onclick="salesSetWeek(9)">5/25–5/31</button>
         <button class="sales-week-tab" onclick="salesSetWeek('all')">趨勢比較</button>
       </div>
 
       <!-- KPI 卡片 -->
       <div class="sales-stats-row">
+        <div class="sales-stat-card sales-stat-total"><div class="sales-stat-label">本週總營業額</div><div class="sales-stat-value" id="s-kpi-total" style="color:#1f3a1a"></div><div class="sales-stat-sub" id="s-kpi-total-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">品牌系列</div><div class="sales-stat-value" id="s-kpi-brand" style="color:#2d5a27"></div><div class="sales-stat-sub" id="s-kpi-brand-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">特選新品</div><div class="sales-stat-value" id="s-kpi-special" style="color:#8B5E2A"></div><div class="sales-stat-sub" id="s-kpi-special-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">二手古著</div><div class="sales-stat-value" id="s-kpi-vintage" style="color:#555"></div><div class="sales-stat-sub" id="s-kpi-vintage-sub"></div></div>
@@ -903,26 +908,27 @@
             <span class="arrow">▶</span> 本週銷售分析與建議
           </button>
           <div class="sales-analysis-body" id="s-analysis-body">
-<strong>5/18–5/24 週銷售分析</strong><br><br>
-這週總申報額 30.6 萬，比上週小回 3 萬左右，整體結構卻很有趣：上週的兩個爆點——外套（15→4）和領帶（25→7）一起退場，本來預期的「季節型外套延續」沒有發生，看來薄外套的需求就只是那一週的短打。但古著主力品項並沒有崩，Polo 從 8 件直接爆回 25 件，Yufu「Cacti prickly Bizan Angel shirt」一款狂銷 14 件，這兩個是本週真正的驚喜。淨營收約 30.4 萬（刷卡手續費 2,164 元）。<br><br>
+<strong>5/25–5/31 週銷售分析</strong><br><br>
+本週總申報額 37.9 萬，比上週 30.6 萬大跳一個檔，是近兩個月最強一週，而且結構非常健康——古著、特選都明顯回血，沒有靠單一爆款撐場。Polo 50 件、格紋 43 件、特選褲款 49 件三大主力同時開火，加上領帶從 7 件爆回 18 件、古巴從 5 件爆回 16 件，這週看到的是整片夏天主力都在動。淨營收約 37.6 萬（刷卡手續費約 2,872 元）。<br><br>
 <strong>📌 二手古著</strong><br>
 <br>
-⚡ <strong>Polo 25 件回血成功</strong>：上週只剩 8 件、本來很怕它就這樣冷下去，這週直接拉回 25 件，是非常漂亮的反彈。應該是補貨速度跟上＋陳列調整奏效。Polo 是夏天的長期主力，這個力道下週要繼續維持，建議把 $1,400 與 $1,300 兩個主力價帶的庫存深度持續盯著，特別是中性色與條紋細格的款式，賣得最快。<br><br>
-⚡ <strong>Yufu「Cacti prickly Bizan Angel shirt」單週爆 14 件</strong>：這是非常少見的單款集中爆量，這款已經連兩週都在 Yufu 的銷量榜首（上週 5、這週 14），明顯是 Yufu 這個檔期的招牌款。要立刻盤庫存與 size 比例，補貨節奏要拉快，並且建議放到 Yufu 區的主視覺位置，順勢帶動 Bizan Angel 系列其他款（這週原版 Bizan Angel shirt 也賣了 8 件）。<br><br>
-🔍 <strong>領帶 25→7 件，需要找原因</strong>：上週 25 件是領帶區連續 4 週 22+ 之後的高峰，這週直接掉到 7 件、跌幅很大。可能是上週的熱賣把比較好看的款式買完了，現在剩下的選擇性變窄。建議今天就到領帶區看一下剩餘的款式深度和顏色多樣性，看是要從倉庫補幾條進來、還是把現場剩的重新整理陳列。領帶是 Mitty 的識別品項，不能讓它連冷。<br><br>
-🌧️ <strong>外套 15→4 件，季節曇花確認</strong>：上週爆衝 15 件當時就提醒不要急著大進，現在確認是短打。可以鬆一口氣，但也代表「準春末」買薄外套的客群已經消化得差不多。下週起外套區的陳列權重可以正式降低，把位置讓給夏天主力（短T、短版、Polo）。<br><br>
-💡 <strong>縮腰 28、條紋 24、格紋 30，三大定海神針依然在</strong>：縮腰連 5 週 26+ 件、條紋穩在 24–25、格紋從上週 43 略回到 30 仍是高位。這三個品項已經是店裡最穩定的長賣，不會出錯，但要注意格紋從 43 回到 30 算是自然回落，補貨節奏可以稍微緩一點，先觀察下週是否再回升。<br><br>
-📊 <strong>素色襯衫 13 件、Y2K 14 件、短T 11 件，「夏天輕量上衣」整體回溫</strong>：素色襯衫從 4 件衝到 13 件，主要是 Carhartt、RL、西部襯衫這類個別款的拉動；Y2K 從 9 回到 14，短T 從 3 衝到 11。這三類其實是同一群「想要輕薄、好搭」的客群在動，建議把這三區放在動線同一段，做個「夏日輕量上衣」的小場景陳列，互相帶量。<br><br>
-🔍 <strong>短版上衣 17 件，從高峰自然回落但仍熱</strong>：上週 28 件之後，本週 17 件其實還算強。$550 與 $650 兩個價帶持續是主力。建議補一批新進貨，不要讓熱度斷在這裡。<br><br>
-📊 <strong>古巴襯衫 5、老美縮口 2、花襯衫 3，冷品項繼續冷</strong>：古巴從 11 掉到 5，老美縮口從 4 掉到 2。這些都不是主力，但要避免「越冷越藏角落」的惡性循環。建議把老美縮口、花襯衫、古巴拉到動線中段做個「夏天個性款」陳列，至少讓它們有曝光機會。<br><br>
+⚡ <strong>Polo 50 件，單週新高！</strong>：上週 25 件已經算強反彈，這週直接翻倍到 50 件——這是 Mitty 開店以來 Polo 單週最高紀錄。表示前面幾週補貨節奏跟陳列調整完全奏效，需求正在加速。重點來了：要立刻盤庫存深度，特別是 M / L 兩個熱門 size，現在這個量很可能會把好賣款式吃乾淨。建議下週就要再進一批，且 $1,300–$1,400 兩個價帶要保持厚度。Polo 接下來會是 6 月的核心。<br><br>
+⚡ <strong>格紋 43 件、條紋 28 件，主力雙引擎全開</strong>：格紋連兩週都在 30+ 高位（上週 30、本週 43），條紋穩定爬升（24→28）。格紋是這檔最穩的長銷，43 件還能保持代表貨況跟得上、價格帶分布也對。建議格紋區的陳列再加深一點，特別是淡色細格款近期賣得快，可以拉到動線最前面。<br><br>
+⚡ <strong>領帶 7→18 件、古巴 5→16 件，雙雙爆回</strong>：上週點名要去看領帶剩貨狀況，這週馬上跳回 18 件，看來補貨或重整陳列有做到位，繼續維持。古巴從 5 件直接爆到 16 件，是這週另一個驚喜，明顯是「夏天個性襯衫」客群被打開了——古巴與短版上衣 19、Y2K 13 應該放在同一段動線，做個「夏日個性襯衫」場景陳列，三邊互帶量會更強。<br><br>
+🔍 <strong>縮腰 28→9 件，跌幅最該注意</strong>：縮腰連 5 週都在 26+ 件，這週直接腰斬到 9 件，是本週唯一明顯的警訊。要分辨是「熱款被買完導致選擇變少」還是「天氣變熱、長袖縮腰客群暫退」——建議今天就到縮腰區看現場剩貨狀況，如果是斷尺寸就趕快補；如果是季節性退場，那把位置讓給短版/Polo 也合理。不要讓它連兩週往下走。<br><br>
+💡 <strong>短T 18、短版上衣 19，夏天主力穩穩接棒</strong>：短T 從上週 11 件繼續上來到 18，短版上衣 19 件維持高位。這兩個就是「天熱想穿短一點」的核心客群，現在進入旺季的節奏。短版的 $550 / $650 價帶建議再進一批新款，避免熱度斷掉。<br><br>
+📊 <strong>素色襯衫 13、Y2K 13、防風罩衫 7、花襯衫 6</strong>：素色襯衫維持 13 件，Y2K 持平 13。防風罩衫從 1 件跳回 7 件，可能是進到 6 月初涼意尚存的客群在動。花襯衫 6 件也比之前回溫。整體輕量上衣群還在加溫。<br><br>
+🌧️ <strong>外套 5、老美縮口 1，冬末品項繼續退場</strong>：外套維持在低位確認季節已過，老美縮口連 3 週都在低個位數。這兩區位置可以正式讓給夏天主力，外套區建議改成短版/Polo 的延伸陳列。<br><br>
+🌬️ <strong>燈芯絨、衛衣、毛衣、帽子全部 0 件</strong>：完全可以收進倉庫了，這幾類在 6 月不會再動，把展示位騰出來給特選褲款與 Polo。<br><br>
 <strong>📌 特選新品</strong><br>
 <br>
-🔍 <strong>褲款 28 件，從上週 48 大幅下滑</strong>：刷色感牛仔 8、鋒利皺摺 8、刷色迷霧 3，三大主力一起放緩。刷色迷霧從 9 掉到 3 是最值得注意的訊號——很可能熱門尺寸已經被買到剩薄。建議立刻盤這三款的尺寸庫存，若有缺斷尺寸（特別是 M、L）就要趕快補。本來特選褲款是高客單的核心，不能讓它連兩週往下走。<br><br>
-⚡ <strong>墨鏡 33 件，連兩週都在 33–35</strong>：旺季正在進入穩定期。上週已經建議陳列要前移，若還沒做就這週做、不要再拖。墨鏡是夏天最好的快速結帳品項，氣溫越高需求只會越大，現在的 33 件絕對不是天花板。<br><br>
-📊 <strong>腰鏈褲鏈 10、領巾 9、襪子 4，配件群整體穩定</strong>：這群品項都不會爆但很穩，是補客單的配角。維持現狀就好。<br><br>
-🔍 <strong>裙款 7 件、飄逸時光半身裙 7 件包辦全部</strong>：上週的雙面穿百褶裙這週掛零，建議檢查是不是斷貨或位置被擋掉。飄逸時光連 4 週都是裙款主力、可考慮再進 2–3 種風格類似的款式做面寬。<br><br>
+⚡ <strong>褲款 49 件 / $57,600，從上週 28 大爆回</strong>：而且龍頭換人——鋒利皺摺闊腿褲從上週 8 件直接衝到 <strong>18 件</strong>，正式取代「刷色感牛仔（本週 10 件）」成為新的特選褲款一哥。這個訊號很明確：客群開始要更俐落的剪裁。建議立刻盤鋒利皺摺的所有 size，特別是 M / L 兩個熱點，如果有缺要趕快補。同時刷色迷霧 6、穩定日常 6 也都比上週成長，整個褲款區是真的在加速，不是單款撐場。<br><br>
+🔍 <strong>墨鏡 26 件，從 33 略回落</strong>：上週 33 連續高位，本週稍微鬆一點。氣溫只會更熱，建議檢查現場款式是否被熱門色（黑、深棕）的缺貨拖住，補貨方向可以多進偏中性款。墨鏡仍是夏天的快速結帳神器，現在不該回落。<br><br>
+🔍 <strong>領巾 3、腰鏈褲鏈 4，配件雙退</strong>：領巾從 9 掉到 3、腰鏈褲鏈從 10 掉到 4。可能是熱門款被買完，建議盤一下剩貨樣式是不是太少，補一兩款新色或新材質進來重新刺激。<br><br>
+📊 <strong>裙款 6 件、飄逸時光半身裙 6 件繼續一款包辦</strong>：裙款區只剩飄逸時光在動，這已經是連 4 週的狀況。再不進新款式做面寬，裙款區會慢慢被忽略。建議下次叫貨優先補 2–3 種風格類似的款。<br><br>
+📊 <strong>襪子 6 件，小幅回溫</strong>：維持配角位置，沒問題。<br><br>
 <strong>📌 品牌系列</strong><br>
-Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Bizan Angel shirt 一款狂銷 14 件、加上 Bizan Angel shirt 8 件——Bizan Angel 系列在這個檔期明顯被市場認可，要趕快盤庫存。Mitty girls 40 件 / $27,000 件數持平上週，但單款集中度回到分散狀態（最高的棉花糖布標髮圈、甜心長襪、Horse、斜肩薄長袖都只有 5–6 件），上週 Horse 單款 10 件的爆款效應稍微退溫，可以觀察是不是熱潮過了。Babyboomer 7 件略收（上週 13 件是高點），是自然回落。Masako 寄賣 1 件、整個檔期還是偏靜，下週看能不能跟對方溝通補一批新貨進來。
+Mitty girls 46 件 / $30,450 是本週品牌系列亮點，斜肩薄長袖 9 件變新一哥（上週 5），購物籃胸章與棉花糖髮圈各 7 件穩定，配件群整體出量很均勻，這代表 MG 商品已經建立起「店裡的小確幸購物清單」的角色，可以穩定貢獻客單。Yufu 14 件 / $18,950 從上週 28 件腰斬，主因是 Cacti prickly Bizan Angel shirt 從 14 件回到 4 件——上週點名要趕快盤庫存補貨，這週的回落很可能是熱門 size 已售完，建議馬上盤點確認是斷貨還是熱潮自然退溫。Bizan Angel shirt 維持 7 件，是基本盤，這款一定要常備。Babyboomer 8 件持平上週低位、Masako 本週 0 件、寄賣需要重新跟對方溝通補新貨進來——這已經是連兩週了。
           </div>
         </div>
       </div>
@@ -1055,10 +1061,12 @@ Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Biza
         <button class="sales-week-tab" onclick="empSalesSetWeek(6)">5/4–5/10</button>
         <button class="sales-week-tab" onclick="empSalesSetWeek(7)">5/11–5/17</button>
         <button class="sales-week-tab" onclick="empSalesSetWeek(8)">5/18–5/24</button>
+        <button class="sales-week-tab" onclick="empSalesSetWeek(9)">5/25–5/31</button>
         <button class="sales-week-tab" onclick="empSalesSetWeek('all')">趨勢比較</button>
       </div>
       <!-- KPI 2×2 手機版 -->
       <div class="sales-stats-row" style="margin-top:12px;">
+        <div class="sales-stat-card sales-stat-total"><div class="sales-stat-label">本週總營業額</div><div class="sales-stat-value" id="es-kpi-total" style="color:#1f3a1a"></div><div class="sales-stat-sub" id="es-kpi-total-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">品牌系列</div><div class="sales-stat-value" id="es-kpi-brand" style="color:#2d5a27"></div><div class="sales-stat-sub" id="es-kpi-brand-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">特選新品</div><div class="sales-stat-value" id="es-kpi-special" style="color:#8B5E2A"></div><div class="sales-stat-sub" id="es-kpi-special-sub"></div></div>
         <div class="sales-stat-card"><div class="sales-stat-label">二手古著</div><div class="sales-stat-value" id="es-kpi-vintage" style="color:#555"></div><div class="sales-stat-sub" id="es-kpi-vintage-sub"></div></div>
@@ -1115,24 +1123,25 @@ Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Biza
             <span class="arrow">▶</span> 本週銷售分析與建議
           </button>
           <div class="sales-analysis-body" id="es-analysis-body">
-<strong>5/18–5/24 週銷售分析</strong><br><br>
-這週業績 30.6 萬，比上週小回 3 萬左右。上週爆衝的外套（15→4）和領帶（25→7）一起退場，但本週有兩個漂亮的反彈：Polo 從 8 件直接拉回 25 件、Yufu 的 Cacti prickly Bizan Angel shirt 單款狂銷 14 件，整體結構還是健康的。<br><br>
+<strong>5/25–5/31 週銷售分析</strong><br><br>
+這週業績 37.9 萬，比上週 30.6 萬大跳一截，是近兩個月最強一週，而且結構很健康——古著、特選都明顯回血，沒靠單一爆款撐場。Polo 50、格紋 43、特選褲款 49 三大主力同時開火，加上領帶、古巴雙雙爆回，整片夏天主力都在動。大家最近的辛苦真的有看到，恭喜！<br><br>
 <strong>📌 二手古著</strong><br>
-⚡ <strong>Polo 25 件回血漂亮</strong>：上週只剩 8 件、本來很擔心，這週直接拉回 25 件，補貨和陳列都奏效。Polo 是夏天主力，這個力道下週要繼續維持，$1,400 與 $1,300 主力價帶要盯著庫存深度，中性色與條紋細格款賣得最快。<br><br>
-⚡ <strong>Yufu「Cacti prickly Bizan Angel shirt」單週 14 件大爆款</strong>：這款連兩週都是 Yufu 銷量榜首（上週 5、這週 14），是這個檔期的招牌款。要立刻盤庫存與 size 比例，補貨節奏要拉快，放到 Yufu 區主視覺位置帶動整個 Bizan Angel 系列。<br><br>
-🔍 <strong>領帶 25→7 件，要找原因</strong>：上週的 25 件是 4 週高峰，這週直接掉到 7 件。可能是上週把好款式買完了，剩下的選擇性變窄。今天就到領帶區看一下剩餘款式深度和顏色多樣性，必要的話從倉庫補進來。領帶是 Mitty 的識別品項，不能連冷。<br><br>
-🌧️ <strong>外套 15→4 件，季節曇花確認</strong>：上週爆衝的外套確認只是短打，可以鬆一口氣。下週起外套區陳列權重可以正式降低，位置讓給夏天主力（短T、短版、Polo）。<br><br>
-💡 <strong>縮腰 28、條紋 24、格紋 30，三大主力穩穩在</strong>：縮腰連 5 週 26+ 件、條紋穩在 24–25、格紋從 43 略回到 30 仍是高位。這三個是店裡最穩定的長賣，補貨節奏不能掉，但格紋自然回落，補貨可以稍緩一點觀察下週。<br><br>
-📊 <strong>素色襯衫 13、Y2K 14、短T 11，夏天輕量上衣整體回溫</strong>：素色從 4 衝到 13，主要是 Carhartt、RL、西部襯衫個別款拉動；Y2K 從 9 回到 14、短T 從 3 衝到 11。這三類是同一群「想要輕薄、好搭」的客群在動，建議把這三區放在動線同一段做個「夏日輕量上衣」陳列。<br><br>
-🔍 <strong>短版上衣 17 件，從 28 自然回落但仍熱</strong>：$550 與 $650 兩個價帶持續主力，建議補一批新進貨，不要讓熱度斷掉。<br><br>
-📊 <strong>古巴 5、老美縮口 2、花襯衫 3，冷品項繼續冷</strong>：這些不是主力但要避免越冷越藏角落，可以拉到動線中段做個「夏天個性款」陳列，至少給曝光機會。<br><br>
+⚡ <strong>Polo 50 件，單週新高！</strong>：上週 25 件已經算強，這週直接翻倍到 50 件——這是 Mitty Polo 單週最高紀錄。要立刻盤庫存深度，特別是 M / L 兩個熱門 size，這個量很可能會把好賣款式吃乾淨。$1,300–$1,400 兩個價帶要保持厚度，Polo 接下來是 6 月的核心。<br><br>
+⚡ <strong>格紋 43、條紋 28，主力雙引擎</strong>：格紋連兩週 30+（30→43），條紋穩定爬升（24→28）。格紋淡色細格款近期賣得快，可以拉到動線最前面、再加深陳列。<br><br>
+⚡ <strong>領帶 7→18、古巴 5→16，雙雙爆回</strong>：上週點名要去看領帶剩貨，馬上跳回 18 件，繼續維持。古巴從 5 衝到 16 是這週另一驚喜——古巴 + 短版 19 + Y2K 13 是同一群「夏天個性襯衫」客群，建議放在同一段動線做個小場景陳列，三邊互帶量。<br><br>
+🔍 <strong>縮腰 28→9，唯一警訊</strong>：縮腰連 5 週都 26+，這週腰斬到 9。要分辨是「熱款被買完」還是「天熱長袖客群退場」——今天就去縮腰區看現場剩貨狀況，若是斷尺寸就趕快補。<br><br>
+💡 <strong>短T 18、短版上衣 19，夏天主力穩穩接棒</strong>：短T 從 11 件繼續上來到 18，短版 19 件維持高位。短版的 $550 / $650 價帶建議再進新款，避免熱度斷掉。<br><br>
+📊 <strong>素色 13、Y2K 13、防風罩衫 7、花襯衫 6</strong>：輕量上衣群還在加溫，防風罩衫從 1 件跳回 7 件，6 月初涼意客群還在動。<br><br>
+🌧️ <strong>外套 5、老美縮口 1，季節品退場</strong>：可以正式讓位給夏天主力。<br><br>
+🌬️ <strong>燈芯絨/衛衣/毛衣/帽子全 0 件</strong>：可以收進倉庫了，把展示位騰給特選褲款與 Polo。<br><br>
 <strong>📌 特選新品</strong><br>
-🔍 <strong>褲款 28 件，從上週 48 大幅下滑</strong>：刷色感牛仔 8、鋒利皺摺 8、刷色迷霧 3，三大主力一起放緩。刷色迷霧從 9 掉到 3 最值得注意，很可能熱門尺寸已經被買到剩薄。立刻盤這三款的尺寸庫存，特別是 M、L，有缺就要趕快補。<br><br>
-⚡ <strong>墨鏡 33 件，連兩週都在 33–35</strong>：旺季穩定期到了。上週已經建議陳列要前移，若還沒做就這週做。墨鏡是夏天最好的快速結帳品項，氣溫越高需求只會更大，現在 33 件絕對不是天花板。<br><br>
-📊 <strong>腰鏈褲鏈 10、領巾 9、襪子 4</strong>：配件群整體穩定，是補客單的配角。維持現狀就好。<br><br>
-🔍 <strong>裙款 7 件、飄逸時光半身裙 7 件包辦全部</strong>：上週的雙面穿百褶裙這週掛零，檢查是不是斷貨或位置被擋掉。飄逸時光連 4 週都是裙款主力，可考慮再進 2–3 種風格類似的款式做面寬。<br><br>
+⚡ <strong>褲款 49 件，從上週 28 爆回，新一哥誕生</strong>：鋒利皺摺闊腿褲從 8 件直接衝到 <strong>18 件</strong>，正式取代刷色感牛仔（10 件）成為特選褲款新一哥。客群在要更俐落的剪裁。立刻盤鋒利皺摺所有 size，特別是 M / L 兩個熱點。整個褲款區是真的在加速。<br><br>
+🔍 <strong>墨鏡 26 件，從 33 略回落</strong>：氣溫只會更熱，墨鏡不該回落，建議檢查熱門色（黑、深棕）是否缺貨，補貨方向多進中性款。<br><br>
+🔍 <strong>領巾 3、腰鏈褲鏈 4，配件雙退</strong>：可能是熱門款被買完，盤一下剩貨樣式是不是太少，補新色或新材質刺激一下。<br><br>
+📊 <strong>裙款 6 件、飄逸時光半身裙 6 件繼續一款包辦</strong>：連 4 週了，下次叫貨優先補 2–3 種風格類似的款做面寬。<br><br>
+📊 <strong>襪子 6 件</strong>：維持配角位置。<br><br>
 <strong>📌 品牌系列</strong><br>
-Yufu 28 件 / $37,830 是近兩個月最強一週，主要靠 Cacti prickly Bizan Angel shirt 一款 14 件＋ Bizan Angel shirt 8 件，Bizan Angel 系列要趕快盤庫存。Mitty girls 40 件 / $27,000 件數持平上週，但單款集中度回到分散狀態（棉花糖、甜心長襪、Horse、斜肩薄長袖都 5–6 件），上週 Horse 單款 10 件的爆款效應稍退溫。Babyboomer 7 件略收（上週 13 件高點），自然回落。Masako 寄賣 1 件偏靜，下週看能不能溝通補新貨。
+Mitty girls 46 件 / $30,450 是本週品牌亮點，斜肩薄長袖 9 件變新一哥（上週 5），購物籃胸章與棉花糖髮圈各 7 件穩定，MG 的「小確幸購物清單」角色已經建立。Yufu 14 件 / $18,950 從上週 28 件腰斬，主因是 Cacti prickly Bizan Angel shirt 從 14 件回到 4 件，要馬上盤點確認是斷貨還是熱潮自然退溫。Babyboomer 8 件持平、Masako 本週 0 件、寄賣需要重新跟對方溝通。
           </div>
         </div>
       </div>
@@ -4576,7 +4585,7 @@ window.initStore = initStore;
 (function() {
   const sFmt = v => 'NT$' + Number(v).toLocaleString();
   const sFont = { family: 'Noto Sans TC', size: 11 };
-  const sWeekLabels = ['3/23–3/29', '3/30–4/5', '4/6–4/12', '4/13–4/19', '4/20–4/26', '4/27–5/3', '5/4–5/10', '5/11–5/17', '5/18–5/24'];
+  const sWeekLabels = ['3/23–3/29', '3/30–4/5', '4/6–4/12', '4/13–4/19', '4/20–4/26', '4/27–5/3', '5/4–5/10', '5/11–5/17', '5/18–5/24', '5/25–5/31'];
 
   // ── 資料填寫說明 ──────────────────────────────────────
   // 每週資料來源：POS 匯出 XLS（mittyvintage_transaction_detail_*.xls）
@@ -4604,6 +4613,7 @@ window.initStore = initStore;
       { 品牌: 59540, 特選: 83700, 古著: 164643 }, // 古著含未分類品項差額（總申報額 307,883）
       { 品牌: 69360, 特選: 81150, 古著: 186215 }, // 古著含未分類品項差額（總申報額 336,725）
       { 品牌: 73100, 特選: 55800, 古著: 177032 }, // 古著含未分類品項差額（總申報額 305,932）
+      { 品牌: 55690, 特選: 74750, 古著: 248610 }, // 古著含未分類品項差額（總申報額 379,050）
     ],
     group_qty: [
       { 品牌: 70, 特選: 57, 古著: 136 },
@@ -4615,6 +4625,7 @@ window.initStore = initStore;
       { 品牌: 61, 特選: 105, 古著: 198 },
       { 品牌: 74, 特選: 113, 古著: 223 },
       { 品牌: 76, 特選: 91, 古著: 186 },
+      { 品牌: 68, 特選: 94, 古著: 266 },
     ],
     brand_amt: [
       { yufu: 31410, 'Mitty girls': 21350, Masako: 14750, Babyboomer: 10040 },
@@ -4626,6 +4637,7 @@ window.initStore = initStore;
       { yufu: 28730, 'Mitty girls': 21200, Masako: 4900, Babyboomer: 4710 },
       { yufu: 23730, 'Mitty girls': 33850, Masako: 3000, Babyboomer: 8780 },
       { yufu: 37830, 'Mitty girls': 27000, Masako: 1500, Babyboomer: 6770 },
+      { yufu: 18950, 'Mitty girls': 30450, Masako: 0, Babyboomer: 6290 },
     ],
     brand_qty: [
       { yufu: 23, 'Mitty girls': 27, Masako: 8, Babyboomer: 12 },
@@ -4637,6 +4649,7 @@ window.initStore = initStore;
       { yufu: 21, 'Mitty girls': 32, Masako: 3, Babyboomer: 5 },
       { yufu: 18, 'Mitty girls': 41, Masako: 2, Babyboomer: 13 },
       { yufu: 28, 'Mitty girls': 40, Masako: 1, Babyboomer: 7 },
+      { yufu: 14, 'Mitty girls': 46, Masako: 0, Babyboomer: 8 },
     ],
     special_amt: [
       { '特選－褲款': 57200, '特選－墨鏡': 0, '特選－裙款': 1500, '特選－腰鏈褲鏈': 0, '特選－領巾': 900, '特選－襪子': 0 },
@@ -4648,6 +4661,7 @@ window.initStore = initStore;
       { '特選－褲款': 66200, '特選－墨鏡': 8400, '特選－裙款': 4500, '特選－腰鏈褲鏈': 3000, '特選－領巾': 1200, '特選－襪子': 400 },
       { '特選－褲款': 56100, '特選－墨鏡': 14000, '特選－裙款': 5950, '特選－腰鏈褲鏈': 3600, '特選－領巾': 1200, '特選－襪子': 300 },
       { '特選－褲款': 32600, '特選－墨鏡': 13200, '特選－裙款': 5250, '特選－腰鏈褲鏈': 3000, '特選－領巾': 1350, '特選－襪子': 400 },
+      { '特選－褲款': 57600, '特選－墨鏡': 10400, '特選－裙款': 4500, '特選－腰鏈褲鏈': 1200, '特選－領巾': 450, '特選－襪子': 600 },
     ],
     special_qty: [
       { '特選－褲款': 49, '特選－墨鏡': 0, '特選－裙款': 2, '特選－腰鏈褲鏈': 0, '特選－領巾': 6, '特選－襪子': 0 },
@@ -4659,6 +4673,7 @@ window.initStore = initStore;
       { '特選－褲款': 56, '特選－墨鏡': 21, '特選－裙款': 6, '特選－腰鏈褲鏈': 10, '特選－領巾': 8, '特選－襪子': 4 },
       { '特選－褲款': 48, '特選－墨鏡': 35, '特選－裙款': 7, '特選－腰鏈褲鏈': 12, '特選－領巾': 8, '特選－襪子': 3 },
       { '特選－褲款': 28, '特選－墨鏡': 33, '特選－裙款': 7, '特選－腰鏈褲鏈': 10, '特選－領巾': 9, '特選－襪子': 4 },
+      { '特選－褲款': 49, '特選－墨鏡': 26, '特選－裙款': 6, '特選－腰鏈褲鏈': 4, '特選－領巾': 3, '特選－襪子': 6 },
     ],
     vintage_amt: [
       { 'Polo 襯衫': 30250, '條紋襯衫': 14050, '外套': 8200, '縮腰上衣': 15750, '格紋襯衫': 13350, '領帶': 0, '短T': 4950, '古巴襯衫': 9600, '素色襯衫': 4400, '短版上衣': 2750, 'Y2K 襯衫': 3100, '防風罩衫': 2650, '背心': 4100, '花襯衫': 2350, '衛衣': 0, '燈芯絨': 5500, '毛衣': 0, '帽子': 0, '老美縮口': 3600 },
@@ -4670,6 +4685,7 @@ window.initStore = initStore;
       { 'Polo 襯衫': 28300, '條紋襯衫': 26950, '外套': 3100, '縮腰上衣': 21100, '格紋襯衫': 29900, '領帶': 11300, '短T': 3300, '古巴襯衫': 8900, '素色襯衫': 5200, '短版上衣': 2200, 'Y2K 襯衫': 4100, '防風罩衫': 1400, '背心': 0, '花襯衫': 2950, '衛衣': 750, '燈芯絨': 0, '毛衣': 0, '帽子': 0, '老美縮口': 0 }, // 注意：含未分類差額已納入 group_amt 古著總計
       { 'Polo 襯衫': 10500, '條紋襯衫': 19500, '外套': 15600, '縮腰上衣': 19500, '格紋襯衫': 33200, '領帶': 11850, '短T': 1650, '古巴襯衫': 9700, '素色襯衫': 4600, '短版上衣': 16800, 'Y2K 襯衫': 11150, '防風罩衫': 850, '背心': 0, '花襯衫': 2600, '衛衣': 0, '燈芯絨': 0, '毛衣': 0, '帽子': 0, '老美縮口': 5400 }, // 注意：含未分類差額已納入 group_amt 古著總計
       { 'Polo 襯衫': 34700, '條紋襯衫': 18850, '外套': 5500, '縮腰上衣': 21350, '格紋襯衫': 23500, '領帶': 3850, '短T': 6550, '古巴襯衫': 4150, '素色襯衫': 17250, '短版上衣': 10050, 'Y2K 襯衫': 15850, '防風罩衫': 750, '背心': 1200, '花襯衫': 1650, '衛衣': 0, '燈芯絨': 0, '毛衣': 760, '帽子': 0, '老美縮口': 2400 }, // 注意：含未分類差額已納入 group_amt 古著總計
+      { 'Polo 襯衫': 61450, '條紋襯衫': 22350, '外套': 6100, '縮腰上衣': 7300, '格紋襯衫': 34200, '領帶': 7400, '短T': 11100, '古巴襯衫': 14100, '素色襯衫': 13550, '短版上衣': 11250, 'Y2K 襯衫': 14150, '防風罩衫': 6100, '背心': 750, '花襯衫': 4750, '衛衣': 0, '燈芯絨': 0, '毛衣': 0, '帽子': 0, '老美縮口': 1100 }, // 注意：含未分類差額已納入 group_amt 古著總計
     ],
     vintage_qty: [
       { 'Polo 襯衫': 24, '條紋襯衫': 19, '外套': 7, '縮腰上衣': 21, '格紋襯衫': 17, '領帶': 0, '短T': 9, '古巴襯衫': 11, '素色襯衫': 3, '短版上衣': 5, 'Y2K 襯衫': 3, '防風罩衫': 3, '背心': 3, '花襯衫': 3, '衛衣': 0, '燈芯絨': 6, '毛衣': 0, '帽子': 0, '老美縮口': 3 },
@@ -4681,6 +4697,7 @@ window.initStore = initStore;
       { 'Polo 襯衫': 22, '條紋襯衫': 35, '外套': 2, '縮腰上衣': 28, '格紋襯衫': 38, '領帶': 22, '短T': 6, '古巴襯衫': 11, '素色襯衫': 4, '短版上衣': 4, 'Y2K 襯衫': 4, '防風罩衫': 2, '背心': 0, '花襯衫': 5, '衛衣': 1, '燈芯絨': 0, '毛衣': 0, '帽子': 0, '老美縮口': 0 },
       { 'Polo 襯衫': 8, '條紋襯衫': 25, '外套': 15, '縮腰上衣': 26, '格紋襯衫': 43, '領帶': 25, '短T': 3, '古巴襯衫': 11, '素色襯衫': 4, '短版上衣': 28, 'Y2K 襯衫': 9, '防風罩衫': 1, '背心': 0, '花襯衫': 4, '衛衣': 0, '燈芯絨': 0, '毛衣': 0, '帽子': 0, '老美縮口': 4 },
       { 'Polo 襯衫': 25, '條紋襯衫': 24, '外套': 4, '縮腰上衣': 28, '格紋襯衫': 30, '領帶': 7, '短T': 11, '古巴襯衫': 5, '素色襯衫': 13, '短版上衣': 17, 'Y2K 襯衫': 14, '防風罩衫': 1, '背心': 1, '花襯衫': 3, '衛衣': 0, '燈芯絨': 0, '毛衣': 1, '帽子': 0, '老美縮口': 2 },
+      { 'Polo 襯衫': 50, '條紋襯衫': 28, '外套': 5, '縮腰上衣': 9, '格紋襯衫': 43, '領帶': 18, '短T': 18, '古巴襯衫': 16, '素色襯衫': 13, '短版上衣': 19, 'Y2K 襯衫': 13, '防風罩衫': 7, '背心': 1, '花襯衫': 6, '衛衣': 0, '燈芯絨': 0, '毛衣': 0, '帽子': 0, '老美縮口': 1 },
     ],
     // ── 品牌品項件數（每週 Mitty girls / yufu 各品項銷售件數）──
     // ── 特選褲款 / 裙款款式排行 ──
@@ -4690,6 +4707,7 @@ window.initStore = initStore;
       { '刷色感牛仔闊腿褲': 15, '鋒利皺摺闊腿褲': 14, '刷色迷霧闊腿褲': 14, '原色丹寧直筒褲': 6, '穩定日常皺褶寬褲': 6, '其他褲款': 1 },
       { '刷色感牛仔闊腿褲': 14, '鋒利皺摺闊腿褲': 13, '刷色迷霧闊腿褲': 9, '原色丹寧直筒褲': 5, '穩定日常皺褶寬褲': 3, '縫線標記丹寧闊腿褲': 2, '斜紋的魅力寬褲': 2 },
       { '刷色感牛仔闊腿褲': 8, '鋒利皺摺闊腿褲': 8, '穩定日常皺褶寬褲': 3, '刷色迷霧闊腿褲': 3, '斜紋的魅力寬褲': 2, '縫線標記丹寧闊腿褲': 2, '原色丹寧直筒褲': 1, '其他褲款': 1 },
+      { '鋒利皺摺闊腿褲': 18, '刷色感牛仔闊腿褲': 10, '穩定日常皺褶寬褲': 6, '刷色迷霧闊腿褲': 6, '斜紋的魅力寬褲': 4, '縫線標記丹寧闊腿褲': 2, '其他褲款': 2, '原色丹寧直筒褲': 1 },
     ],
     special_skirt_items: [
       {}, {}, {}, {}, {},
@@ -4697,6 +4715,7 @@ window.initStore = initStore;
       { '飄逸時光半身裙': 6 },
       { '飄逸時光半身裙': 5, '雙面穿百褶裙': 2 },
       { '飄逸時光半身裙': 7 },
+      { '飄逸時光半身裙': 6 },
     ],
     brand_mg_items: [
       {}, {}, {}, {}, {},
@@ -4704,6 +4723,7 @@ window.initStore = initStore;
       { '棉花糖布標髮圈': 5, '奶油旋律髮夾': 5, 'Horse好事中國結襯衫': 3, '購物籃的好貨胸章': 3, '性感尤物假兩件丁字褲半裙': 2, '甜心長襪': 2, '幸運星天使項鍊': 2, '蕾絲鈕扣領帶': 2, '熱辣夏日蝴蝶結蕾絲背心': 2, '斜肩薄長袖': 2, '在看啥金屬釦條紋短褲': 1, '愛與和平拿破崙結碎花背心': 1, '鈕扣斜肩薄長袖': 1, '海洋樂園方巾': 1 },
       { 'Horse好事中國結襯衫': 10, '購物籃的好貨胸章': 5, '絲綢連衣裙': 5, '棉花糖布標髮圈': 4, '鈕扣斜肩薄長袖': 3, '甜心長襪': 3, '甜心拿破崙結彈性短T': 2, '在看啥金屬釦條紋短褲': 2, '性感尤物假兩件丁字褲半裙': 1, '修身白襯衫': 1, '蕾絲鈕扣領帶': 1, '奶油旋律髮夾': 1, '海洋樂園方巾': 1, '熱辣夏日蝴蝶結蕾絲背心': 1, '斜肩薄長袖': 1 },
       { '棉花糖布標髮圈': 6, '甜心長襪': 5, 'Horse好事中國結襯衫': 5, '斜肩薄長袖': 5, '購物籃的好貨胸章': 4, '蕾絲鈕扣領帶': 3, '奶油旋律髮夾': 2, '在看啥金屬釦條紋短褲': 2, '鈕扣斜肩薄長袖': 2, '絲綢連衣裙': 2, '甜心拿破崙結彈性短T': 1, '你是我的天使綁繩項鍊': 1, '海洋繆思合身短T': 1, '幸運星天使項鍊': 1 },
+      { '斜肩薄長袖': 9, '購物籃的好貨胸章': 7, '棉花糖布標髮圈': 7, '甜心長襪': 5, '在看啥金屬釦條紋短褲': 4, '奶油旋律髮夾': 3, '性感尤物假兩件丁字褲半裙': 2, '絲綢連衣裙': 2, '拿破崙結音符甜心棉褲': 1, '愛與和平拿破崙結碎花背心': 1, '我的MBTI薄荷綠斜肩上衣': 1, '連帽修身上衣': 1, '蕾絲拼布條紋連帽上衣': 1, '甜心拿破崙結彈性短T': 1, '修身白襯衫': 1 },
     ],
     brand_yufu_items: [
       {}, {}, {}, {}, {},
@@ -4711,6 +4731,7 @@ window.initStore = initStore;
       { 'Bizan Angle shirt': 7, 'Bizan Angle shirt small yufu': 4, 'Bizan Angle tie': 2, 'Bizan Angle freehand Two-Way Zip Hoodie': 1, 'Bizan Angle ink damage shirt': 1, 'DEMON CAT Crop Top': 1, 'Distressed Patchwork 00 cap': 1, 'bizan scarf black': 1, 'cosmic image Denim shirt': 1, 'yi ma dang sian new year card': 1, 'Bi zan embroidery Distressed cap': 1 },
       { 'Bizan Angel shirt': 7, 'Cacti prickly Bizan Angel shirt': 5, 'Bizan Angel shirt small': 3, 'Bizan Angle shirt': 1, 'Bizan Angle tie': 1, 'Ripple flow scarf': 1 },
       { 'Cacti prickly Bizan Angel shirt': 14, 'Bizan Angel shirt': 8, 'Cacti prickly Bizan Angel shirt small': 2, 'Bizan Angel shirt small': 2, 'Bizan scarf black': 1, 'Bizan Angle tie': 1 },
+      { 'Bizan Angel shirt': 7, 'Cacti prickly Bizan Angel shirt': 4, 'DEMON CAT Crop Top': 1, 'Bizan Angle tie': 1, 'PRICKLY CAT washed shred midi skirt': 1 },
     ],
   };
 
@@ -4809,7 +4830,7 @@ window.initStore = initStore;
     if (sInitialized) return;
     sInitialized = true;
     initWeekTabsCollapse('#s-week-tabs', 'sales');
-    salesSetWeek(8);
+    salesSetWeek(9);
   };
 
   // ── 週按鈕收合（自動隱藏舊週，只顯示最近3週 + 趨勢比較）──
@@ -4865,13 +4886,18 @@ window.initStore = initStore;
     if (esInitialized) return;
     esInitialized = true;
     initWeekTabsCollapse('#es-week-tabs', 'emp');
-    empSalesSetWeek(8);
+    empSalesSetWeek(9);
   };
 
   function esRenderKPI(w) {
     if (w === 'all') {
       const last3 = sData.group_amt.slice(-3);
+      const last3q = sData.group_qty.slice(-3);
       const nLabel = `近${last3.length}週合計`;
+      const totalAll = last3.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
+      const totalQty = last3q.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
+      document.getElementById('es-kpi-total').textContent = sFmt(totalAll);
+      document.getElementById('es-kpi-total-sub').textContent = `${totalQty} 件 / ${nLabel}`;
       document.getElementById('es-kpi-brand').textContent = sFmt(last3.reduce((s,d)=>s+d.品牌,0));
       document.getElementById('es-kpi-brand-sub').textContent = nLabel;
       document.getElementById('es-kpi-special').textContent = sFmt(last3.reduce((s,d)=>s+d.特選,0));
@@ -4881,6 +4907,18 @@ window.initStore = initStore;
     } else {
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
+      const totalQty = q.品牌 + q.特選 + q.古著;
+      const prev = w > 0 ? sData.group_amt[w-1] : null;
+      const prevTotal = prev ? (prev.品牌 + prev.特選 + prev.古著) : 0;
+      let subTxt = `${totalQty} 件`;
+      if (prev) {
+        const diff = total - prevTotal;
+        const pct = prevTotal ? (diff/prevTotal*100) : 0;
+        const sign = diff >= 0 ? '▲' : '▼';
+        subTxt += ` / 較上週 ${sign}${Math.abs(pct).toFixed(1)}%`;
+      }
+      document.getElementById('es-kpi-total').textContent = sFmt(total);
+      document.getElementById('es-kpi-total-sub').textContent = subTxt;
       document.getElementById('es-kpi-brand').textContent = sFmt(g.品牌);
       document.getElementById('es-kpi-brand-sub').textContent = `${q.品牌} 件 / ${(g.品牌/total*100).toFixed(1)}%`;
       document.getElementById('es-kpi-special').textContent = sFmt(g.特選);
@@ -5171,7 +5209,12 @@ window.initStore = initStore;
   function sRenderKPI(w) {
     if (w === 'all') {
       const last3 = sData.group_amt.slice(-3);
+      const last3q = sData.group_qty.slice(-3);
       const nLabel = `近${last3.length}週合計`;
+      const totalAll = last3.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
+      const totalQty = last3q.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
+      sAnimateNum(document.getElementById('s-kpi-total'), totalAll, sFmt);
+      document.getElementById('s-kpi-total-sub').textContent = `${totalQty} 件 / ${nLabel}`;
       sAnimateNum(document.getElementById('s-kpi-brand'), last3.reduce((s,d)=>s+d.品牌,0), sFmt);
       document.getElementById('s-kpi-brand-sub').textContent = nLabel;
       sAnimateNum(document.getElementById('s-kpi-special'), last3.reduce((s,d)=>s+d.特選,0), sFmt);
@@ -5181,6 +5224,18 @@ window.initStore = initStore;
     } else {
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
+      const totalQty = q.品牌 + q.特選 + q.古著;
+      const prev = w > 0 ? sData.group_amt[w-1] : null;
+      const prevTotal = prev ? (prev.品牌 + prev.特選 + prev.古著) : 0;
+      let subTxt = `${totalQty} 件`;
+      if (prev) {
+        const diff = total - prevTotal;
+        const pct = prevTotal ? (diff/prevTotal*100) : 0;
+        const sign = diff >= 0 ? '▲' : '▼';
+        subTxt += ` / 較上週 ${sign}${Math.abs(pct).toFixed(1)}%`;
+      }
+      sAnimateNum(document.getElementById('s-kpi-total'), total, sFmt);
+      document.getElementById('s-kpi-total-sub').textContent = subTxt;
       sAnimateNum(document.getElementById('s-kpi-brand'), g.品牌, sFmt);
       document.getElementById('s-kpi-brand-sub').textContent = `${q.品牌} 件 / ${(g.品牌/total*100).toFixed(1)}%`;
       sAnimateNum(document.getElementById('s-kpi-special'), g.特選, sFmt);
