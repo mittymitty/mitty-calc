@@ -4891,17 +4891,13 @@ window.initStore = initStore;
 
   function esRenderKPI(w) {
     const totalCard = document.getElementById('es-kpi-total')?.closest('.sales-stat-card');
+    const statsRow = document.getElementById('es-kpi-brand')?.closest('.sales-stats-row');
     if (w === 'all') {
-      if (totalCard) totalCard.style.display = 'none';
-      const last3 = sData.group_amt.slice(-3);
-      const nLabel = `近${last3.length}週合計`;
-      document.getElementById('es-kpi-brand').textContent = sFmt(last3.reduce((s,d)=>s+d.品牌,0));
-      document.getElementById('es-kpi-brand-sub').textContent = nLabel;
-      document.getElementById('es-kpi-special').textContent = sFmt(last3.reduce((s,d)=>s+d.特選,0));
-      document.getElementById('es-kpi-special-sub').textContent = nLabel;
-      document.getElementById('es-kpi-vintage').textContent = sFmt(last3.reduce((s,d)=>s+d.古著,0));
-      document.getElementById('es-kpi-vintage-sub').textContent = nLabel;
+      // 趨勢比較模式：整列 KPI 卡片都收起來（資訊已在下方圖表呈現）
+      if (statsRow) statsRow.style.display = 'none';
+      return;
     } else {
+      if (statsRow) statsRow.style.display = '';
       if (totalCard) totalCard.style.display = '';
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
@@ -5210,17 +5206,13 @@ window.initStore = initStore;
 
   function sRenderKPI(w) {
     const totalCard = document.getElementById('s-kpi-total')?.closest('.sales-stat-card');
+    const statsRow = document.getElementById('s-kpi-brand')?.closest('.sales-stats-row');
     if (w === 'all') {
-      if (totalCard) totalCard.style.display = 'none';
-      const last3 = sData.group_amt.slice(-3);
-      const nLabel = `近${last3.length}週合計`;
-      sAnimateNum(document.getElementById('s-kpi-brand'), last3.reduce((s,d)=>s+d.品牌,0), sFmt);
-      document.getElementById('s-kpi-brand-sub').textContent = nLabel;
-      sAnimateNum(document.getElementById('s-kpi-special'), last3.reduce((s,d)=>s+d.特選,0), sFmt);
-      document.getElementById('s-kpi-special-sub').textContent = nLabel;
-      sAnimateNum(document.getElementById('s-kpi-vintage'), last3.reduce((s,d)=>s+d.古著,0), sFmt);
-      document.getElementById('s-kpi-vintage-sub').textContent = nLabel;
+      // 趨勢比較模式：整列 KPI 卡片都收起來（資訊已在下方圖表呈現）
+      if (statsRow) statsRow.style.display = 'none';
+      return;
     } else {
+      if (statsRow) statsRow.style.display = '';
       if (totalCard) totalCard.style.display = '';
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
