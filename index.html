@@ -4890,14 +4890,11 @@ window.initStore = initStore;
   };
 
   function esRenderKPI(w) {
+    const totalCard = document.getElementById('es-kpi-total')?.closest('.sales-stat-card');
     if (w === 'all') {
+      if (totalCard) totalCard.style.display = 'none';
       const last3 = sData.group_amt.slice(-3);
-      const last3q = sData.group_qty.slice(-3);
       const nLabel = `近${last3.length}週合計`;
-      const totalAll = last3.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
-      const totalQty = last3q.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
-      document.getElementById('es-kpi-total').textContent = sFmt(totalAll);
-      document.getElementById('es-kpi-total-sub').textContent = `${totalQty} 件 / ${nLabel}`;
       document.getElementById('es-kpi-brand').textContent = sFmt(last3.reduce((s,d)=>s+d.品牌,0));
       document.getElementById('es-kpi-brand-sub').textContent = nLabel;
       document.getElementById('es-kpi-special').textContent = sFmt(last3.reduce((s,d)=>s+d.特選,0));
@@ -4905,6 +4902,7 @@ window.initStore = initStore;
       document.getElementById('es-kpi-vintage').textContent = sFmt(last3.reduce((s,d)=>s+d.古著,0));
       document.getElementById('es-kpi-vintage-sub').textContent = nLabel;
     } else {
+      if (totalCard) totalCard.style.display = '';
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
       const totalQty = q.品牌 + q.特選 + q.古著;
@@ -5176,6 +5174,10 @@ window.initStore = initStore;
       { label: '品牌系列', data: ga.map(d=>d.品牌), qtyData: gq.map(d=>d.品牌), backgroundColor: sColors.mix[0], borderRadius: 5 },
       { label: '特選新品', data: ga.map(d=>d.特選), qtyData: gq.map(d=>d.特選), backgroundColor: sColors.mix[1], borderRadius: 5 },
       { label: '二手古著', data: ga.map(d=>d.古著), qtyData: gq.map(d=>d.古著), backgroundColor: sColors.mix[2], borderRadius: 5 },
+      { type: 'line', label: '當週總營業額', data: ga.map(d=>d.品牌+d.特選+d.古著),
+        qtyData: gq.map(d=>d.品牌+d.特選+d.古著),
+        borderColor: '#c0392b', backgroundColor: '#c0392b', pointBackgroundColor: '#c0392b',
+        pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, tension: 0.25, fill: false, order: 0 },
     ]);
     const brandKeys = ['yufu','Mitty girls','Masako','Babyboomer'];
     esCharts.trendBrand = esMakeGroupedBar('es-trendBrand', labels, brandKeys.map((k,i) => ({
@@ -5207,14 +5209,11 @@ window.initStore = initStore;
   }
 
   function sRenderKPI(w) {
+    const totalCard = document.getElementById('s-kpi-total')?.closest('.sales-stat-card');
     if (w === 'all') {
+      if (totalCard) totalCard.style.display = 'none';
       const last3 = sData.group_amt.slice(-3);
-      const last3q = sData.group_qty.slice(-3);
       const nLabel = `近${last3.length}週合計`;
-      const totalAll = last3.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
-      const totalQty = last3q.reduce((s,d)=>s+d.品牌+d.特選+d.古著,0);
-      sAnimateNum(document.getElementById('s-kpi-total'), totalAll, sFmt);
-      document.getElementById('s-kpi-total-sub').textContent = `${totalQty} 件 / ${nLabel}`;
       sAnimateNum(document.getElementById('s-kpi-brand'), last3.reduce((s,d)=>s+d.品牌,0), sFmt);
       document.getElementById('s-kpi-brand-sub').textContent = nLabel;
       sAnimateNum(document.getElementById('s-kpi-special'), last3.reduce((s,d)=>s+d.特選,0), sFmt);
@@ -5222,6 +5221,7 @@ window.initStore = initStore;
       sAnimateNum(document.getElementById('s-kpi-vintage'), last3.reduce((s,d)=>s+d.古著,0), sFmt);
       document.getElementById('s-kpi-vintage-sub').textContent = nLabel;
     } else {
+      if (totalCard) totalCard.style.display = '';
       const g = sData.group_amt[w], q = sData.group_qty[w];
       const total = g.品牌 + g.特選 + g.古著;
       const totalQty = q.品牌 + q.特選 + q.古著;
@@ -5432,6 +5432,10 @@ window.initStore = initStore;
       { label: '品牌系列', data: ga.map(d=>d.品牌), qtyData: gq.map(d=>d.品牌), backgroundColor: sColors.mix[0], borderRadius: 5 },
       { label: '特選新品', data: ga.map(d=>d.特選), qtyData: gq.map(d=>d.特選), backgroundColor: sColors.mix[1], borderRadius: 5 },
       { label: '二手古著', data: ga.map(d=>d.古著), qtyData: gq.map(d=>d.古著), backgroundColor: sColors.mix[2], borderRadius: 5 },
+      { type: 'line', label: '當週總營業額', data: ga.map(d=>d.品牌+d.特選+d.古著),
+        qtyData: gq.map(d=>d.品牌+d.特選+d.古著),
+        borderColor: '#c0392b', backgroundColor: '#c0392b', pointBackgroundColor: '#c0392b',
+        pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, tension: 0.25, fill: false, order: 0 },
     ]);
 
     const brandKeys = ['yufu','Mitty girls','Masako','Babyboomer'];
