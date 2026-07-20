@@ -2574,20 +2574,29 @@ function yufuLoadDashboard() {
     const weekLabels = window.salesBrandItems.weekLabels;
     const weekAmts   = window.salesBrandItems.getWeekly('yufu', 'amt');
     const weekQtys   = window.salesBrandItems.getWeekly('yufu', 'qty');
+    const olAmts     = window.salesBrandItems.getOnlineWeekly('yufu', 'amt');
+    const olQtys     = window.salesBrandItems.getOnlineWeekly('yufu', 'qty');
+    const totAmts    = weekAmts.map((v,i) => olAmts[i] == null ? null : v + olAmts[i]);
     yufuChartLine = new Chart(lineCtx, {
       type: 'line',
       data: {
         labels: weekLabels,
         datasets: [
-          { label:'Yufu 週銷售金額', data: weekAmts, qtyData: weekQtys,
+          { label:'店面', data: weekAmts, qtyData: weekQtys,
             borderColor:'#b38b59', backgroundColor:'rgba(179,139,89,0.12)',
-            fill:true, tension:0.35, pointRadius:4, pointBackgroundColor:'#b38b59' }
+            fill:true, tension:0.35, pointRadius:4, pointBackgroundColor:'#b38b59' },
+          { label:'網路', data: olAmts, qtyData: olQtys, spanGaps:false,
+            borderColor:'#8B5E2A', borderDash:[5,4], backgroundColor:'#8B5E2A',
+            fill:false, tension:0.35, pointRadius:4, pointStyle:'rectRot', pointBackgroundColor:'#8B5E2A' },
+          { label:'店＋網合計', data: totAmts, spanGaps:false,
+            borderColor:'#c0392b', borderWidth:1.5, backgroundColor:'#c0392b',
+            fill:false, tension:0.35, pointRadius:3, pointBackgroundColor:'#c0392b' }
         ]
       },
       options: {
         responsive: true,
         plugins: {
-          legend: { display: false },
+          legend: { display: true, labels: { font: { size: 10 }, boxWidth: 18 } },
           tooltip: { callbacks: { label: function(c){
             const q = c.dataset.qtyData ? c.dataset.qtyData[c.dataIndex] : null;
             const qStr = q != null ? ' ／ ' + q + ' 件' : '';
@@ -3206,20 +3215,29 @@ function mittyLoadDashboard() {
     const weekLabels = window.salesBrandItems.weekLabels;
     const weekAmts   = window.salesBrandItems.getWeekly('mg', 'amt');
     const weekQtys   = window.salesBrandItems.getWeekly('mg', 'qty');
+    const olAmts     = window.salesBrandItems.getOnlineWeekly('mg', 'amt');
+    const olQtys     = window.salesBrandItems.getOnlineWeekly('mg', 'qty');
+    const totAmts    = weekAmts.map((v,i) => olAmts[i] == null ? null : v + olAmts[i]);
     mittyChartLine = new Chart(lineCtx, {
       type: 'line',
       data: {
         labels: weekLabels,
         datasets: [
-          { label:'Mitty Girls 週銷售金額', data: weekAmts, qtyData: weekQtys,
+          { label:'店面', data: weekAmts, qtyData: weekQtys,
             borderColor:'#2d5a27', backgroundColor:'rgba(45,90,39,0.10)',
-            fill:true, tension:0.35, pointRadius:4, pointBackgroundColor:'#2d5a27' }
+            fill:true, tension:0.35, pointRadius:4, pointBackgroundColor:'#2d5a27' },
+          { label:'網路', data: olAmts, qtyData: olQtys, spanGaps:false,
+            borderColor:'#8B5E2A', borderDash:[5,4], backgroundColor:'#8B5E2A',
+            fill:false, tension:0.35, pointRadius:4, pointStyle:'rectRot', pointBackgroundColor:'#8B5E2A' },
+          { label:'店＋網合計', data: totAmts, spanGaps:false,
+            borderColor:'#c0392b', borderWidth:1.5, backgroundColor:'#c0392b',
+            fill:false, tension:0.35, pointRadius:3, pointBackgroundColor:'#c0392b' }
         ]
       },
       options: {
         responsive: true,
         plugins: {
-          legend: { display: false },
+          legend: { display: true, labels: { font: { size: 10 }, boxWidth: 18 } },
           tooltip: { callbacks: { label: function(c){
             const q = c.dataset.qtyData ? c.dataset.qtyData[c.dataIndex] : null;
             const qStr = q != null ? ' ／ ' + q + ' 件' : '';
@@ -4836,6 +4854,13 @@ window.initStore = initStore;
       { 'Bizan Angel shirt': 8, 'Cacti prickly Bizan Angel shirt': 5, 'Cacti prickly Bizan Angel shirt small': 2, 'Ripple flow scarf': 2, 'Bi zan embroidery cap Knot': 1, 'Bi zan summer orbit cap': 1, 'Bi zan embroidery Distressed cap': 1, 'Bizan Angle tie': 1, 'Bizan Angle washed shred midi skirt': 1 },
       { 'Bizan Angel shirt': 6, 'Cacti prickly Bizan Angel shirt': 5, 'Related Araphics Rib Tee': 2, 'Bizan Angel shirt small': 2, 'Garden Series Sling Bag': 1, 'Bizan Angle washed shred midi skirt': 1, 'MAO DAO CHENG GOUNG Garment-Dyed Long Sleeve Shirt': 1, 'PRICKLY CAT Distressed Crop Top': 1, 'Bizan scarf black': 1, '蕾絲拼接領帶': 1, 'Bi zan embroidery cap Knot': 1 },
     ],
+    // ── 網路銷售（Shopline）品牌週資料，2026/7/13 週起記錄；null = 該週無網路資料 ──
+    // 只記品牌（給 Yufu / Mitty Girls 帳簿頁用）；非品牌的網路品項不納入
+    online_brand: [
+      null, null, null, null, null, null, null, null,
+      null, null, null, null, null, null, null, null,
+      { 'Mitty girls': { amt: 10800, qty: 10, items: { '絲綢連衣裙': 4, '緞帶蝴蝶結背心': 2, '海洋樂園方巾': 1, '性感尤物假兩件丁字褲半裙': 1, '奶油旋律髮夾': 1, '拿破崙結音符甜心棉褲': 1 } }, yufu: { amt: 0, qty: 0, items: {} } },
+    ],
   };
 
   const sColors = {
@@ -4863,6 +4888,19 @@ window.initStore = initStore;
       const arr = kind === 'qty' ? sData.brand_qty : sData.brand_amt;
       return arr.map(function(d) { return (d && d[key]) || 0; });
     },
+    // 網路銷售（Shopline）：無資料的週回傳 null（圖上不畫點）
+    getOnlineWeekly: function(brand, kind) {
+      const key = brand === 'yufu' ? 'yufu' : 'Mitty girls';
+      return sData.online_brand.map(function(d) {
+        if (!d || !d[key]) return null;
+        return kind === 'qty' ? d[key].qty : d[key].amt;
+      });
+    },
+    getOnlineData: function(brand, w) {
+      const key = brand === 'yufu' ? 'yufu' : 'Mitty girls';
+      const d = sData.online_brand[w];
+      return (d && d[key]) || null;
+    },
     // 在指定的 select 元素填入週次選項（最新週在最前）
     populateWeekSelect: function(selectId, defaultLatest) {
       const sel = document.getElementById(selectId);
@@ -4888,7 +4926,7 @@ window.initStore = initStore;
       const color = brand === 'yufu' ? '#b38b59' : '#2d5a27';
       const max = Math.max(...Object.values(data));
       const sorted = Object.entries(data).sort((a,b) => b[1]-a[1]);
-      body.innerHTML = sorted.map(function(pair) {
+      const bar = function(pair) {
         const k = pair[0], v = pair[1];
         const pct = Math.round(v/max*100);
         return '<div style="margin-bottom:7px">' +
@@ -4899,7 +4937,32 @@ window.initStore = initStore;
           '<div style="height:5px;background:#eee;border-radius:3px">' +
             '<div style="height:5px;width:' + pct + '%;background:' + color + ';border-radius:3px;transition:width .4s"></div>' +
           '</div></div>';
-      }).join('');
+      };
+      let html = '<div style="font-size:0.78rem;color:#999;margin:2px 0 8px;">🏬 店面（POS）</div>' + sorted.map(bar).join('');
+      // 網路銷售區塊（有記錄的週才顯示；與店面分開列）
+      const ol = this.getOnlineData(brand, w);
+      if (ol) {
+        html += '<div style="font-size:0.78rem;color:#999;margin:14px 0 8px;border-top:1px dashed #ddd;padding-top:10px;">🛒 網路（Shopline）｜' + ol.qty + ' 件 ／ NT$' + ol.amt.toLocaleString('zh-TW') + '</div>';
+        const okeys = Object.entries(ol.items).sort((a,b) => b[1]-a[1]);
+        if (okeys.length === 0) {
+          html += '<p style="color:#bbb;font-size:0.8rem;">本週網路無此品牌銷售</p>';
+        } else {
+          const omax = Math.max(...Object.values(ol.items));
+          html += okeys.map(function(pair) {
+            const k = pair[0], v = pair[1];
+            const pct = Math.round(v/omax*100);
+            return '<div style="margin-bottom:7px">' +
+              '<div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:3px">' +
+                '<span style="color:var(--text)">' + k + '</span>' +
+                '<span style="font-weight:700;color:#8B5E2A">' + v + ' 件</span>' +
+              '</div>' +
+              '<div style="height:5px;background:#eee;border-radius:3px">' +
+                '<div style="height:5px;width:' + pct + '%;background:#8B5E2A;border-radius:3px;transition:width .4s"></div>' +
+              '</div></div>';
+          }).join('');
+        }
+      }
+      body.innerHTML = html;
     }
   };
 
