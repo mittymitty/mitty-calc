@@ -1844,9 +1844,11 @@ window.doSignup = async function() {
 //  管理員介面
 // ══════════════════════════════════════════════════════════
 function initAdmin() {
+  // 薪資是月初結算上個月，月份預設為上一個月
   const now = new Date();
-  document.getElementById('adminMonth').value =
-    now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  let ay = now.getFullYear(), am = now.getMonth(); // getMonth() 0-indexed，直接當作上個月；1月時退回前一年12月
+  if (am === 0) { ay--; am = 12; }
+  document.getElementById('adminMonth').value = `${ay}-${String(am).padStart(2,'0')}`;
   document.getElementById('adminUserName').textContent = currentUserData.name || '';
   renderAdminEmpCards();
   renderSwitchEmpGrid();
