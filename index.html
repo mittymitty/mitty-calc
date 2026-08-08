@@ -224,6 +224,8 @@
     .emp-key-select { padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 0.82rem; background: var(--card); }
     .btn-save-user { padding: 6px 14px; background: var(--green); color: #fff; border: none; border-radius: var(--r-sm); cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: background .2s; }
     .btn-save-user:hover { background: var(--green-light); }
+    .btn-del-user { padding: 5px 10px; margin-left: 8px; background: none; color: #c0392b; border: 1px solid #c0392b; border-radius: var(--r-sm); cursor: pointer; font-size: 0.78rem; font-weight: 600; transition: all .2s; flex-shrink: 0; }
+    .btn-del-user:hover { background: #c0392b; color: #fff; }
     .section-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin: 16px 0 10px; font-weight: 600; }
 
     /* ═══════════════════════════════════════
@@ -2264,8 +2266,21 @@ function renderActiveUsers(users) {
       </small>
     </div>
     <span class="emp-badge ${u.role==='pending'?'pending':''}">${u.role==='admin'?'管理員':(u.role==='store'?'店面':'已開通')}</span>
+    ${u.role!=='admin' ? `<button class="btn-del-user" onclick="deleteUserAccount('${u.uid}','${(u.name||'').replace(/['"<>]/g,'')}')">刪除</button>` : ''}
   </div>`).join('');
 }
+
+// ── 刪除帳號（離職員工用）───────────────────────────────
+// 刪除 users 資料後，該帳號登入會被立即登出，等於無法再使用系統。
+// 過去的薪資、排班資料存在 monthlyData / scheduling，完全不受影響。
+window.deleteUserAccount = async function(uid, name) {
+  if (!confirm(`確定要刪除「${name}」的帳號嗎？\n\n刪除後這個帳號將無法再登入系統。\n（過去的薪資與排班資料不會被刪除）`)) return;
+  try {
+    await deleteDoc(doc(db,'users',uid));
+    alert('已刪除帳號');
+    loadUserList();
+  } catch(e) { alert('刪除失敗：'+e.message); }
+};
 
 window.approveUser = async function(uid) {
   const empKey = document.getElementById(`empkey_${uid}`)?.value;
