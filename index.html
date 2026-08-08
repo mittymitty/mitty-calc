@@ -1714,9 +1714,17 @@ const PT = [
   { key:'tong',  name:'童', rate:200, pct:0.02, end:'2026-07' } // 離職：做到 2026 年 7 月
 ];
 const FT = [
-  { key:'nian', name:'鯰 (店長)', salary:70000, insurance:2135 },
-  { key:'lun',  name:'倫 (阿倫)', salary:63000, insurance:2088 }
+  // insurance = 目前的勞健保自付額；insHistory = 舊金額（until 該月「含」以前適用，由舊到新排列）
+  { key:'nian', name:'鯰 (店長)', salary:70000, insurance:2274, insHistory:[{until:'2026-07', amount:2135}] },
+  { key:'lun',  name:'倫 (阿倫)', salary:63000, insurance:2135, insHistory:[{until:'2026-07', amount:2088}] }
 ];
+// 依月份取得正職勞健保自付額（2026-07 以前用舊值，2026-08 起用新值）
+function ftInsurance(f, ym) {
+  if (ym && f.insHistory) {
+    for (const h of f.insHistory) if (ym <= h.until) return h.amount;
+  }
+  return f.insurance;
+}
 const EMP_KEYS = [
   { key:'sheng', label:'聖（兼職）'},{ key:'fei', label:'斐（兼職）'},
   { key:'du',    label:'都（兼職）'},{ key:'hao', label:'浩（兼職）'},
@@ -2096,8 +2104,8 @@ async function loadAdminData() {
         if (leaveEl) leaveEl.innerHTML = '<span style="color:#ccc;font-style:italic;font-size:0.82rem;">無請假</span>';
         if (notesEl) notesEl.value = '';
       }
-      // 保險固定用 FT 陣列中的值，不從 DB 覆蓋
-      setVal(`ft_ins_${f.key}`, f.insurance);
+      // 保險固定用 FT 陣列中的值（依月份取新舊金額），不從 DB 覆蓋
+      setVal(`ft_ins_${f.key}`, ftInsurance(f, month));
     }
   } catch(e) { console.error('loadAdminData:', e); }
   isLoadingAdminData = false; // 載入完畢，恢復自動儲存
