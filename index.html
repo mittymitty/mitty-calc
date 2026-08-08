@@ -1710,7 +1710,7 @@ const PT = [
   { key:'sheng', name:'聖', rate:300, pct:0.04 },
   { key:'fei',   name:'斐', rate:280, pct:0.03 },
   { key:'du',    name:'都', rate:250, pct:0.03 },
-  { key:'hao',   name:'浩', rate:230, pct:0.03 },
+  { key:'hao',   name:'浩', rate:250, pct:0.03, rateHistory:[{until:'2026-07', amount:230}] }, // 2026-08 起調薪 250
   { key:'tong',  name:'童', rate:200, pct:0.02, end:'2026-07' } // 離職：做到 2026 年 7 月
 ];
 const FT = [
@@ -1724,6 +1724,13 @@ function ftInsurance(f, ym) {
     for (const h of f.insHistory) if (ym <= h.until) return h.amount;
   }
   return f.insurance;
+}
+// 依月份取得兼職時薪：rateHistory 列出「until 該月（含）以前」的舊時薪，其餘用 rate
+function ptRate(e, ym) {
+  if (ym && e.rateHistory) {
+    for (const h of e.rateHistory) if (ym <= h.until) return h.amount;
+  }
+  return e.rate;
 }
 const EMP_KEYS = [
   { key:'sheng', label:'聖（兼職）'},{ key:'fei', label:'斐（兼職）'},
@@ -1978,7 +1985,7 @@ function renderAdminEmpCards() {
     ptHtml += `
     <div class="emp-card" id="pt_card_${e.key}">
       <div class="emp-header">
-        <span>${e.name}</span><small>時薪 ${e.rate} / 獎金 ${e.pct*100}%</small>
+        <span>${e.name}</span><small id="pt_rate_label_${e.key}">時薪 ${e.rate} / 獎金 ${e.pct*100}%</small>
       </div>
       <div class="emp-body">
         <div class="input-row"><label>上班總時數</label><input type="number" id="pt_h_${e.key}"     step="0.5" placeholder="0" oninput="adminCalc()"></div>
@@ -2041,6 +2048,9 @@ async function loadAdminData() {
   PT.forEach(e => {
     const card = document.getElementById(`pt_card_${e.key}`);
     if (card) card.style.display = empActiveIn(e.key, month) ? '' : 'none';
+    // 時薪標籤依月份顯示（調薪前的月份顯示舊時薪）
+    const rateLbl = document.getElementById(`pt_rate_label_${e.key}`);
+    if (rateLbl) rateLbl.textContent = `時薪 ${ptRate(e, month)} / 獎金 ${e.pct*100}%`;
   });
 
   ['shopRev','cardFee','onlineRev','convFee','platformFee','refund','cancelOrder','nightHours']
@@ -2117,13 +2127,15 @@ function setVal(id, val) { const el=document.getElementById(id); if(el && val) e
 window.copyPtFormula = function(key) {
   const emp = PT.find(e => e.key === key);
   if (!emp) return;
-  const month = document.getElementById('adminMonth').value || '本月';
+  const monthVal = document.getElementById('adminMonth').value;
+  const month = monthVal || '本月';
+  const rate  = ptRate(emp, monthVal); // 時薪依月份取值
   const h     = gv(`pt_h_${key}`);
   const hd    = gv(`pt_hd_${key}`);
   const extra = gv(`pt_extra_${key}`);
   const ins   = gv(`pt_ins_${key}`);
   const bonus = Math.round(adminBonusBase * emp.pct);
-  const pay   = Math.round((emp.rate + adminBonusBase * emp.pct) * h + hd * emp.rate + extra - ins);
+  const pay   = Math.round((rate + adminBonusBase * emp.pct) * h + hd * rate + extra - ins);
   const name  = emp.name.replace(/\s*\(.*?\)/g,'');
   const text =
 `📐 ${month} 薪資計算（${name}）
@@ -2132,8 +2144,8 @@ window.copyPtFormula = function(key) {
 當月總營收 ${fmt(adminTotalRev)} ÷ 晚班總時數 ${adminNightH} × 個人獎金% ${emp.pct*100}% ＝ ${fmt(bonus)} 元／小時
 
 【薪資計算】
-（時薪 ${emp.rate} ＋ 每小時獎金 ${fmt(bonus)}）× 上班總時數 ${h}
-＋ 國定假日時數 ${hd} × 時薪 ${emp.rate}
+（時薪 ${rate} ＋ 每小時獎金 ${fmt(bonus)}）× 上班總時數 ${h}
+＋ 國定假日時數 ${hd} × 時薪 ${rate}
 ＋ 其他 ${fmt(extra)} － 勞健保自付 ${fmt(ins)}
 ＝ 應領薪資 ${fmt(pay)} 元`;
   navigator.clipboard.writeText(text).then(() => {
@@ -2178,9 +2190,11 @@ window.adminCalc = function() {
   adminTotalRev = totalRev; adminNightH = nightH; adminBonusBase = bonusBase;
 
   let total = 0;
+  const calcMonth = document.getElementById('adminMonth').value;
   PT.forEach(e => {
     const h=gv(`pt_h_${e.key}`), hd=gv(`pt_hd_${e.key}`), ins=gv(`pt_ins_${e.key}`), extra=gv(`pt_extra_${e.key}`);
-    const pay = (e.rate + bonusBase * e.pct) * h + hd * e.rate + extra - ins;
+    const rate = ptRate(e, calcMonth); // 時薪依月份取值（調薪前的月份用舊時薪）
+    const pay = (rate + bonusBase * e.pct) * h + hd * rate + extra - ins;
     setText(`pt_pay_${e.key}`, h > 0 ? fmt(pay)+' 元' : '—');
     if (h > 0) total += pay;
   });
