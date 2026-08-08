@@ -981,7 +981,7 @@
     <div id="empTopQuickAccess" style="display:none; margin: 12px 0 0;"></div>
     <div class="emp-welcome">
       <p class="greeting">歡迎回來 👋</p>
-      <p class="hint">請填寫當月上班時數後送出</p>
+      <p class="hint">請填寫「上個月」的上班時數後送出（月份已自動選好）</p>
       <p style="font-size:0.8rem;color:#bbb;margin-top:2px" id="empWelcomeName"></p>
     </div>
     <div class="month-row">
@@ -990,7 +990,7 @@
     </div>
     <div class="schedule-card">
       <h3>📋 打卡班表記錄</h3>
-      <p class="hint-text">請填入當月每次上班的日期與時間，老闆會對照時數確認</p>
+      <p class="hint-text">請填入該月份每次上班的日期與時間，老闆會對照時數確認</p>
       <textarea class="schedule-textarea" id="empScheduleLog" placeholder="範例：
 3/7 2:00-9:00（7）
 3/9 2:00-9:00（7）
@@ -1709,7 +1709,7 @@ const PT = [
   { key:'fei',   name:'斐', rate:280, pct:0.03 },
   { key:'du',    name:'都', rate:250, pct:0.03 },
   { key:'hao',   name:'浩', rate:230, pct:0.03 },
-  { key:'tong',  name:'童', rate:200, pct:0.02 }
+  { key:'tong',  name:'童', rate:200, pct:0.02, end:'2026-07' } // 離職：做到 2026 年 7 月
 ];
 const FT = [
   { key:'nian', name:'鯰 (店長)', salary:70000, insurance:2135 },
@@ -1721,6 +1721,18 @@ const EMP_KEYS = [
   { key:'tong',  label:'童（兼職）'},{ key:'nian', label:'鯰 店長（正職）'},
   { key:'lun',   label:'倫（正職）'}
 ];
+
+// ── 離職員工處理 ─────────────────────────────────────────
+// PT/FT 裡有 end:'YYYY-MM'（最後在職月份）的員工：
+// 在該月份（含）之前的頁面照常顯示（薪資、排班歷史資料都保留），之後的月份自動隱藏。
+const EMP_END = {};
+[...PT, ...FT].forEach(e => { if (e.end) EMP_END[e.key] = e.end; });
+// ym 傳 null 代表「現在／未來」的情境（例如帳號選單），離職員工一律不顯示
+function empActiveIn(key, ym) {
+  const end = EMP_END[key];
+  return !end || (ym && ym <= end);
+}
+function activeEmps(list, ym) { return list.filter(e => empActiveIn(e.key, ym)); }
 
 const insData = [[1500,277,458,735],[3000,277,458,735],[4500,277,458,735],[6000,277,458,735],[7500,277,458,735],[8700,277,458,735],[9900,277,458,735],[11100,277,458,735],[12540,313,458,771],[13500,338,458,796],[15840,396,458,854],[16500,413,458,871],[17280,432,458,890],[17880,447,458,905],[19047,476,458,934],[20008,500,458,958],[21009,525,458,983],[22000,550,458,1008],[23100,577,458,1035],[24000,600,458,1058],[25250,632,458,1090],[26400,660,458,1118],[27600,690,458,1148],[28590,715,458,1173],[29500,738,458,1196],[30300,758,470,1228],[31800,795,493,1288],[33300,833,516,1349],[34800,870,540,1410],[36300,908,563,1471],[38200,955,592,1547],[40100,1002,622,1624],[42000,1050,651,1701],[43900,1098,681,1779],[45800,1145,710,1855],[48200,1145,748,1893],[50600,1145,785,1930],[53000,1145,822,1967],[55400,1145,859,2004],[57800,1145,896,2041],[60800,1145,943,2088],[63800,1145,990,2135]];
 
@@ -1934,7 +1946,7 @@ function renderSwitchEmpGrid() {
     hao:'#C07D10',   tong:'#6B3A9C', nian:'#2BBFB0', lun:'#E06090'
   };
   const roleLabel = { sheng:'兼職', fei:'兼職', du:'兼職', hao:'兼職', tong:'兼職', nian:'店長', lun:'正職' };
-  const allEmps = [...PT, ...FT];
+  const allEmps = activeEmps([...PT, ...FT], null); // 離職員工不顯示
   grid.innerHTML = allEmps.map(emp => {
     const cleanName = emp.name.replace(/\s*\(.*?\)/g, '');
     const color = colors[emp.key] || '#999';
@@ -1952,7 +1964,7 @@ function renderAdminEmpCards() {
   let ptHtml = '';
   PT.forEach(e => {
     ptHtml += `
-    <div class="emp-card">
+    <div class="emp-card" id="pt_card_${e.key}">
       <div class="emp-header">
         <span>${e.name}</span><small>時薪 ${e.rate} / 獎金 ${e.pct*100}%</small>
       </div>
@@ -2013,6 +2025,12 @@ async function loadAdminData() {
   isLoadingAdminData = true;
   clearTimeout(saveTimer); // 取消任何待執行的儲存
 
+  // 離職員工：離職月之後隱藏薪資卡片（歷史月份照常顯示）
+  PT.forEach(e => {
+    const card = document.getElementById(`pt_card_${e.key}`);
+    if (card) card.style.display = empActiveIn(e.key, month) ? '' : 'none';
+  });
+
   ['shopRev','cardFee','onlineRev','convFee','platformFee','refund','cancelOrder','nightHours']
     .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
   PT.forEach(e => ['h','hd','extra','ins'].forEach(f => {
@@ -2031,6 +2049,7 @@ async function loadAdminData() {
       Object.keys(d).forEach(k => { const el=document.getElementById(k); if(el && d[k]) el.value=d[k]; });
     }
     for (const e of PT) {
+      if (!empActiveIn(e.key, month)) continue; // 離職後的月份不載入
       const snap = await getDoc(doc(db,'monthlyData',month,'employees',e.key));
       const logEl = document.getElementById(`emp_log_${e.key}`);
       if (snap.exists()) {
@@ -2178,6 +2197,7 @@ async function adminSaveData() {
       cancelOrder:gv('cancelOrder'), nightHours:gv('nightHours')
     });
     for (const e of PT) {
+      if (!empActiveIn(e.key, month)) continue; // 離職後的月份不寫入，避免覆蓋
       const prev = await getDoc(doc(db,'monthlyData',month,'employees',e.key));
       const base = prev.exists() ? prev.data() : {};
       await setDoc(doc(db,'monthlyData',month,'employees',e.key), {
@@ -2225,7 +2245,7 @@ function renderPendingUsers(users) {
     <div class="user-actions">
       <select class="emp-key-select" id="empkey_${u.uid}">
         <option value="">— 選擇員工 —</option>
-        ${EMP_KEYS.map(k=>`<option value="${k.key}">${k.label}</option>`).join('')}
+        ${EMP_KEYS.filter(k=>empActiveIn(k.key,null)).map(k=>`<option value="${k.key}">${k.label}</option>`).join('')}
         <option value="__store__">🏪 店面共用帳號</option>
       </select>
       <button class="btn-save-user" onclick="approveUser('${u.uid}')">開通</button>
@@ -2273,9 +2293,11 @@ window.switchEmpTab = function(tab) {
 };
 
 function initEmployee() {
+  // 上班時數是「月初回報上個月」，所以月份預設為上一個月，避免員工填錯
   const now = new Date();
-  document.getElementById('empMonth').value =
-    now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  let ey = now.getFullYear(), em = now.getMonth(); // getMonth() 0-indexed，直接當作上個月；1月時退回前一年12月
+  if (em === 0) { ey--; em = 12; }
+  document.getElementById('empMonth').value = `${ey}-${String(em).padStart(2,'0')}`;
   const _dnEl = document.getElementById('empDisplayName'); if (_dnEl) _dnEl.textContent = currentUserData.name || '';
   const _wnEl = document.getElementById('empWelcomeName'); if (_wnEl) _wnEl.textContent = currentUserData.name || '';
   document.getElementById('empUserName').textContent    = currentUserData.name || '';
@@ -3852,7 +3874,8 @@ function renderEmpSchedCalendar() {
   // 圖例：其他員工（可排班色點） + 出國說明
   const legend = document.getElementById('schedColorLegend');
   if (legend) {
-    const otherEmpKeys = Object.keys(SCHED_COLORS).filter(k => k !== currentUserData?.employeeKey);
+    const schedYm = `${schedYear}-${String(schedMonth).padStart(2,'0')}`;
+    const otherEmpKeys = Object.keys(SCHED_COLORS).filter(k => k !== currentUserData?.employeeKey && empActiveIn(k, schedYm));
     let legendHtml = otherEmpKeys.map(k =>
       `<span class="sched-legend-item">
         <span class="sched-legend-dot" style="background:${SCHED_COLORS[k]}"></span>
@@ -3901,7 +3924,7 @@ async function loadSchedData() {
   if (!currentUserData?.employeeKey) return;
   const ym = `${schedYear}-${String(schedMonth).padStart(2,'0')}`;
   try {
-    const allKeys = Object.keys(SCHED_COLORS);
+    const allKeys = Object.keys(SCHED_COLORS).filter(k => empActiveIn(k, ym));
     const snaps = await Promise.all(allKeys.map(k => getDoc(doc(db,'scheduling',ym,'employees',k))));
     schedSelectedDays    = new Set();
     schedTravelDays      = new Set();
@@ -3989,7 +4012,7 @@ async function loadAdminSchedData() {
   const wrap = document.getElementById('finalSchedWrap');
   if (wrap) wrap.style.display = 'none';
   try {
-    const allEmps = [...PT, ...FT];
+    const allEmps = activeEmps([...PT, ...FT], ym);
     const schedData = {};
     await Promise.all(allEmps.map(async emp => {
       const snap = await getDoc(doc(db,'scheduling',ym,'employees',emp.key));
@@ -4006,7 +4029,7 @@ async function loadAdminSchedData() {
 async function loadFinalSchedule(ym, schedData) {
   const wrap = document.getElementById('finalSchedWrap');
   if (!wrap) return;
-  const allEmps = [...PT, ...FT];
+  const allEmps = activeEmps([...PT, ...FT], ym);
   const [year, month] = ym.split('-').map(Number);
   const daysInMonth = new Date(year, month, 0).getDate();
 
@@ -4070,7 +4093,7 @@ function renderFinalSchedCalendar(ym) {
   const [year, month] = ym.split('-').map(Number);
   const daysInMonth = new Date(year, month, 0).getDate();
   const firstDay    = new Date(year, month-1, 1).getDay();
-  const allEmps     = [...PT, ...FT];
+  const allEmps     = activeEmps([...PT, ...FT], ym);
 
   // 計算每人確認上班天數（只計 active 狀態）
   const counts = {};
@@ -4181,7 +4204,7 @@ window.downloadSchedule = function() {
   const [year, month] = ym.split('-').map(Number);
   const daysInMonth   = new Date(year, month, 0).getDate();
   const firstDay      = new Date(year, month-1, 1).getDay();
-  const allEmps       = [...PT, ...FT];
+  const allEmps       = activeEmps([...PT, ...FT], ym);
   const wdNames       = ['日','一','二','三','四','五','六'];
   const wdFull        = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
 
@@ -4275,7 +4298,7 @@ function renderAdminSchedCalendar(ym, schedData) {
   const [year, month] = ym.split('-').map(Number);
   const daysInMonth   = new Date(year, month, 0).getDate();
   const firstDay      = new Date(year, month-1, 1).getDay();
-  const allEmps       = [...PT, ...FT];
+  const allEmps       = activeEmps([...PT, ...FT], ym);
 
   // 建立 日期 → 可排班員工 / 出國員工 對應
   const dayEmps   = {};
@@ -4375,7 +4398,7 @@ function storeAuthorOptions(selectedKey) {
   const opts = [
     `<option value="山羊先生" ${!selectedKey || selectedKey==='山羊先生' ? 'selected':''}>🐐 山羊先生</option>`
   ];
-  EMP_KEYS.forEach(k => {
+  EMP_KEYS.filter(k => empActiveIn(k.key, null)).forEach(k => {
     const name = k.label.replace(/\s*[（(].+/, '');
     opts.push(`<option value="${name}" ${selectedKey===name?'selected':''}>${name}</option>`);
   });
